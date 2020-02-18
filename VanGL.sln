@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VanGL", "VanGL.vcxproj", "{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Debug|x64.ActiveCfg = Debug|x64
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Debug|x64.Build.0 = Debug|x64
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Debug|x86.ActiveCfg = Debug|Win32
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Debug|x86.Build.0 = Debug|Win32
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Release|x64.ActiveCfg = Release|x64
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Release|x64.Build.0 = Release|x64
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Release|x86.ActiveCfg = Release|Win32
+		{F0B08E08-06ED-4BA1-A8A5-DC75AB7FBC5D}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C611C528-3246-4C71-A24C-F754BD497B5A}
+	EndGlobalSection
+EndGlobal
