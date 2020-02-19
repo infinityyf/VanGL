@@ -3,11 +3,27 @@
 #include "window.h"
 #include "texture.h"
 
+// use glm 
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+float deltaTime = 0.0f; // time between current and last frame
+float lastFrame = 0.0f; // last frame time
 
 void processInput(GLFWwindow* window) {
 	//get key press event
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+	// adjust accordingly if use more time to render then move faster
+	float cameraSpeed = 2.5f * deltaTime; 
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cameraPos += cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cameraPos -= cameraSpeed * cameraFront;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 float vertices[] = {
@@ -66,7 +82,6 @@ int main() {
 
 	int width = 800;
 	int height = 600;
-
 	Window window(width, height);
 	if (window.window == NULL) return -1;
 
@@ -122,16 +137,12 @@ int main() {
 	Texture texture1("scene\\materials\\textures\\container.jpg", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB);
 	Texture texture2("scene\\materials\\textures\\awesomeface.png", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGBA);
 
-	// use glm 
-	glm::mat4 trans = glm::mat4(1.0f);
-	// translate from degree to radians
-	trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	// use orthogonal vectors to translate into camera coordinate
 	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 	glm::mat4 projection = glm::mat4(1.0f);
 	projection = glm::perspective(glm::radians(45.0f), (float)window.windowWidth / window.windowHeight, 0.1f, 100.0f);
 	
@@ -150,8 +161,13 @@ int main() {
 	//enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 
+	
+
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 		
 
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
@@ -173,6 +189,9 @@ int main() {
 		glfwPollEvents();
 		processInput(window.window);
 		glfwSwapBuffers(window.window);
+
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		shader.setMatrix4("view", view);
 	}
 	
 	glDeleteBuffers(1, &VBO);
