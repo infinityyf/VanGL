@@ -11,7 +11,3 @@ using namespace std;
 
 //create opengl context, define windows and deal input
 #include <GLFW/glfw3.h>
-
-
-const int WIN_CREATE_FAILE = -1;
-const int GLAD_LOAD_FAILE = -1;

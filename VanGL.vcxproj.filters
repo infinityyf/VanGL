@@ -23,11 +23,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\contextManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="src\stdafx.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="src\shader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\window.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shaders\shader.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\shader.vs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
