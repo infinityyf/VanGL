@@ -32,6 +32,9 @@
     <ClInclude Include="src\window.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="src\texture.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\shader.fs">

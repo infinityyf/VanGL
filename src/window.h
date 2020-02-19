@@ -23,6 +23,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 class Window {
 public:
+	int windowWidth;
+	int windowHeight;
 	GLFWwindow* window;
 	Window(const int width, const int height);
 	
@@ -61,6 +63,9 @@ Window::Window(const int width, const int height)
 	transform coordinate from NDC to screen
 	*/
 	glViewport(0, 0, width, height);
+
+	windowWidth = width;
+	windowHeight = height;
 }
 inline void Window::SetFramebufferSizeCallback(size_callback framebuffer_size_callback)
 {

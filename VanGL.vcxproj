@@ -83,7 +83,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,7 +97,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\texture.h" />
     <ClInclude Include="src\window.h" />
   </ItemGroup>
   <ItemGroup>

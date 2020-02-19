@@ -4,6 +4,11 @@
 
 #include <glad/glad.h>
 
+#include <glm.hpp>
+// matrix operation
+#include <gtc/matrix_transform.hpp>
+// send data pointer
+#include <gtc/type_ptr.hpp>
 /*
 stream's function can return  different status bit
 eofbit: end of source
@@ -26,10 +31,12 @@ public:
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	// use program
 	void use();
-	// set uniform
+
+	// set uniform (const means it doesnt change any data in this class)
 	void setBool(const std::string& name, bool value) const;
 	void setInt(const std::string& name, int value) const;
 	void setFloat(const std::string& name, float value) const;
+	void setMatrix4(const std::string& name,const glm::mat4 matrix) const;
 };
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
@@ -133,6 +140,13 @@ inline void Shader::setInt(const std::string& name, int value) const
 inline void Shader::setFloat(const std::string& name, float value) const
 {
 	glUniform1f(glGetUniformLocation(shaderProgramID, name.c_str()), value);
+}
+
+inline void Shader::setMatrix4(const std::string& name, const glm::mat4 matrix) const
+{
+	unsigned int matrixLocation = glGetUniformLocation(shaderProgramID, name.c_str());
+	// second parameter means how many matrixs
+	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 

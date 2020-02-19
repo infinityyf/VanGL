@@ -11,3 +11,10 @@ using namespace std;
 
 //create opengl context, define windows and deal input
 #include <GLFW/glfw3.h>
+
+
+#include <glm.hpp>
+// matrix operation
+#include <gtc/matrix_transform.hpp>
+// send data pointer
+#include <gtc/type_ptr.hpp>
