@@ -140,6 +140,8 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\model.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\texture.h" />

@@ -7,28 +7,39 @@
 
 #include <iostream>
 
+#include <glm.hpp>
+// matrix operation
+#include <gtc/matrix_transform.hpp>
+// send data pointer
+#include <gtc/type_ptr.hpp>
+
 enum WIN_ERROR
 {
 	WIN_CREATE_FAILE = -1,
 	GLAD_LOAD_FAILE = -1
 };
 
-typedef void (*size_callback)(GLFWwindow* window, int width, int height);
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
-}
-
+//add limitation of class name
+//this is the way to define the function pointer of class function
+//but we cannot use it without object , unless it is a static function(we can find its address without an object)
+//typedef void (*size_callback)(GLFWwindow*, int, int);
+//typedef void (*cursor_callback)(GLFWwindow*, double, double);
+//typedef void (*scroll_callback)(GLFWwindow*, double, double);
+//size_callback = &Window::framebuffer_size_callback
 
 
 class Window {
 public:
+
 	int windowWidth;
 	int windowHeight;
 	GLFWwindow* window;
 	Window(const int width, const int height);
-	
-	void SetFramebufferSizeCallback(size_callback function);
+	//void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	//void cursor_position_callback(GLFWwindow* window, double posx, double posy);
+	//void scroll_fov_callback(GLFWwindow* window, double xoffset, double yoffset);
+public:
+	void SetInputMode(int mode, int value);
 };
 
 Window::Window(const int width, const int height)
@@ -67,8 +78,11 @@ Window::Window(const int width, const int height)
 	windowWidth = width;
 	windowHeight = height;
 }
-inline void Window::SetFramebufferSizeCallback(size_callback framebuffer_size_callback)
+// deal with cursor
+inline void Window::SetInputMode(int mode, int value)
 {
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetInputMode(window, mode, value);
 }
+
+
 #endif

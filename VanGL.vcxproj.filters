@@ -35,6 +35,12 @@
     <ClInclude Include="src\texture.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="src\camera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\shader.fs">

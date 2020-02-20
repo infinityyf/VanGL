@@ -2,29 +2,10 @@
 #include "shader.h"
 #include "window.h"
 #include "texture.h"
+#include "camera.h"
 
-// use glm 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-float deltaTime = 0.0f; // time between current and last frame
-float lastFrame = 0.0f; // last frame time
 
-void processInput(GLFWwindow* window) {
-	//get key press event
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
-	// adjust accordingly if use more time to render then move faster
-	float cameraSpeed = 2.5f * deltaTime; 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		cameraPos += cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		cameraPos -= cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-}
 
 float vertices[] = {
 	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -84,9 +65,17 @@ int main() {
 	int height = 600;
 	Window window(width, height);
 	if (window.window == NULL) return -1;
+	//get cursor but make it invisible
+	window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	camera.linkToWindow(&window);
 	//register size change call back
-	window.SetFramebufferSizeCallback(framebuffer_size_callback);
+	camera.SetFramebufferSizeCallback();
+	camera.SetCursorCallBack();
+	camera.SetScrollCallBack();
+
+	
 
 	//use VAO to record vertex attributes it can only contain 16 attributes
 	unsigned int VAO;
@@ -136,27 +125,12 @@ int main() {
 	// path wrap_s wrap_t min_filter mag_filter format
 	Texture texture1("scene\\materials\\textures\\container.jpg", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB);
 	Texture texture2("scene\\materials\\textures\\awesomeface.png", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGBA);
-
+	Shader shader("src\\shaders\\shader.vs", "src\\shaders\\shader.fs");
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	// use orthogonal vectors to translate into camera coordinate
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(45.0f), (float)window.windowWidth / window.windowHeight, 0.1f, 100.0f);
 	
 	
-	Shader shader("src\\shaders\\shader.vs", "src\\shaders\\shader.fs");
-	//use shaders link to this program object
-	shader.use();
-	// set texture1 uniform to texture unit0
-	shader.setInt("texture1", 0);
-	shader.setInt("texture2", 1);
-	shader.setMatrix4("model", model);
-	shader.setMatrix4("view", view);
-	shader.setMatrix4("projection", projection);
-
 
 	//enable z buffer test
 	glEnable(GL_DEPTH_TEST);
@@ -166,14 +140,29 @@ int main() {
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
 		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
-		
+		camera.deltaTime = currentFrame - camera.lastFrame;
+		camera.lastFrame = currentFrame;
+		camera.processInput();
+
+
 
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		
+		
+		
+		//use shaders link to this program object
+		shader.use();
+		// set texture1 uniform to texture unit0
+		shader.setInt("texture1", 0);
+		shader.setInt("texture2", 1);
+		shader.setMatrix4("model", model);
+
+		camera.updateMatrixs();
+
+		shader.setMatrix4("view", camera.view);
+		shader.setMatrix4("projection", camera.projection);
 
 		glActiveTexture(GL_TEXTURE0);
 		// bind texture to texture unit0
@@ -187,11 +176,9 @@ int main() {
 
 		//check events
 		glfwPollEvents();
-		processInput(window.window);
 		glfwSwapBuffers(window.window);
 
-		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		shader.setMatrix4("view", view);
+
 	}
 	
 	glDeleteBuffers(1, &VBO);
