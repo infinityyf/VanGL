@@ -122,20 +122,30 @@ int main() {
 	glBindVertexArray(0);
 
 
+	//create light VAO
+	unsigned int lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+	glBindVertexArray(lightVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// data has already be binded
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+
 	// path wrap_s wrap_t min_filter mag_filter format
 	Texture texture1("scene\\materials\\textures\\container.jpg", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB);
 	Texture texture2("scene\\materials\\textures\\awesomeface.png", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGBA);
 	Shader shader("src\\shaders\\shader.vs", "src\\shaders\\shader.fs");
-
+	Shader lightShader("src\\shaders\\lightShader.vs", "src\\shaders\\lightShader.fs");
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 lightModel = glm::mat4(1.0f);
+	lightModel = glm::translate(lightModel, glm::vec3(1.0f));
+	lightModel = glm::scale(lightModel, glm::vec3(0.2f));
 	
-	
-
 	//enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 
-	
 
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
@@ -143,7 +153,7 @@ int main() {
 		camera.deltaTime = currentFrame - camera.lastFrame;
 		camera.lastFrame = currentFrame;
 		camera.processInput();
-
+		camera.updateMatrixs();
 
 
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
@@ -158,12 +168,9 @@ int main() {
 		shader.setInt("texture1", 0);
 		shader.setInt("texture2", 1);
 		shader.setMatrix4("model", model);
-
-		camera.updateMatrixs();
-
 		shader.setMatrix4("view", camera.view);
 		shader.setMatrix4("projection", camera.projection);
-
+		shader.setVector3("lightColor", glm::vec3(0.6f,0.5f,0.0f));
 		glActiveTexture(GL_TEXTURE0);
 		// bind texture to texture unit0
 		glBindTexture(GL_TEXTURE_2D, texture1.textureID);
@@ -171,7 +178,14 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture2.textureID);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		//use shaders link to this program object
+		lightShader.use();
+		lightShader.setMatrix4("model", lightModel);
+		lightShader.setMatrix4("view", camera.view);
+		lightShader.setMatrix4("projection", camera.projection);
+		glBindVertexArray(lightVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
 		//check events

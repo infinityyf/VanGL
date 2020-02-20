@@ -37,6 +37,7 @@ public:
 	void setInt(const std::string& name, int value) const;
 	void setFloat(const std::string& name, float value) const;
 	void setMatrix4(const std::string& name,const glm::mat4 matrix) const;
+	void setVector3(const std::string& name, const glm::vec3 vec)const;
 };
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
@@ -147,6 +148,12 @@ inline void Shader::setMatrix4(const std::string& name, const glm::mat4 matrix) 
 	unsigned int matrixLocation = glGetUniformLocation(shaderProgramID, name.c_str());
 	// second parameter means how many matrixs
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+inline void Shader::setVector3(const std::string& name, const glm::vec3 vec) const
+{
+	unsigned int location = glGetUniformLocation(shaderProgramID, name.c_str());
+	glUniform3fv(location, 1, glm::value_ptr(vec));
 }
 
 
