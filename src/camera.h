@@ -78,6 +78,12 @@ inline void Camera::renderScene()
 	//2. for all models set matrixs into shaders
 	//3. for all models set textures
 	//4. render
+
+	//extention
+	//1.render path(forward? deferred?)
+	//2.shadow
+	//3.global illumination
+	//4.voxel rendering
 }
 
 
