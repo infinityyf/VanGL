@@ -63,6 +63,8 @@ void Model::loadModel(std::string modelPath) {
 	}
 	modelDictionary = modelPath.substr(0, modelPath.find_last_of('\\'));
 	processNode(scene->mRootNode, scene);
+
+	modelDictionary = modelPath.substr(0, modelPath.find_last_of("\\"));
 }
 
 inline void Model::processNode(aiNode* node, const aiScene* scene)
@@ -145,7 +147,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material, aiTexture
 		material->GetTexture(type, i, &path);
 		Texture texture;
 		//use stb read pic
-		texture.textureID = texture.loadTextureFromFile(path.C_Str());
+		texture.textureID = texture.loadTextureFromFile(path.C_Str(),modelDictionary);
 		texture.textureType = typeName;
 		textures.push_back(texture);
 	}

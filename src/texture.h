@@ -19,24 +19,17 @@ enum TEX_TYPE
 
 };
 
-std::map<std::string, unsigned int> textureTypeMap = {
-	{"texture_diffuse",DIFFUSE_TEX},
-	{"texture_specular",SPECULAR_TEX},
-	{"texture_ambient",AMBIENT_TEX},
-	{"texture_normal",NORMAL_TEX},
-	{"texture_height",HEIGHT_TEX}
-};
-
-
 class Texture {
 public:
 	unsigned int textureID;
+
+	// you can find mesh's texture by type so you can replace texture bt your own
 	unsigned int textureType;
-	std::string texturePath;
+
 	Texture() {};
 	Texture(const std::string picPath, GLint wrap_s, GLint wrap_t, GLint min_filter, GLint mag_filter,GLint format);
 	void setTextureType(unsigned int type);
-	unsigned int loadTextureFromFile(const char* picPath);
+	unsigned int loadTextureFromFile(const char* picName,std::string dictionary);
 };
 
 Texture::Texture(const std::string picPath, GLint wrap_s, GLint wrap_t, GLint min_filter, GLint mag_filter,GLint format) {
@@ -78,8 +71,12 @@ inline void Texture::setTextureType(unsigned int type)
 	textureType = type;
 }
 
-inline unsigned int Texture::loadTextureFromFile(const char* picPath)
+inline unsigned int Texture::loadTextureFromFile(const char* picName, std::string dictionary)
 {
+	
+	std::string picPath = dictionary.append("\\").append(picName);
+	std::cout << "load texture: "+ picPath << std::endl;
+
 	unsigned int id;
 	glGenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);
@@ -89,7 +86,7 @@ inline unsigned int Texture::loadTextureFromFile(const char* picPath)
 
 	// load texture
 	int ImageWidth, ImageHeight, nrChannels;
-	unsigned char* data = stbi_load(picPath, &ImageWidth, &ImageHeight, &nrChannels, 0);
+	unsigned char* data = stbi_load(picPath.c_str(), &ImageWidth, &ImageHeight, &nrChannels, 0);
 	if (data) {
 		//check the pic format(use channel)
 		GLenum format = GL_RGB;
