@@ -3,7 +3,7 @@
 #include "window.h"
 #include "texture.h"
 #include "camera.h"
-
+#include "model.h"
 
 float vertices[] = {
 	// positions          // normals           // texture coords
@@ -135,7 +135,9 @@ int main() {
 	Texture texture1("scene\\materials\\textures\\container.jpg", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB);
 	Texture texture2("scene\\materials\\textures\\awesomeface.png", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGBA);
 	Texture diffuseTexture("scene\\materials\\textures\\container2.png", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGBA);
+	diffuseTexture.setTextureType(DIFFUSE_TEX);
 	Texture specularTexture("scene\\materials\\textures\\container2_specular.png", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGBA);
+	diffuseTexture.setTextureType(SPECULAR_TEX);
 
 	Shader shader("src\\shaders\\StandardShader.vs", "src\\shaders\\StandardShader.fs");
 	Shader lightShader("src\\shaders\\lightShader.vs", "src\\shaders\\lightShader.fs");
@@ -145,8 +147,14 @@ int main() {
 	lightModel = glm::translate(lightModel, glm::vec3(1.0f));
 	lightModel = glm::scale(lightModel, glm::vec3(0.2f));
 	
+	
+	//load model
+	Model nanosuit("scene\\models\\nanosuit\\nanosuit.obj");
+	
 	//enable z buffer test
 	glEnable(GL_DEPTH_TEST);
+
+
 
 
 	//render loop
@@ -179,15 +187,32 @@ int main() {
 		shader.setVector3("viewPos", camera.cameraPos);
 
 
-		shader.setVector3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
 		shader.setVector3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
 		shader.setVector3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 		shader.setFloat("material.shininess", 32.0f);
 
-		shader.setVector3("light.position", glm::vec3(1.0f, 1.0f, 1.0f));
-		shader.setVector3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-		shader.setVector3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-		shader.setVector3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		shader.setInt("PointNum", 1);
+		shader.setInt("SpotNum", 1);
+
+		shader.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
+		shader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		shader.setVector3("dirLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+		shader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.setVector3("pointLights[0].position", glm::vec3(1.0f, 1.0f, -1.0f));
+		shader.setVector3("pointLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		shader.setVector3("pointLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+		shader.setVector3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.setFloat("pointLights[0].constant", 1.0f);
+		shader.setFloat("pointLights[0].linear", 0.22f);
+		shader.setFloat("pointLights[0].quadratic", 0.2f);
+		shader.setVector3("spotLights[0].position", glm::vec3(1.0f, -1.0f, 1.0f));
+		shader.setVector3("spotLights[0].direction", glm::vec3(-1.0f, 1.0f, -1.0f));
+		shader.setVector3("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		shader.setVector3("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+		shader.setVector3("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.setFloat("spotLights[0].innerCutoff", 0.9f);
+		shader.setFloat("spotLights[0].outerCutOff", 0.5f);
 		//glActiveTexture(GL_TEXTURE0);
 		//// bind texture to texture unit0(bind with data)
 		//glBindTexture(GL_TEXTURE_2D, texture1.textureID);
@@ -205,8 +230,7 @@ int main() {
 		lightShader.setMatrix4("model", lightModel);
 		lightShader.setMatrix4("view", camera.view);
 		lightShader.setMatrix4("projection", camera.projection);
-		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		nanosuit.drawModel(&lightShader);
 
 
 		//check events

@@ -41,6 +41,12 @@
     <ClInclude Include="src\model.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="src\light.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\lightShader.fs">
