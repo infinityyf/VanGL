@@ -26,7 +26,7 @@ public:
 	std::vector<Texture> textures;
 	Mesh(std::vector<Vertex> vertexs, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	void setupMesh();
-	void drawMesh(Shader* shader);
+	void drawMesh(StandardShader* shader);
 private:
 	unsigned int VBO;
 	unsigned int EBO;
@@ -45,16 +45,24 @@ void Mesh::setupMesh() {
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 
+	//then vertex attribute will bind to VAO 
+	//just change different VAO when rendering different objects
 	glBindVertexArray(VAO);
 	// set buffer type and indicate that we will set VBO later
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// copy data
+	//GL_STATIC_DRAW : data wont change
+	//GL_DYNAMIC_DRAW : data change a lot
+	//GL_STREAM_DRAW : data change every time
 	glBufferData(GL_ARRAY_BUFFER, vertexs.size() * sizeof(Vertex), &vertexs[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-	// vertex position
+	//how to resolve tha vertex data
+	//first 0 means location 0 in vertex shader
+	//GL_FALSE means we dont want map data between 0,1 or -1,1
+	//this funciton will run above VBO bind to GL_ARRAY_BUFFER
+	// position
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	// normal
@@ -67,9 +75,26 @@ void Mesh::setupMesh() {
 	glBindVertexArray(0);
 }
 
-inline void Mesh::drawMesh(Shader* shader)
+inline void Mesh::drawMesh(StandardShader* shader)
 {
-	shader->use();
+	shader->use();	
+	for (unsigned int i = 0; i < textures.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		unsigned int type = textures[i].textureType;
+		switch (type)
+		{
+		// set texture1 uniform to texture unit0(bind with GPU texture unit not data)
+		case AMBIENT_TEX: shader->setInt("material.ambient", i);
+		case DIFFUSE_TEX: shader->setInt("material.diffuse", i);
+		case SPECULAR_TEX: shader->setInt("material.specular", i);
+		case NORMAL_TEX: shader->setInt("material.normal", i);
+		default:
+			break;
+		}
+		shader->setFloat("material.shininess", 32.0f);
+		glBindTexture(GL_TEXTURE_2D,textures[i].textureID);
+	}
+
 	glBindVertexArray(VAO);
 	// third parameter data type
 	// forth parameter offset 

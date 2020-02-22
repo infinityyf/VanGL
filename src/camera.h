@@ -14,6 +14,8 @@ public:
 	static glm::vec3 cameraPos;
 	static glm::vec3 cameraFront;
 	static glm::vec3 cameraUp;
+	float near;
+	float far;
 
 	//rotation information
 	//curse position
@@ -36,7 +38,7 @@ public:
 	glm::mat4 projection;
 
 public:
-	Camera(glm::vec3, glm::vec3, glm::vec3);
+	Camera(glm::vec3, glm::vec3, glm::vec3,float near,float far);
 	void linkToWindow(Window* window);
 	//render function
 	void renderScene();
@@ -56,11 +58,13 @@ public:
 	void updateMatrixs();
 };
 
-Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up) {
+Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float near, float far) {
 	cameraPos = pos;
 	cameraFront = front;
 	cameraUp = up;
 
+	this->near = near;
+	this->far = far;
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
 }
@@ -172,7 +176,7 @@ void Camera::processInput() {
 inline void Camera::updateMatrixs()
 {
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	projection = glm::perspective((float)glm::radians(fov), (float)window->windowWidth / window->windowHeight, 0.1f, 100.0f);
+	projection = glm::perspective((float)glm::radians(fov), (float)window->windowWidth / window->windowHeight, near, far);
 }
 
 glm::vec3 Camera::cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);

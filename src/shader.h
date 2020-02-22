@@ -21,14 +21,14 @@ badbit: error occured
 #include <iostream> // IO
 
 
-class Shader
+class StandardShader
 {
 public:
 	// shader ID
 	unsigned int shaderProgramID;
 
 	// get source code 
-	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	// use program
 	void use();
 
@@ -40,7 +40,7 @@ public:
 	void setVector3(const std::string& name, const glm::vec3 vec)const;
 };
 
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath) {
 	//open file
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -124,33 +124,33 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath) {
 	glDeleteShader(fragmentShader);
 }
 
-void Shader::use() {
+void StandardShader::use() {
 	glUseProgram(shaderProgramID);
 }
 
-inline void Shader::setBool(const std::string& name, bool value) const
+inline void StandardShader::setBool(const std::string& name, bool value) const
 {
 	glUniform1i(glad_glGetUniformLocation(shaderProgramID, name.c_str()), (int)value);
 }
 
-inline void Shader::setInt(const std::string& name, int value) const
+inline void StandardShader::setInt(const std::string& name, int value) const
 {
 	glUniform1i(glGetUniformLocation(shaderProgramID, name.c_str()), value);
 }
 
-inline void Shader::setFloat(const std::string& name, float value) const
+inline void StandardShader::setFloat(const std::string& name, float value) const
 {
 	glUniform1f(glGetUniformLocation(shaderProgramID, name.c_str()), value);
 }
 
-inline void Shader::setMatrix4(const std::string& name, const glm::mat4 matrix) const
+inline void StandardShader::setMatrix4(const std::string& name, const glm::mat4 matrix) const
 {
 	unsigned int matrixLocation = glGetUniformLocation(shaderProgramID, name.c_str());
 	// second parameter means how many matrixs
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-inline void Shader::setVector3(const std::string& name, const glm::vec3 vec) const
+inline void StandardShader::setVector3(const std::string& name, const glm::vec3 vec) const
 {
 	unsigned int location = glGetUniformLocation(shaderProgramID, name.c_str());
 	glUniform3fv(location, 1, glm::value_ptr(vec));

@@ -40,6 +40,7 @@ public:
 	//void scroll_fov_callback(GLFWwindow* window, double xoffset, double yoffset);
 public:
 	void SetInputMode(int mode, int value);
+	void SetViewPort(int mode, int value);
 };
 
 Window::Window(const int width, const int height)
@@ -73,7 +74,7 @@ Window::Window(const int width, const int height)
 	can use callback function to resize view port
 	transform coordinate from NDC to screen
 	*/
-	glViewport(0, 0, width, height);
+	SetViewPort(width, height);
 
 	windowWidth = width;
 	windowHeight = height;
@@ -82,6 +83,11 @@ Window::Window(const int width, const int height)
 inline void Window::SetInputMode(int mode, int value)
 {
 	glfwSetInputMode(window, mode, value);
+}
+
+inline void Window::SetViewPort(int width, int height)
+{
+	glViewport(0, 0, width, height);
 }
 
 

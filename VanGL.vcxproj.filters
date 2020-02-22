@@ -21,6 +21,9 @@
     <ClCompile Include="src\glad.c">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\depthTest.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">

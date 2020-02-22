@@ -2,18 +2,33 @@
 in vec2 TexCoord;
 in vec3 FragPos;
 in vec3 Normal;
-
-uniform vec3 viewPos;
+in mat4 View;
+in mat4 Projection;
+in float Near;
+out float Far;
 
 out vec4 FragColor;
 
+uniform vec3 viewPos;
+// struct StandardMaterial{
+//     // color of each channel(can replace by texture)
+//     sampler2D diffuse;
+//     sampler2D specular;
+//     float shininess;
+// };
+// uniform StandardMaterial material;
+
+
+//material
 struct StandardMaterial{
-    // color of each channel(can replace by texture)
+    sampler2D ambient;
     sampler2D diffuse;
     sampler2D specular;
+    sampler2D normal;
     float shininess;
 };
 uniform StandardMaterial material;
+
 
 
 
@@ -124,30 +139,16 @@ vec3 calculateSpotLight(SpotLight spotLight , vec3 Normal , vec3 viewDir, Standa
 
 
 
-
+// from screen depth to linear 01
+float depthToEyeCoord(float ScreenDepth){
+    float NDCDepth = ScreenDepth * 2 - 1;
+    float depth = (2.0 * Near * Far) / (Far + Near - NDCDepth * (Far - Near));   
+    return depth/Far;
+}
 
 
 void main()
 {
-    //FragColor = texture(texture2,TexCoord);
-    //FragColor = mix(texture(texture1,TexCoord),texture(texture2,TexCoord),0.2);
-
-    // //claculate ambient
-    // vec3 ambient = texture(material.diffuse,TexCoord).rgb * light.ambient;
-
-    // //calculate diffuse in world coordinate
-    // vec3 normal = normalize(Normal);
-    // vec3 lightDir = normalize(light.position - FragPos);
-    // float diff = max(dot(normal,lightDir),0.0f);
-    // vec3 diffuse = texture(material.diffuse,TexCoord).rgb * diff * light.diffuse;
-
-    // //calculate speqular light
-    // vec3 viewDir = normalize(viewPos - FragPos);
-    // // from light point to fragment
-    // vec3 reflectDir = reflect(-lightDir, normal);
-    // float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // vec3 specular = texture(material.specular,TexCoord).rgb * spec * light.specular;
-    // vec3 result = ambient + diffuse + specular;
 
     vec3 viewDir = normalize(viewPos - FragPos);
     //calculate all lights
@@ -163,5 +164,8 @@ void main()
     direct += calculateDirectLight(dirLight,Normal,viewDir,material);
     vec3 result = spot + point + direct;
 
+    
+
+    FragColor =vec4(FragPos,1.0f);
     FragColor = vec4(result,1.0f);
 }

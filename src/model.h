@@ -27,7 +27,7 @@ public:
 	
 public:
 	Model(std::string modelPath);
-	void drawModel(Shader* shader);
+	void drawModel(StandardShader* shader);
 
 	void loadModel(std::string modelPath);
 	void processNode(aiNode* node, const aiScene* scene);
@@ -35,6 +35,9 @@ public:
 
 	//load texture
 	std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, unsigned int typeName);
+
+	//model operate
+	void scale(glm::vec3 scale);
 };
 
 Model::Model(std::string modelPath) {
@@ -43,8 +46,9 @@ Model::Model(std::string modelPath) {
 	model = glm::mat4(1.0f);
 }
 
-inline void Model::drawModel(Shader* shader)
+inline void Model::drawModel(StandardShader* shader)
 {
+	shader->setMatrix4("model",model);
 	for (int i = 0; i < meshes.size(); i++) {
 		meshes[i].drawMesh(shader);
 	}
@@ -154,5 +158,9 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material, aiTexture
 	return textures;
 }
 
+void Model::scale(glm::vec3 scale) {
+	model = glm::mat4(1.0f);
+	model = glm::scale(model, scale);
+}
 
 #endif // !MODEL
