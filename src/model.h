@@ -27,7 +27,7 @@ public:
 	
 public:
 	Model(std::string modelPath);
-	void drawModel(StandardShader* shader);
+	void drawModel(StandardShader* shader, Skybox* sky);
 
 	void loadModel(std::string modelPath);
 	void processNode(aiNode* node, const aiScene* scene);
@@ -46,11 +46,11 @@ Model::Model(std::string modelPath) {
 	model = glm::mat4(1.0f);
 }
 
-inline void Model::drawModel(StandardShader* shader)
+inline void Model::drawModel(StandardShader* shader,Skybox* sky)
 {
 	shader->setMatrix4("model",model);
 	for (int i = 0; i < meshes.size(); i++) {
-		meshes[i].drawMesh(shader);
+		meshes[i].drawMesh(shader, sky);
 	}
 }
 
@@ -135,7 +135,7 @@ inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, NORMAL_TEX);
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-		std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, HEIGHT_TEX);
+		std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, AMBIENT_TEX);
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 	}
 	return Mesh(vertexs, indices, textures);

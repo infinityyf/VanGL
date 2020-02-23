@@ -26,7 +26,7 @@ public:
 	std::vector<Texture> textures;
 	Mesh(std::vector<Vertex> vertexs, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	void setupMesh();
-	void drawMesh(StandardShader* shader);
+	void drawMesh(StandardShader* shader,Skybox* sky);
 private:
 	unsigned int VBO;
 	unsigned int EBO;
@@ -75,29 +75,44 @@ void Mesh::setupMesh() {
 	glBindVertexArray(0);
 }
 
-inline void Mesh::drawMesh(StandardShader* shader)
+inline void Mesh::drawMesh(StandardShader* shader,Skybox* sky)
 {
 	shader->use();	
-	for (unsigned int i = 0; i < textures.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + i);
+	unsigned int i;
+	for (i = 0; i < textures.size(); i++) {
+		
 		unsigned int type = textures[i].textureType;
 		switch (type)
 		{
 			// set texture1 uniform to texture unit0(bind with GPU texture unit not data)
 			//case AMBIENT_TEX: shader->setInt("material.ambient", i);
 		case DIFFUSE_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
 			shader->setInt("material.diffuse", i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
 			break; }
 		case SPECULAR_TEX: { 
+			glActiveTexture(GL_TEXTURE0 + i);
 			shader->setInt("material.specular", i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
 			break;}
+		case AMBIENT_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("material.ambient", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
 		//case NORMAL_TEX: shader->setInt("material.normal", i);
 		default:
 			break;
 		}
+		
 	}
+
+	// load sky box
+	glActiveTexture(GL_TEXTURE0 + i);
+	shader->setInt("material.sky", i);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, sky->skyBox);
+
 	shader->setFloat("material.shininess", 32.0f);
 
 	glBindVertexArray(VAO);

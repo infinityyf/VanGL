@@ -8,6 +8,9 @@ uniform mat4 view;
 
 void main()
 {
+    //TexCoords = vec3(-aPos.x,-aPos.y,-aPos.z);
     TexCoords = aPos;
-    gl_Position = projection * mat4(mat3(view)) * vec4(aPos, 1.0);
+    vec4 pos  = projection * mat4(mat3(view)) * vec4(aPos, 1.0);
+    // coord beform NDC so it will be divide by w
+    gl_Position = pos.xyww;
 }

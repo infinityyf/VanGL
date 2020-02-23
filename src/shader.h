@@ -26,6 +26,8 @@ class StandardShader
 public:
 	// shader ID
 	unsigned int shaderProgramID;
+	// current texture unit
+	unsigned int textureUnit;
 
 	// get source code 
 	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath);
@@ -38,9 +40,13 @@ public:
 	void setFloat(const std::string& name, float value) const;
 	void setMatrix4(const std::string& name,const glm::mat4 matrix) const;
 	void setVector3(const std::string& name, const glm::vec3 vec)const;
+
+	//use a texture(define a new texture unit)
+	void useTexture(const std::string& shaderName);
 };
 
 StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath) {
+	textureUnit = 0;
 	//open file
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -154,6 +160,13 @@ inline void StandardShader::setVector3(const std::string& name, const glm::vec3 
 {
 	unsigned int location = glGetUniformLocation(shaderProgramID, name.c_str());
 	glUniform3fv(location, 1, glm::value_ptr(vec));
+}
+
+inline void StandardShader::useTexture(const std::string& shaderName)
+{
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	setInt(shaderName, textureUnit);
+	textureUnit++;
 }
 
 

@@ -200,10 +200,10 @@ Skybox::Skybox(std::string picDictionary) {
 		} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
 		_findclose(hFile);
 	}
-	int texWidth, texHeight, texChannel;
 	int width, height, nrChannels;
 	// load texture flip y coordinate
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
+
 	for (unsigned int i = 0; i < files.size(); i++)
 	{
 		std::cout <<"load skybox images:"<< files[i] << std::endl;
@@ -238,7 +238,7 @@ Skybox::Skybox(std::string picDictionary) {
 	glBindVertexArray(0);
 
 	// load shader (this shader will be set as a default shader)
-	shader = new StandardShader("src\\shaders\\skyBox.vs", "src\\shaders\\skyBox.fs");
+	shader = new StandardShader("E:\\vs_workspace\\VanGL\\src\\shaders\\skyBox.vs", "E:\\vs_workspace\\VanGL\\src\\shaders\\skyBox.fs");
 	shader->use();
 	shader->setInt("cubemap",0);
 	

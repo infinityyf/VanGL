@@ -9,6 +9,7 @@ out float Far;
 
 out vec4 FragColor;
 
+
 uniform vec3 viewPos;
 // struct StandardMaterial{
 //     // color of each channel(can replace by texture)
@@ -21,6 +22,8 @@ uniform vec3 viewPos;
 
 //material
 struct StandardMaterial{
+    // link to sky(not good)
+    samplerCube sky;
     sampler2D ambient;
     sampler2D diffuse;
     sampler2D specular;
@@ -151,6 +154,9 @@ void main()
 {
 
     vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 refDir = reflect(-viewDir,Normal);
+    //calculate the reflect light
+    vec3 reflectColor = texture(material.ambient,TexCoord).rgb * texture(material.sky,refDir).rgb;
     //calculate all lights
     vec3 point = vec3(0.0f);
     for(int i=0;i<min(PointNum,NUM_POINT_LIGHTS);i++){
@@ -162,10 +168,12 @@ void main()
     }
     vec3 direct = vec3(0.0f);
     direct += calculateDirectLight(dirLight,Normal,viewDir,material);
-    vec3 result = spot + point + direct;
+
+    vec3 result = spot + point + direct + reflectColor;
 
     
 
-    FragColor =vec4(FragPos,1.0f);
+    //FragColor =vec4(FragPos,1.0f);
     FragColor = vec4(result,1.0f);
+    //FragColor = texture(material.sky,ref);
 }

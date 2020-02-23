@@ -65,11 +65,13 @@ int main() {
 	shader.setFloat("spotLights[0].innerCutoff", 0.9f);
 	shader.setFloat("spotLights[0].outerCutOff", 0.5f);
 
-	//load model
-	Model nanosuit(path+"scene\\models\\nanosuit\\nanosuit.obj");
-
-	// create cube map
+	// create cube map (need before model
 	Skybox skybox(path + "scene\\materials\\textures\\skybox");
+	
+	//load model
+	Model nanosuit(path+"scene\\models\\nanosuit_reflection\\nanosuit.obj");
+
+	
 
 	
 
@@ -94,19 +96,23 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glDisable(GL_DEPTH_TEST);
-		skybox.setCamera(&camera);
-		skybox.drawSkyBox();
 
 		glEnable(GL_DEPTH_TEST);
 		shader.use();
+		
 		shader.setMatrix4("camera.view", camera.view);
 		shader.setMatrix4("camera.projection", camera.projection);
 		shader.setFloat("camera.near", camera.near);
 		shader.setFloat("camera.far", camera.far);
 		shader.setVector3("viewPos", camera.cameraPos);
 		nanosuit.scale(glm::vec3(0.3f, 0.3f, 0.3f));
-		nanosuit.drawModel(&shader);
+		nanosuit.drawModel(&shader,&skybox);
+
+
+		//set the depth with 1 (so only draw on the pixels not cull bt object)
+		glDepthFunc(GL_LEQUAL);
+		skybox.setCamera(&camera);
+		skybox.drawSkyBox();
 
 
 		//check events
