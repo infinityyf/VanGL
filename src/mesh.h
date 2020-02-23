@@ -83,17 +83,22 @@ inline void Mesh::drawMesh(StandardShader* shader)
 		unsigned int type = textures[i].textureType;
 		switch (type)
 		{
-		// set texture1 uniform to texture unit0(bind with GPU texture unit not data)
-		case AMBIENT_TEX: shader->setInt("material.ambient", i);
-		case DIFFUSE_TEX: shader->setInt("material.diffuse", i);
-		case SPECULAR_TEX: shader->setInt("material.specular", i);
-		case NORMAL_TEX: shader->setInt("material.normal", i);
+			// set texture1 uniform to texture unit0(bind with GPU texture unit not data)
+			//case AMBIENT_TEX: shader->setInt("material.ambient", i);
+		case DIFFUSE_TEX: {
+			shader->setInt("material.diffuse", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		case SPECULAR_TEX: { 
+			shader->setInt("material.specular", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break;}
+		//case NORMAL_TEX: shader->setInt("material.normal", i);
 		default:
 			break;
 		}
-		shader->setFloat("material.shininess", 32.0f);
-		glBindTexture(GL_TEXTURE_2D,textures[i].textureID);
 	}
+	shader->setFloat("material.shininess", 32.0f);
 
 	glBindVertexArray(VAO);
 	// third parameter data type

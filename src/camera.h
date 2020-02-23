@@ -78,10 +78,13 @@ inline void Camera::linkToWindow(Window* window)
 
 inline void Camera::renderScene()
 {
-	//1. update camera matrix
-	//2. for all models set matrixs into shaders
-	//3. for all models set textures
-	//4. render
+	//update camera matrix
+	//bind frame buffer
+	//for all models set matrixs into shaders
+	//for all models set textures
+	//render
+		// render skybox
+		// for each light render model
 
 	//extention
 	//1.render path(forward? deferred?)

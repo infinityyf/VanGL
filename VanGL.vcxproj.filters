@@ -50,6 +50,9 @@
     <ClInclude Include="src\mesh.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="src\frame.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\lightShader.fs">
@@ -62,6 +65,18 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="src\shaders\StandardShader.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\postProcessShader.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\postProcessShader.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\skyBox.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\skyBox.vs">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

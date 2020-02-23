@@ -67,8 +67,6 @@ void Model::loadModel(std::string modelPath) {
 	}
 	modelDictionary = modelPath.substr(0, modelPath.find_last_of('\\'));
 	processNode(scene->mRootNode, scene);
-
-	modelDictionary = modelPath.substr(0, modelPath.find_last_of("\\"));
 }
 
 inline void Model::processNode(aiNode* node, const aiScene* scene)

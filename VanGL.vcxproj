@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />
@@ -153,6 +154,10 @@
   <ItemGroup>
     <None Include="src\shaders\lightShader.fs" />
     <None Include="src\shaders\lightShader.vs" />
+    <None Include="src\shaders\postProcessShader.fs" />
+    <None Include="src\shaders\postProcessShader.vs" />
+    <None Include="src\shaders\skyBox.fs" />
+    <None Include="src\shaders\skyBox.vs" />
     <None Include="src\shaders\StandardShader.fs" />
     <None Include="src\shaders\StandardShader.vs" />
   </ItemGroup>
