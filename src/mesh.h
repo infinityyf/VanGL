@@ -31,6 +31,7 @@ private:
 	unsigned int VBO;
 	unsigned int EBO;
 	unsigned int VAO;
+
 };
 
 Mesh::Mesh(std::vector<Vertex> vertexs, std::vector<unsigned int> indices, std::vector<Texture> textures) {
@@ -71,8 +72,8 @@ void Mesh::setupMesh() {
 	// tex coord
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-
 	glBindVertexArray(0);
+	
 }
 
 inline void Mesh::drawMesh(StandardShader* shader,Skybox* sky)
@@ -107,13 +108,12 @@ inline void Mesh::drawMesh(StandardShader* shader,Skybox* sky)
 		}
 		
 	}
-
+	shader->setFloat("material.shininess", 32.0f);
 	// load sky box
 	glActiveTexture(GL_TEXTURE0 + i);
 	shader->setInt("material.sky", i);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, sky->skyBox);
-
-	shader->setFloat("material.shininess", 32.0f);
+	
 
 	glBindVertexArray(VAO);
 	// third parameter data type

@@ -20,6 +20,9 @@ badbit: error occured
 #include <sstream>	// string IO
 #include <iostream> // IO
 
+enum BIND_POINT {
+	MATRIX_POINT = 0,
+};
 
 class StandardShader
 {

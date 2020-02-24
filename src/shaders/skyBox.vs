@@ -12,5 +12,5 @@ void main()
     TexCoords = aPos;
     vec4 pos  = projection * mat4(mat3(view)) * vec4(aPos, 1.0);
     // coord beform NDC so it will be divide by w
-    gl_Position = pos.xyww;
+    gl_Position = pos.xyzw;
 }
