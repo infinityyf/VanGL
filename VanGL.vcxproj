@@ -152,6 +152,10 @@
     <ClInclude Include="src\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\shaders\furryEffectShader\furry.fs" />
+    <None Include="src\shaders\furryEffectShader\furry.gs" />
+    <None Include="src\shaders\furryEffectShader\furry.vs" />
+    <None Include="src\shaders\geometry.gs" />
     <None Include="src\shaders\lightShader.fs" />
     <None Include="src\shaders\lightShader.vs" />
     <None Include="src\shaders\postProcessShader.fs" />

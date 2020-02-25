@@ -20,6 +20,7 @@ badbit: error occured
 #include <sstream>	// string IO
 #include <iostream> // IO
 
+
 enum BIND_POINT {
 	MATRIX_POINT = 0,
 };
@@ -29,11 +30,9 @@ class StandardShader
 public:
 	// shader ID
 	unsigned int shaderProgramID;
-	// current texture unit
-	unsigned int textureUnit;
 
 	// get source code 
-	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath);
+	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath = nullptr);
 	// use program
 	void use();
 
@@ -48,19 +47,23 @@ public:
 	void useTexture(const std::string& shaderName);
 };
 
-StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath) {
-	textureUnit = 0;
+inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath)
+{
 	//open file
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::ifstream vShaderFile;
 	std::ifstream fShaderFile;
 
+	std::string geometryCode;
+	std::ifstream gShaderFile;
+
 	//set exception bit(use bit operator)
 	//this function can get or set exception mask
 	//then we can use try catch
 	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 	//stream has 4 bit: goodbit, eofbit, failbit, badbit
 	//when goodbit is false stream will close
@@ -73,14 +76,23 @@ StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath)
 		//rdbuf: use another stream to output this stream content
 		vShaderStream << vShaderFile.rdbuf();
 		fShaderStream << fShaderFile.rdbuf();
-
 		vShaderFile.close();
 		fShaderFile.close();
 
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
+
+		if (geometryPath != nullptr)
+		{
+			gShaderFile.open(geometryPath);
+			std::stringstream gShaderStream;
+			gShaderStream << gShaderFile.rdbuf();
+			gShaderFile.close();
+			geometryCode = gShaderStream.str();
+		}
+
 	}
-	catch(std::ifstream::failure error){
+	catch (std::ifstream::failure error) {
 		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
 	}
 
@@ -93,6 +105,8 @@ StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath)
 	unsigned int vertexShader;
 	//compile fragment shader runtime
 	unsigned int fragmentShader;
+	unsigned int geometryShader;
+
 	//check result
 	int  success;
 	char infoLog[512];
@@ -102,14 +116,14 @@ StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath)
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vShaderCode, NULL);
 	glCompileShader(vertexShader);
-	
+
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cerr << "ERROR IN VERTEX SHADER:\n" << infoLog << std::endl;
 	}
 
-	
+
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
 	glCompileShader(fragmentShader);
@@ -117,12 +131,27 @@ StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath)
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
 		std::cerr << "ERROR IN FRAGMENT SHADER:\n" << infoLog << std::endl;
+	}	
+	
+	
+	if (geometryPath != nullptr)
+	{
+		const char* gShaderCode = geometryCode.c_str();
+		geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometryShader, 1, &gShaderCode, NULL);
+		glCompileShader(geometryShader);
+		glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &success);
+		if (!success) {
+			glGetShaderInfoLog(geometryShader, 512, NULL, infoLog);
+			std::cerr << "ERROR IN FRAGMENT SHADER:\n" << infoLog << std::endl;
+		}
 	}
 
 	//link shader to shader program object. it will be activated when rendering
 	shaderProgramID = glCreateProgram();
 	glAttachShader(shaderProgramID, vertexShader);
 	glAttachShader(shaderProgramID, fragmentShader);
+	if (geometryPath != nullptr) glAttachShader(shaderProgramID, geometryShader);
 	glLinkProgram(shaderProgramID);
 	glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &success);
 	if (!success) {
@@ -131,6 +160,7 @@ StandardShader::StandardShader(const char* vertexPath, const char* fragmentPath)
 	}
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	if (geometryPath != nullptr) glDeleteShader(geometryShader);
 }
 
 void StandardShader::use() {
@@ -163,13 +193,6 @@ inline void StandardShader::setVector3(const std::string& name, const glm::vec3 
 {
 	unsigned int location = glGetUniformLocation(shaderProgramID, name.c_str());
 	glUniform3fv(location, 1, glm::value_ptr(vec));
-}
-
-inline void StandardShader::useTexture(const std::string& shaderName)
-{
-	glActiveTexture(GL_TEXTURE0 + textureUnit);
-	setInt(shaderName, textureUnit);
-	textureUnit++;
 }
 
 

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="shaders\furry shader">
+      <UniqueIdentifier>{dd31c651-d9d5-4bf3-a3ed-f79f73c9986c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -78,6 +81,18 @@
     </None>
     <None Include="src\shaders\skyBox.vs">
       <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\geometry.gs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\furryEffectShader\furry.fs">
+      <Filter>shaders\furry shader</Filter>
+    </None>
+    <None Include="src\shaders\furryEffectShader\furry.gs">
+      <Filter>shaders\furry shader</Filter>
+    </None>
+    <None Include="src\shaders\furryEffectShader\furry.vs">
+      <Filter>shaders\furry shader</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -4,13 +4,13 @@ layout (location = 1) in vec3 aNormal; // 颜色变量的属性位置值为 1
 layout (location = 2) in vec2 aTexCoord;
 
 out VS_OUT{
-    out vec3 Normal;
-    out vec3 FragPos;
-    out vec2 TexCoord;
-    out mat4 View;
-    out mat4 Projection;
-    out float Near;
-    out float Far;
+    vec3 Normal;
+    vec3 FragPos;
+    vec2 TexCoord;
+    mat4 View;
+    mat4 Projection;
+    float Near;
+    float Far;
 }vs_out;
 
 struct Camera{          //align
