@@ -40,6 +40,7 @@ int main() {
 
 
 	//shader
+	//StandardShader shader((path + "src\\shaders\\instanceShader\\instance.vs").c_str(), (path + "src\\shaders\\instanceShader\\instance.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	shader.use();
 	shader.setInt("PointNum", 1);
@@ -70,6 +71,19 @@ int main() {
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
 
+	// use instance draw
+
+	glm::mat4 matrix[500];
+	int amount = 500;
+	srand(time(NULL));
+	// generate data
+	for (int i = 0; i < amount; i++) {
+		matrix[i] = glm::mat4(1.0);
+		matrix[i] = glm::translate(matrix[i], glm::vec3((float)(rand() % 100 - 50), (float)(rand() % 100 - 50), (float)(rand() % 100 - 50)));
+	}
+
+
+
 	// create cube map (need before model
 	Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	//load model
@@ -89,6 +103,18 @@ int main() {
 		camera.lastFrame = currentFrame;
 		camera.processInput();
 		camera.updateMatrixs();
+
+		// render to framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glEnable(GL_DEPTH_TEST);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+
+
+		shader.use();
+		shader.setVector3("viewPos", camera.cameraPos);
+		shader.setFloat("time", glfwGetTime());
 		/*
 		we can bind many uniform block to same bind point
 		so we can use a same uniform buffer object to send data to
@@ -99,24 +125,12 @@ int main() {
 		glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera.projection));
 		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.near);
 		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.far);
-
-		// render to framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glEnable(GL_DEPTH_TEST);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-		glEnable(GL_DEPTH_TEST);
-		shader.use();
-		shader.setVector3("viewPos", camera.cameraPos);
-		shader.setFloat("time", glfwGetTime());
 		nanosuit.scale(glm::vec3(0.3f, 0.3f, 0.3f));
 		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(nanosuit.model));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		
 		nanosuit.drawModel(&shader,&skybox);
-
+		//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
 
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);

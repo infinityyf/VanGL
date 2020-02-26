@@ -28,7 +28,8 @@ public:
 public:
 	Model(std::string modelPath);
 	void drawModel(StandardShader* shader, Skybox* sky);
-
+	void drawModelInstaced(StandardShader* shader, Skybox* sky, int amount,glm::mat4 *matrix);
+	
 	void loadModel(std::string modelPath);
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
@@ -51,6 +52,43 @@ inline void Model::drawModel(StandardShader* shader,Skybox* sky)
 	//shader->setMatrix4("model",model);
 	for (int i = 0; i < meshes.size(); i++) {
 		meshes[i].drawMesh(shader, sky);
+	}
+}
+
+inline void Model::drawModelInstaced(StandardShader* shader, Skybox* sky, int amount, glm::mat4* matrix)
+{
+	unsigned int instanceVBO;
+	// attach a new buffer then will be attah to each mesh's VAO
+	glGenBuffers(1, &instanceVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), matrix, GL_STATIC_DRAW);
+	for (int i = 0; i < meshes.size(); i++) {
+		unsigned int VAO = meshes[i].VAO;
+		// means later operation's target is instanceVBO
+		glBindVertexArray(VAO);
+		// vertex atrribute for instance draw
+		GLsizei vec4Size = sizeof(glm::vec4);
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(vec4Size));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+		// it means unpate these 4 vertex atrribution every 1 instance
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+
+		glBindVertexArray(0);
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//shader->setMatrix4("model",model);
+	for (int i = 0; i < meshes.size(); i++) {
+		meshes[i].drawMeshInstanced(shader, sky,amount);
 	}
 }
 
