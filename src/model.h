@@ -39,6 +39,8 @@ public:
 
 	//model operate
 	void scale(glm::vec3 scale);
+	void translate(glm::vec3 translate);
+	void rotate(glm::vec3 axis, float radian);
 };
 
 Model::Model(std::string modelPath) {
@@ -195,8 +197,15 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* material, aiTexture
 }
 
 void Model::scale(glm::vec3 scale) {
-	model = glm::mat4(1.0f);
 	model = glm::scale(model, scale);
+}
+
+void Model::translate(glm::vec3 translate) {
+	model = glm::translate(model, translate);
+}
+
+void Model::rotate(glm::vec3 axis,float radian) {
+	model = glm::rotate(model, radian,axis);
 }
 
 #endif // !MODEL

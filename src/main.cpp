@@ -99,6 +99,7 @@ int main() {
 
 	//load model
 	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
+	nanosuit.scale(glm::vec3(0.3f, 0.3f, 0.3f));
 
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
@@ -129,7 +130,7 @@ int main() {
 		glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera.projection));
 		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.near);
 		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.far);
-		nanosuit.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+		
 		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(nanosuit.model));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		nanosuit.drawModel(&shader,&skybox);
