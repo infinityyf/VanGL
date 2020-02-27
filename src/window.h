@@ -52,7 +52,10 @@ Window::Window(const int width, const int height)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	//only use core mode (donnt use extend function)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+	
+	//set MSAA * 4
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	
 	//create a window
 	window = glfwCreateWindow(width, height, "VANGL", NULL, NULL);
 	if (window == NULL) {

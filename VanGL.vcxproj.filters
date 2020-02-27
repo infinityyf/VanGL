@@ -30,6 +30,9 @@
     <ClCompile Include="src\depthTest.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\MSAA.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">

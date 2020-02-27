@@ -8,8 +8,13 @@
 #include "model.h"
 #include "shader.h"
 
+#include "frame.h"
+
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
+
+
+void DrawScene();
 
 int main() {
 
@@ -40,6 +45,8 @@ int main() {
 
 
 	//shader
+	// create cube map (need before model
+	Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	//StandardShader shader((path + "src\\shaders\\instanceShader\\instance.vs").c_str(), (path + "src\\shaders\\instanceShader\\instance.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	shader.use();
@@ -72,7 +79,6 @@ int main() {
 
 
 	// use instance draw
-
 	glm::mat4 matrix[500];
 	int amount = 500;
 	srand(time(NULL));
@@ -82,19 +88,17 @@ int main() {
 		matrix[i] = glm::translate(matrix[i], glm::vec3((float)(rand() % 100 - 50), (float)(rand() % 100 - 50), (float)(rand() % 100 - 50)));
 	}
 
-
-
-	// create cube map (need before model
-	Skybox skybox(path + "scene\\materials\\textures\\skybox");
-	//load model
-	Model nanosuit(path+"scene\\models\\nanosuit_reflection\\nanosuit.obj");
-
-
 	//enable z buffer test
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
 	//glCullFace(GL_FRONT);
+	//enable multisample
+	glEnable(GL_MULTISAMPLE);
+
+
+	//load model
+	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
 
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
@@ -104,12 +108,12 @@ int main() {
 		camera.processInput();
 		camera.updateMatrixs();
 
+
 		// render to framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
 
 
 		shader.use();
@@ -128,7 +132,6 @@ int main() {
 		nanosuit.scale(glm::vec3(0.3f, 0.3f, 0.3f));
 		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(nanosuit.model));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		
 		nanosuit.drawModel(&shader,&skybox);
 		//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
 
@@ -136,7 +139,6 @@ int main() {
 		glDepthFunc(GL_LEQUAL);
 		skybox.setCamera(&camera);
 		skybox.drawSkyBox();
-
 
 		//check events
 		glfwPollEvents();
@@ -149,4 +151,8 @@ int main() {
 	glfwTerminate();
 
 	return 0;
+}
+
+void DrawScene() {
+
 }
