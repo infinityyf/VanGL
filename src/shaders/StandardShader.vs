@@ -24,8 +24,10 @@ struct Camera{          //align
 //use uniform block we can access component directly nont need to use Matrix
 layout(std140) uniform Matrix{
     Camera camera;      //144   //0
-    mat4 model;         //64    //208
+    //mat4 model;         //64    //208
 };
+
+uniform mat4 model;
 
 void main()
 {

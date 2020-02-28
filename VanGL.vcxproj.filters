@@ -19,6 +19,9 @@
     <Filter Include="shaders\instance shader">
       <UniqueIdentifier>{4dc40ab0-adac-44d7-8b9e-b6ffe2f6d41f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\basic_shape">
+      <UniqueIdentifier>{659d31e4-2115-4441-b17b-dfbad87405f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -61,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="src\frame.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\basic_shape\plane.h">
+      <Filter>include\basic_shape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +111,12 @@
     </None>
     <None Include="src\shaders\instanceShader\instance.vs">
       <Filter>shaders\instance shader</Filter>
+    </None>
+    <None Include="src\shaders\basicShapeShader.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\basicShapeShader.vs">
+      <Filter>shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

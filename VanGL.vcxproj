@@ -142,6 +142,7 @@
     <ClCompile Include="src\MSAA.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\basic_shape\plane.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\light.h" />
@@ -153,6 +154,8 @@
     <ClInclude Include="src\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\shaders\basicShapeShader.fs" />
+    <None Include="src\shaders\basicShapeShader.vs" />
     <None Include="src\shaders\furryEffectShader\furry.fs" />
     <None Include="src\shaders\furryEffectShader\furry.gs" />
     <None Include="src\shaders\furryEffectShader\furry.vs" />

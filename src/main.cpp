@@ -7,14 +7,12 @@
 #include "camera.h"
 #include "model.h"
 #include "shader.h"
-
 #include "frame.h"
 
+//basic shape
+#include "basic_shape/plane.h"
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
-
-
-void DrawScene();
 
 int main() {
 
@@ -45,9 +43,11 @@ int main() {
 
 
 	//shader
+	
 	// create cube map (need before model
 	Skybox skybox(path + "scene\\materials\\textures\\skybox");
-	//StandardShader shader((path + "src\\shaders\\instanceShader\\instance.vs").c_str(), (path + "src\\shaders\\instanceShader\\instance.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
+	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
+	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	shader.use();
 	shader.setInt("PointNum", 1);
@@ -63,17 +63,27 @@ int main() {
 	shader.setFloat("pointLights[0].constant", 1.0f);
 	shader.setFloat("pointLights[0].linear", 0.22f);
 	shader.setFloat("pointLights[0].quadratic", 0.2f);
-	shader.setVector3("spotLights[0].position", glm::vec3(1.0f, -1.0f, 1.0f));
-	shader.setVector3("spotLights[0].direction", glm::vec3(-1.0f, 1.0f, -1.0f));
+	shader.setVector3("spotLights[0].position", glm::vec3(0.0f, 1.0f, 0.0f));
+	shader.setVector3("spotLights[0].direction", glm::vec3(0.0f, -1.0f, 0.0f));
 	shader.setVector3("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	shader.setVector3("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 	shader.setVector3("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	shader.setFloat("spotLights[0].innerCutoff", 0.9f);
 	shader.setFloat("spotLights[0].outerCutOff", 0.5f);
+	planeShader.use();
+	planeShader.setVector3("spotLight.position", glm::vec3(0.0f, 1.0f, 0.0f));
+	planeShader.setVector3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
+	planeShader.setVector3("spotLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	planeShader.setVector3("spotLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	planeShader.setVector3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	planeShader.setFloat("spotLight.innerCutoff", 0.9f);
+	planeShader.setFloat("spotLight.outerCutOff", 0.5f);
 	//get block index
 	unsigned int matrixIndex = glGetUniformBlockIndex(shader.shaderProgramID, "Matrix");
 	// bind matrix uniform to 2 binding point
 	glUniformBlockBinding(shader.shaderProgramID, matrixIndex, BIND_POINT::MATRIX_POINT);
+	unsigned int matrixIndex1 = glGetUniformBlockIndex(planeShader.shaderProgramID, "Matrix");
+	glUniformBlockBinding(planeShader.shaderProgramID, matrixIndex1, BIND_POINT::MATRIX_POINT);
 	//bind uniform buffer object to bind point
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
@@ -99,7 +109,14 @@ int main() {
 
 	//load model
 	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
-	nanosuit.scale(glm::vec3(0.3f, 0.3f, 0.3f));
+	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
+	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
+
+	//load plane
+	Texture floor(path + "scene\\materials\\textures\\wood.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
+	planeShader.use();
+	planeShader.setInt("basicTex0", 0);
+	Plane plane(floor.textureID);
 
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
@@ -116,10 +133,6 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-		shader.use();
-		shader.setVector3("viewPos", camera.cameraPos);
-		shader.setFloat("time", glfwGetTime());
 		/*
 		we can bind many uniform block to same bind point
 		so we can use a same uniform buffer object to send data to
@@ -131,15 +144,21 @@ int main() {
 		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.near);
 		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.far);
 		
-		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(nanosuit.model));
+		//glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(nanosuit.model));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		nanosuit.drawModel(&shader,&skybox);
+		shader.use();
+		shader.setVector3("viewPos", camera.cameraPos);
+		shader.setFloat("time", glfwGetTime());
+		nanosuit.drawModel(&shader,&blackSkybox);
 		//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
+		planeShader.use();
+		planeShader.setVector3("viewPos", camera.cameraPos);
+		plane.Draw(&planeShader);
 
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);
-		skybox.setCamera(&camera);
-		skybox.drawSkyBox();
+		blackSkybox.setCamera(&camera);
+		blackSkybox.drawSkyBox();
 
 		//check events
 		glfwPollEvents();
@@ -152,8 +171,4 @@ int main() {
 	glfwTerminate();
 
 	return 0;
-}
-
-void DrawScene() {
-
 }
