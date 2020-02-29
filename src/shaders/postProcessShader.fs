@@ -5,7 +5,10 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 
+
 void main()
 { 
+    float gamma = 2.2f;
     FragColor = texture(screenTexture, TexCoords);
+    FragColor = pow(FragColor,vec4(gamma));
 }

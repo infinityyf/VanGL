@@ -105,12 +105,17 @@ int main() {
 	//glCullFace(GL_FRONT);
 	//enable multisample
 	glEnable(GL_MULTISAMPLE);
-
+	
+	//enable gamma correction (but some textures will be corrected twice, because they 
+	// have been corrected already)
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 
 	//load model
 	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
 	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
 	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
+
+	Model planet(path + "scene\\models\\planet\\planet.obj");
 
 	//load plane
 	Texture floor(path + "scene\\materials\\textures\\wood.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
@@ -148,7 +153,6 @@ int main() {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		shader.use();
 		shader.setVector3("viewPos", camera.cameraPos);
-		shader.setFloat("time", glfwGetTime());
 		nanosuit.drawModel(&shader,&blackSkybox);
 		//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
 		planeShader.use();
