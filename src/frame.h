@@ -23,15 +23,14 @@ public:
 	unsigned int renderBufferObject;
 	
 
-	Frame(int width, int height);
+	Frame(int width, int height,bool enableHDR);
 	//support MSAA
-	Frame(int width, int height,int msaa);
+	Frame(int width, int height,int msaa,bool enableHDR);
 
-	
 	void use();
 };
 
-Frame::Frame(int width, int height) {
+Frame::Frame(int width, int height, bool enableHDR) {
 	glGenFramebuffers(1, &FBO);
 	// also can be binded to GL_READ_FRAMEBUFFER or GL_DRAW_FRAMEBUFFER
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -39,7 +38,13 @@ Frame::Frame(int width, int height) {
 	//1. texture attachment
 	glGenTextures(1, &texAttach);
 	glBindTexture(GL_TEXTURE_2D, texAttach);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	if (enableHDR) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB16F, GL_FLOAT, NULL);
+	}
+	else {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	}
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -65,16 +70,22 @@ Frame::Frame(int width, int height) {
 //support mass
 // glTexImage2DMultisample
 // glRenderbufferStorageMultisample
-inline Frame::Frame(int width, int height, int msaa)
+inline Frame::Frame(int width, int height, int msaa, bool enableHDR)
 {
 	glGenFramebuffers(1, &FBO);
 	// also can be binded to GL_READ_FRAMEBUFFER or GL_DRAW_FRAMEBUFFER
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	// create attachment
-	//1. texture attachment
+	//1. texture attachment,use MSAA
 	glGenTextures(1, &texAttach);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texAttach);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGB, width, height,GL_TRUE);
+	if (enableHDR) {
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGB16F, width, height, GL_TRUE);
+	}
+	else {
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGB, width, height, GL_TRUE);
+	}
+	//glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGB, width, height,GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 	
 	
@@ -129,6 +140,7 @@ inline void Screen::Draw(StandardShader* shader,unsigned int screenTexture)
 	glBindTexture(GL_TEXTURE_2D, screenTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
 
 
 #endif

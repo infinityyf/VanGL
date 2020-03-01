@@ -22,6 +22,12 @@
     <Filter Include="include\basic_shape">
       <UniqueIdentifier>{659d31e4-2115-4441-b17b-dfbad87405f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders\postProcess">
+      <UniqueIdentifier>{914e0217-0aae-4dd1-9a99-7014b486f6db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\skyboxShader">
+      <UniqueIdentifier>{e34a8013-befa-43d3-bbe4-6cac83b0a709}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -70,28 +76,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\lightShader.fs">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="src\shaders\lightShader.vs">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="src\shaders\StandardShader.fs">
       <Filter>shaders</Filter>
     </None>
     <None Include="src\shaders\StandardShader.vs">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="src\shaders\postProcessShader.fs">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="src\shaders\postProcessShader.vs">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="src\shaders\skyBox.fs">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="src\shaders\skyBox.vs">
       <Filter>shaders</Filter>
     </None>
     <None Include="src\shaders\geometry.gs">
@@ -117,6 +105,18 @@
     </None>
     <None Include="src\shaders\basicShapeShader.vs">
       <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\postProcess\postProcessShader.fs">
+      <Filter>shaders\postProcess</Filter>
+    </None>
+    <None Include="src\shaders\postProcess\postProcessShader.vs">
+      <Filter>shaders\postProcess</Filter>
+    </None>
+    <None Include="src\shaders\skyboxShader\skyBox.fs">
+      <Filter>shaders\skyboxShader</Filter>
+    </None>
+    <None Include="src\shaders\skyboxShader\skyBox.vs">
+      <Filter>shaders\skyboxShader</Filter>
     </None>
   </ItemGroup>
 </Project>

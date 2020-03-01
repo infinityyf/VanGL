@@ -162,12 +162,10 @@
     <None Include="src\shaders\geometry.gs" />
     <None Include="src\shaders\instanceShader\instance.fs" />
     <None Include="src\shaders\instanceShader\instance.vs" />
-    <None Include="src\shaders\lightShader.fs" />
-    <None Include="src\shaders\lightShader.vs" />
-    <None Include="src\shaders\postProcessShader.fs" />
-    <None Include="src\shaders\postProcessShader.vs" />
-    <None Include="src\shaders\skyBox.fs" />
-    <None Include="src\shaders\skyBox.vs" />
+    <None Include="src\shaders\postProcess\postProcessShader.fs" />
+    <None Include="src\shaders\postProcess\postProcessShader.vs" />
+    <None Include="src\shaders\skyboxShader\skyBox.fs" />
+    <None Include="src\shaders\skyboxShader\skyBox.vs" />
     <None Include="src\shaders\StandardShader.fs" />
     <None Include="src\shaders\StandardShader.vs" />
   </ItemGroup>

@@ -237,7 +237,7 @@ Skybox::Skybox(std::string picDictionary) {
 	glBindVertexArray(0);
 
 	// load shader (this shader will be set as a default shader)
-	shader = new StandardShader("E:\\vs_workspace\\VanGL\\src\\shaders\\skyBox.vs", "E:\\vs_workspace\\VanGL\\src\\shaders\\skyBox.fs");
+	shader = new StandardShader("E:\\vs_workspace\\VanGL\\src\\shaders\\skyboxShader\\skyBox.vs", "E:\\vs_workspace\\VanGL\\src\\shaders\\skyboxShader\\skyBox.fs");
 	shader->use();
 	shader->setInt("cubemap",0);
 	
