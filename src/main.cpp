@@ -8,6 +8,7 @@
 #include "model.h"
 #include "shader.h"
 #include "frame.h"
+#include "shadowMap.h"
 
 //basic shape
 #include "basic_shape/plane.h"
@@ -43,10 +44,10 @@ int main() {
 
 
 	//shader
-	
 	// create cube map (need before model
 	Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
+	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	shader.use();
@@ -114,7 +115,6 @@ int main() {
 	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
 	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
 	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
-
 	Model planet(path + "scene\\models\\planet\\planet.obj");
 
 	//load plane
@@ -123,6 +123,12 @@ int main() {
 	planeShader.setInt("basicTex0", 0);
 	Plane plane(floor.textureID);
 
+	//shadow map
+	ShadowMap* shadowMap = new ShadowMap();
+
+	//screen quad for post process
+	Screen* screen= new Screen();
+
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
 		float currentFrame = glfwGetTime();
@@ -130,6 +136,10 @@ int main() {
 		camera.lastFrame = currentFrame;
 		camera.processInput();
 		camera.updateMatrixs();
+
+
+		//generate shadow map
+		//shadowMap->renderToTexture();
 
 
 		// render to framebuffer
@@ -163,6 +173,10 @@ int main() {
 		glDepthFunc(GL_LEQUAL);
 		blackSkybox.setCamera(&camera);
 		blackSkybox.drawSkyBox();
+
+
+		
+		//screen->Draw(&postShader,shadowMap->depthTexture);
 
 		//check events
 		glfwPollEvents();

@@ -28,6 +28,9 @@
     <Filter Include="shaders\skyboxShader">
       <UniqueIdentifier>{e34a8013-befa-43d3-bbe4-6cac83b0a709}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\shadow_map">
+      <UniqueIdentifier>{1f78d84d-b85a-486b-bae6-befdbe528353}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="src\basic_shape\plane.h">
       <Filter>include\basic_shape</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowMap.h">
+      <Filter>include\shadow_map</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
