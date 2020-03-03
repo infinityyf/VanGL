@@ -31,6 +31,9 @@
     <Filter Include="include\shadow_map">
       <UniqueIdentifier>{1f78d84d-b85a-486b-bae6-befdbe528353}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders\shadowMap">
+      <UniqueIdentifier>{d9ddcdcf-e74a-4a6c-95b6-f2c74003e903}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -123,6 +126,15 @@
     </None>
     <None Include="src\shaders\skyboxShader\skyBox.vs">
       <Filter>shaders\skyboxShader</Filter>
+    </None>
+    <None Include="src\shaders\shadowMap\simpleDepthShader.fs">
+      <Filter>shaders\shadowMap</Filter>
+    </None>
+    <None Include="src\shaders\shadowMap\simpleDepthShader.vs">
+      <Filter>shaders\shadowMap</Filter>
+    </None>
+    <None Include="src\shaders\postProcess\renderShadowMap.fs">
+      <Filter>shaders\postProcess</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -47,7 +47,7 @@ int main() {
 	// create cube map (need before model
 	Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
-	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
+	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\renderShadowMap.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	shader.use();
@@ -72,7 +72,7 @@ int main() {
 	shader.setFloat("spotLights[0].innerCutoff", 0.9f);
 	shader.setFloat("spotLights[0].outerCutOff", 0.5f);
 	planeShader.use();
-	planeShader.setVector3("spotLight.position", glm::vec3(0.0f, 1.0f, 0.0f));
+	planeShader.setVector3("spotLight.position", glm::vec3(0.0f, 5.0f, 0.0f));
 	planeShader.setVector3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
 	planeShader.setVector3("spotLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	planeShader.setVector3("spotLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
@@ -123,8 +123,8 @@ int main() {
 	planeShader.setInt("basicTex0", 0);
 	Plane plane(floor.textureID);
 
-	//shadow map
-	ShadowMap* shadowMap = new ShadowMap();
+	//shadow map 
+	ShadowMap* shadowMap = new ShadowMap(glm::vec3(0.1f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	//screen quad for post process
 	Screen* screen= new Screen();
@@ -139,8 +139,12 @@ int main() {
 
 
 		//generate shadow map
-		//shadowMap->renderToTexture();
-
+		shadowMap->bindBuffer();
+		shadowMap->renderToTexture(nanosuit.model);
+		nanosuit.drawModel(shadowMap->depthShader, &blackSkybox);
+		shadowMap->renderToTexture(plane.model);
+		plane.Draw(shadowMap->depthShader);
+		shadowMap->unBindBuffer();
 
 		// render to framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -176,7 +180,7 @@ int main() {
 
 
 		
-		//screen->Draw(&postShader,shadowMap->depthTexture);
+		screen->Draw(&postShader,shadowMap->depthTexture);
 
 		//check events
 		glfwPollEvents();

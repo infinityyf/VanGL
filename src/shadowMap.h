@@ -3,18 +3,35 @@
 #define SHADOW
 
 #include "frame.h"
-
+#include "shader.h"
 class ShadowMap {
 public:
 	unsigned int shadowFBO;
 	unsigned int shadowWidth, shadowHeight;
 	unsigned int depthTexture;
-	ShadowMap();
+	ShadowMap(glm::vec3 lightPos, glm::vec3 lightDir);
 
-	void renderToTexture();
+public:
+	//std::vector<glm::vec3> lightDirs;
+	//we will use light class later
+	glm::vec3 lightPos;			//light position
+	glm::vec3 lightDir;			//light direction
+
+	glm::mat4 lightSpace;
+	StandardShader* depthShader;
+	void bindBuffer() {
+		glViewport(0, 0, shadowWidth, shadowHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		//glEnable(GL_DEPTH_TEST);
+	}
+	void renderToTexture(glm::mat4& model);
+	void unBindBuffer() {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 };
 
-ShadowMap::ShadowMap() {
+ShadowMap::ShadowMap(glm::vec3 lightPos, glm::vec3 lightDir) {
 	shadowWidth = 1024;
 	shadowHeight = 1024;
 	glGenFramebuffers(1, &shadowFBO);
@@ -36,16 +53,25 @@ ShadowMap::ShadowMap() {
 	glDrawBuffer(GL_NONE);			//tell opengl donnt need a color buffer
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+	depthShader = new StandardShader("E:\\vs_workspace\\VanGL\\src\\shaders\\shadowMap\\simpleDepthShader.vs","E:\\vs_workspace\\VanGL\\src\\shaders\\shadowMap\\simpleDepthShader.fs");
+	
+	//set light camera
+	float near = 0.01f;
+	float far = 100.0f;
+	this->lightPos = lightPos;
+	this->lightDir = lightDir;
+	glm::mat4 orthoProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near, far);
+	glm::mat4 lightView = glm::lookAt(lightPos, lightDir, glm::vec3(0.0f, 1.0f, 0.0f));
+	lightSpace = orthoProjection * lightView;
+	depthShader->use();
+	depthShader->setMatrix4("lightMatrix", lightSpace);
 }
 
 //independent of main camera
-void ShadowMap::renderToTexture() {
-	glViewport(0, 0, shadowWidth, shadowHeight);
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+void ShadowMap::renderToTexture(glm::mat4& model) {
+	depthShader->use();
+	depthShader->setMatrix4("model", model);
 }
 
 #endif

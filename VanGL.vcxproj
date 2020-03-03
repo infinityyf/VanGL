@@ -165,6 +165,9 @@
     <None Include="src\shaders\instanceShader\instance.vs" />
     <None Include="src\shaders\postProcess\postProcessShader.fs" />
     <None Include="src\shaders\postProcess\postProcessShader.vs" />
+    <None Include="src\shaders\postProcess\renderShadowMap.fs" />
+    <None Include="src\shaders\shadowMap\simpleDepthShader.fs" />
+    <None Include="src\shaders\shadowMap\simpleDepthShader.vs" />
     <None Include="src\shaders\skyboxShader\skyBox.fs" />
     <None Include="src\shaders\skyboxShader\skyBox.vs" />
     <None Include="src\shaders\StandardShader.fs" />
