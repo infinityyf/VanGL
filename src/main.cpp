@@ -51,34 +51,32 @@ int main() {
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	shader.use();
-	shader.setInt("PointNum", 1);
-	shader.setInt("SpotNum", 1);
+	shader.setInt("PointNum", 0);
+	shader.setInt("SpotNum", 0);
 	shader.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
 	shader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	shader.setVector3("dirLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	shader.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
 	shader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	shader.setVector3("pointLights[0].position", glm::vec3(1.0f, 1.0f, -1.0f));
-	shader.setVector3("pointLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	shader.setVector3("pointLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	shader.setVector3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	shader.setFloat("pointLights[0].constant", 1.0f);
-	shader.setFloat("pointLights[0].linear", 0.22f);
-	shader.setFloat("pointLights[0].quadratic", 0.2f);
-	shader.setVector3("spotLights[0].position", glm::vec3(0.0f, 1.0f, 0.0f));
-	shader.setVector3("spotLights[0].direction", glm::vec3(0.0f, -1.0f, 0.0f));
-	shader.setVector3("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	shader.setVector3("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	shader.setVector3("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	shader.setFloat("spotLights[0].innerCutoff", 0.9f);
-	shader.setFloat("spotLights[0].outerCutOff", 0.5f);
+	//shader.setVector3("pointLights[0].position", glm::vec3(1.0f, 1.0f, -1.0f));
+	//shader.setVector3("pointLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	//shader.setVector3("pointLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	//shader.setVector3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	//shader.setFloat("pointLights[0].constant", 1.0f);
+	//shader.setFloat("pointLights[0].linear", 0.22f);
+	//shader.setFloat("pointLights[0].quadratic", 0.2f);
+	//shader.setVector3("spotLights[0].position", glm::vec3(0.0f, 1.0f, 0.0f));
+	//shader.setVector3("spotLights[0].direction", glm::vec3(0.0f, -1.0f, 0.0f));
+	//shader.setVector3("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	//shader.setVector3("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	//shader.setVector3("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	//shader.setFloat("spotLights[0].innerCutoff", 0.9f);
+	//shader.setFloat("spotLights[0].outerCutOff", 0.5f);
 	planeShader.use();
-	planeShader.setVector3("spotLight.position", glm::vec3(0.0f, 5.0f, 0.0f));
-	planeShader.setVector3("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
-	planeShader.setVector3("spotLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	planeShader.setVector3("spotLight.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	planeShader.setVector3("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	planeShader.setFloat("spotLight.innerCutoff", 0.9f);
-	planeShader.setFloat("spotLight.outerCutOff", 0.5f);
+	planeShader.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
+	planeShader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	planeShader.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
+	planeShader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
 	//get block index
 	unsigned int matrixIndex = glGetUniformBlockIndex(shader.shaderProgramID, "Matrix");
 	// bind matrix uniform to 2 binding point
@@ -124,7 +122,7 @@ int main() {
 	Plane plane(floor.textureID);
 
 	//shadow map 
-	ShadowMap* shadowMap = new ShadowMap(glm::vec3(0.1f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	ShadowMap* shadowMap = new ShadowMap(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	//screen quad for post process
 	Screen* screen= new Screen();

@@ -57,11 +57,11 @@ ShadowMap::ShadowMap(glm::vec3 lightPos, glm::vec3 lightDir) {
 	depthShader = new StandardShader("E:\\vs_workspace\\VanGL\\src\\shaders\\shadowMap\\simpleDepthShader.vs","E:\\vs_workspace\\VanGL\\src\\shaders\\shadowMap\\simpleDepthShader.fs");
 	
 	//set light camera
-	float near = 0.01f;
-	float far = 100.0f;
+	float near = 0.1f;
+	float far = 10.0f;
 	this->lightPos = lightPos;
 	this->lightDir = lightDir;
-	glm::mat4 orthoProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near, far);
+	glm::mat4 orthoProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, near, far);
 	glm::mat4 lightView = glm::lookAt(lightPos, lightDir, glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpace = orthoProjection * lightView;
 	depthShader->use();
