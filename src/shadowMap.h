@@ -65,7 +65,7 @@ ShadowMap::ShadowMap(glm::vec3 lightPos, glm::vec3 lightDir) {
 	float far = 10.0f;
 	this->lightPos = lightPos;
 	this->lightDir = lightDir;
-	glm::mat4 orthoProjection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, near, far);
+	glm::mat4 orthoProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near, far);
 	glm::mat4 lightView = glm::lookAt(lightPos, lightPos+lightDir, glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpace = orthoProjection * lightView;
 	depthShader->use();

@@ -51,6 +51,7 @@ Model::Model(std::string modelPath) {
 
 inline void Model::drawModel(StandardShader* shader,Skybox* sky,int shadowID)
 {
+	shader->use();
 	shader->setMatrix4("model",model);
 	for (int i = 0; i < meshes.size(); i++) {
 		meshes[i].drawMesh(shader, sky, shadowID);
