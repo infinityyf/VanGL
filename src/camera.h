@@ -63,6 +63,8 @@ Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float near, float f
 	cameraFront = front;
 	cameraUp = up;
 
+	//yaw =glm::dot(glm::normalize(front), glm::vec3(1.0f, 0.0f, 0.0f));
+	//pitch = glm::dot(glm::normalize(front), glm::vec3(0.0f, 1.0f, 0.0f));
 	this->near = near;
 	this->far = far;
 	glm::mat4 view = glm::mat4(1.0f);

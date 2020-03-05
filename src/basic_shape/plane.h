@@ -21,7 +21,7 @@ public:
 	unsigned int VBO, VAO;
 	unsigned int textureID;
 	Plane(unsigned int textureID);
-	void Draw(StandardShader* shader);
+	void Draw(StandardShader* shader,int shadowID=NULL);
 
 	glm::mat4 model;
 };
@@ -46,12 +46,18 @@ Plane::Plane(unsigned int textureID) {
 	model = glm::mat4(1.0f);
 }
 
-void Plane::Draw(StandardShader* shader) {
+void Plane::Draw(StandardShader* shader,int shadowID) {
 	shader->use();
-	shader->setMatrix4("model", model);
-	glBindVertexArray(VAO);
+	shader->setInt("basicTex0", 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
+	if (shadowID != NULL) {
+		shader->setInt("shadowMap", 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, shadowID);
+	}
+	shader->setMatrix4("model", model);
+	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 }

@@ -11,6 +11,7 @@ out VS_OUT{
     mat4 Projection;
     float Near;
     float Far;
+    vec4 FragLightSpacePos;
 }vs_out;
 
 struct Camera{          //align
@@ -25,6 +26,7 @@ struct Camera{          //align
 layout(std140) uniform Matrix{
     Camera camera;      //144   //0
     //mat4 model;         //64    //208
+    mat4 lightSpaceMatrix;
 };
 
 uniform mat4 model;
@@ -41,4 +43,5 @@ void main()
     vs_out.Projection = camera.projection;
     vs_out.Near = camera.near;
     vs_out.Far = camera.far;
+    vs_out.FragLightSpacePos = lightSpaceMatrix * vec4(vs_out.FragPos,1.0f);
 }

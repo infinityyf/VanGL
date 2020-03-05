@@ -27,7 +27,7 @@ public:
 	
 public:
 	Model(std::string modelPath);
-	void drawModel(StandardShader* shader, Skybox* sky);
+	void drawModel(StandardShader* shader, Skybox* sky, int shadowID = NULL);
 	void drawModelInstaced(StandardShader* shader, Skybox* sky, int amount,glm::mat4 *matrix);
 	
 	void loadModel(std::string modelPath);
@@ -49,11 +49,11 @@ Model::Model(std::string modelPath) {
 	model = glm::mat4(1.0f);
 }
 
-inline void Model::drawModel(StandardShader* shader,Skybox* sky)
+inline void Model::drawModel(StandardShader* shader,Skybox* sky,int shadowID)
 {
 	shader->setMatrix4("model",model);
 	for (int i = 0; i < meshes.size(); i++) {
-		meshes[i].drawMesh(shader, sky);
+		meshes[i].drawMesh(shader, sky, shadowID);
 	}
 }
 
@@ -66,7 +66,7 @@ inline void Model::drawModelInstaced(StandardShader* shader, Skybox* sky, int am
 	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), matrix, GL_STATIC_DRAW);
 	for (int i = 0; i < meshes.size(); i++) {
 		unsigned int VAO = meshes[i].VAO;
-		// means later operation's target is instanceVBO
+		// means later operation's target is instanceVBO,each VAO get same VBO data
 		glBindVertexArray(VAO);
 		// vertex atrribute for instance draw
 		GLsizei vec4Size = sizeof(glm::vec4);

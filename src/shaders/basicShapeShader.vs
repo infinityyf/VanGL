@@ -8,6 +8,7 @@ out VS_OUT{
     vec2 coord;
     vec3 normal;
     vec3 FragPos;
+    vec4 FragLightSpacePos;
 }vs_out;
 
 struct Camera{          //align
@@ -22,6 +23,7 @@ struct Camera{          //align
 layout(std140) uniform Matrix{
     Camera camera;      //144   //0
     //mat4 model;         //64    //208
+    mat4 lightSpaceMatrix;
 };
 
 uniform mat4 model;
@@ -33,4 +35,5 @@ void main()
     vs_out.normal = aNormal;
     //world coord
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
+    vs_out.FragLightSpacePos = lightSpaceMatrix * vec4(vs_out.FragPos,1.0f);
 }

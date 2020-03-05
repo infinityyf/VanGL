@@ -26,7 +26,7 @@ public:
 	std::vector<Texture> textures;
 	Mesh(std::vector<Vertex> vertexs, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	void setupMesh();
-	void drawMesh(StandardShader* shader,Skybox* sky);
+	void drawMesh(StandardShader* shader,Skybox* sky, int shadowID=NULL);
 	void drawMeshInstanced(StandardShader* shader, Skybox* sky, int amount);
 public:
 	unsigned int VBO;
@@ -77,7 +77,7 @@ void Mesh::setupMesh() {
 	
 }
 
-inline void Mesh::drawMesh(StandardShader* shader,Skybox* sky)
+inline void Mesh::drawMesh(StandardShader* shader,Skybox* sky,int shadowID)
 {
 	shader->use();	
 	unsigned int i;
@@ -114,8 +114,13 @@ inline void Mesh::drawMesh(StandardShader* shader,Skybox* sky)
 	glActiveTexture(GL_TEXTURE0 + i);
 	shader->setInt("material.sky", i);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, sky->skyBox);
+	if (shadowID != NULL) {
+		//load shadow map
+		glActiveTexture(GL_TEXTURE0 + (i + 1));
+		shader->setInt("shadowMap", (i + 1));
+		glBindTexture(GL_TEXTURE_2D, shadowID);
+	}
 	
-
 	glBindVertexArray(VAO);
 	// third parameter data type
 	// forth parameter offset 

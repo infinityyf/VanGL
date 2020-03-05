@@ -122,7 +122,7 @@ int main() {
 	Plane plane(floor.textureID);
 
 	//shadow map 
-	ShadowMap* shadowMap = new ShadowMap(glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	ShadowMap* shadowMap = new ShadowMap(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
 
 	//screen quad for post process
 	Screen* screen= new Screen();
@@ -135,21 +135,6 @@ int main() {
 		camera.processInput();
 		camera.updateMatrixs();
 
-
-		//generate shadow map
-		shadowMap->bindBuffer();
-		shadowMap->renderToTexture(nanosuit.model);
-		nanosuit.drawModel(shadowMap->depthShader, &blackSkybox);
-		shadowMap->renderToTexture(plane.model);
-		plane.Draw(shadowMap->depthShader);
-		shadowMap->unBindBuffer();
-
-		// render to framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glEnable(GL_DEPTH_TEST);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		/*
 		we can bind many uniform block to same bind point
 		so we can use a same uniform buffer object to send data to
@@ -160,16 +145,30 @@ int main() {
 		glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera.projection));
 		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.near);
 		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.far);
-		
-		//glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(nanosuit.model));
+		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, &shadowMap->lightSpace);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		//shadow pass
+		//generate shadow map
+		shadowMap->bindBuffer(width,height);
+		nanosuit.drawModel(shadowMap->depthShader, &blackSkybox);
+		plane.Draw(shadowMap->depthShader);
+		shadowMap->unBindBuffer();
+
+		// render to framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glEnable(GL_DEPTH_TEST);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
 		shader.use();
 		shader.setVector3("viewPos", camera.cameraPos);
-		nanosuit.drawModel(&shader,&blackSkybox);
+		nanosuit.drawModel(&shader,&blackSkybox, shadowMap->depthTexture);
 		//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
 		planeShader.use();
 		planeShader.setVector3("viewPos", camera.cameraPos);
-		plane.Draw(&planeShader);
+		plane.Draw(&planeShader,shadowMap->depthTexture);
 
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);
@@ -178,7 +177,7 @@ int main() {
 
 
 		
-		screen->Draw(&postShader,shadowMap->depthTexture);
+		//screen->Draw(&postShader,shadowMap->depthTexture);
 
 		//check events
 		glfwPollEvents();

@@ -9,6 +9,8 @@ public:
 	unsigned int shadowFBO;
 	unsigned int shadowWidth, shadowHeight;
 	unsigned int depthTexture;
+	int originWidth;
+	int originHeight;
 	ShadowMap(glm::vec3 lightPos, glm::vec3 lightDir);
 
 public:
@@ -19,15 +21,17 @@ public:
 
 	glm::mat4 lightSpace;
 	StandardShader* depthShader;
-	void bindBuffer() {
+	void bindBuffer(int width,int height) {
 		glViewport(0, 0, shadowWidth, shadowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		//glEnable(GL_DEPTH_TEST);
+		originWidth = width;
+		originHeight - height;
 	}
-	void renderToTexture(glm::mat4& model);
 	void unBindBuffer() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, originWidth, originHeight);
 	}
 };
 
@@ -61,17 +65,12 @@ ShadowMap::ShadowMap(glm::vec3 lightPos, glm::vec3 lightDir) {
 	float far = 10.0f;
 	this->lightPos = lightPos;
 	this->lightDir = lightDir;
-	glm::mat4 orthoProjection = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, near, far);
-	glm::mat4 lightView = glm::lookAt(lightPos, lightDir, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 orthoProjection = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, near, far);
+	glm::mat4 lightView = glm::lookAt(lightPos, lightPos+lightDir, glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpace = orthoProjection * lightView;
 	depthShader->use();
 	depthShader->setMatrix4("lightMatrix", lightSpace);
 }
 
-//independent of main camera
-void ShadowMap::renderToTexture(glm::mat4& model) {
-	depthShader->use();
-	depthShader->setMatrix4("model", model);
-}
 
 #endif

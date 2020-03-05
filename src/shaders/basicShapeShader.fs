@@ -3,6 +3,7 @@ in VS_OUT{
     vec2 coord;
     vec3 normal;
     vec3 FragPos;
+    vec4 FragLightSpacePos;
 }fs_in;
 out vec4 FragColor;  
 
@@ -28,7 +29,7 @@ struct DirLight {
     vec3 specular;
 }; 
 
-//uniform SpotLight spotLight;
+uniform sampler2D shadowMap;
 uniform DirLight dirLight;
 // specular light calculate
 float Phong(vec3 viewDir,vec3 reflectDir,float shininess){
@@ -65,7 +66,7 @@ float Blinn_Phong(vec3 viewDir,vec3 lightDir,vec3 Normal,float shininess){
 // }
 
 //directlight calculation
-vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir){
+vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir,float shadow){
     vec3 lightDir = normalize(-dirLight.direction);
     //diffuse
     float diff = max(dot(lightDir,Normal),0.0f);
@@ -79,20 +80,34 @@ vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir){
 
     //ambient
     vec3 ambient = dirLight.ambient * texture(basicTex0,fs_in.coord).rgb;
-    return diffuse + specular + ambient;
+    return (diffuse + specular)*(1.0f - shadow) + ambient;
 }
 
 
-
+//calculate shadow
+float ShadowMap(){
+    //FragLightSpacePos is in NDC but it doesnt divide by w
+    vec4 NDCCoord = fs_in.FragLightSpacePos/fs_in.FragLightSpacePos.w;
+    //this coord is frag coord in light space(between -1 and 1),but depthtex is between 0,1
+    // so as UV coord
+    NDCCoord = NDCCoord*0.5 + 0.5;
+    float closestDepth = texture(shadowMap, NDCCoord.xy).r;
+    float currentDepth = NDCCoord.z;
+    //1 : in shadow 
+    return currentDepth>closestDepth? 1:0;
+}
 
 
 void main()
 {
+    float shadow = 0;
+    shadow = ShadowMap();
+
     FragColor = texture(basicTex0,fs_in.coord);
     //FragColor = vec4(1.0,0.0,0.0,1.0);
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     //vec3 spot = calculateSpotLight(spotLight,fs_in.Normal,viewDir);
-    vec3 direct = calculateDirectLight(dirLight,fs_in.normal,viewDir);
+    vec3 direct = calculateDirectLight(dirLight,fs_in.normal,viewDir,shadow);
     vec3 result = direct;
     //FragColor =vec4(FragPos,1.0f);
     FragColor = vec4(result,1.0f);

@@ -26,6 +26,7 @@ struct Camera{          //align
 layout(std140) uniform Matrix{
     Camera camera;      //144   //0
     //mat4 model;         //64    //208
+    mat4 lightSpaceMatrix;
 };
 
 uniform mat4 model; 
