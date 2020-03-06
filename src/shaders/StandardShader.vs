@@ -38,7 +38,7 @@ void main()
     //world coord
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
     //Normal = mat3(transpose(inverse(model)))*aNormal;
-    vs_out.Normal = aNormal;
+    vs_out.Normal = normalize(aNormal);
     vs_out.View = camera.view;
     vs_out.Projection = camera.projection;
     vs_out.Near = camera.near;

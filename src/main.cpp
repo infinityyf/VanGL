@@ -122,7 +122,7 @@ int main() {
 	Plane plane(floor.textureID);
 
 	//shadow map 
-	ShadowMap* shadowMap = new ShadowMap(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
+	ShadowMap* shadowMap = new ShadowMap(glm::vec3(3.0f, 3.0f, 3.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
 
 	//screen quad for post process
 	Screen* screen= new Screen();
@@ -145,7 +145,7 @@ int main() {
 		glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera.projection));
 		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.near);
 		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.far);
-		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, &shadowMap->lightSpace);
+		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(shadowMap->lightSpace));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		//shadow pass

@@ -94,9 +94,12 @@ float ShadowMap(){
     float closestDepth = texture(shadowMap, NDCCoord.xy).r;
     float currentDepth = NDCCoord.z;
     //1 : in shadow 
-    return currentDepth>closestDepth? 1:0;
+    // fix shadow acne(angle between normal and lightdir is large bias should also be)
+    float bias = max(0.05 * (1.0 - dot(fs_in.normal, normalize(-dirLight.direction))), 0.005);
+    float shadow = currentDepth>closestDepth? 1:0;
+    if(currentDepth>1.0) shadow = 0.0f;
+    return shadow;
 }
-
 
 void main()
 {
