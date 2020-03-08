@@ -163,6 +163,23 @@ float depthToEyeCoord(float ScreenDepth){
 }
 
 
+float PCFShadowSmooth(vec3 NDCCoord){
+    // plane is not like mesh
+    // even it has to face it cannot avoid shadow scne, there is not distance between front and back
+    //float bias = max(0.005 * (1.0 - dot(fs_in.normal, normalize(-dirLight.direction))), 0.0005);
+    float shadow = 0.0;
+    vec2 size = 1/textureSize(shadowMap,0);
+    for(int i=-1;i<1;i++){
+        for(int j=-1;j<1;j++){
+            float closestDepth = texture(shadowMap,NDCCoord.xy+vec2(i,j)*size).r;    // * is different from dot
+            shadow += NDCCoord.z>closestDepth? 1:0;
+        }
+    }
+    shadow /= 9.0f;
+    return shadow;
+}
+
+
 //calculate shadow
 float ShadowMap(){
     //FragLightSpacePos is in NDC but it doesnt divide by w
@@ -170,15 +187,8 @@ float ShadowMap(){
     //this coord is frag coord in light space(between -1 and 1),but depthtex is between 0,1
     // so as UV coord
     NDCCoord = NDCCoord*0.5 + 0.5;
-    float closestDepth = texture(shadowMap, NDCCoord.xy).r;
-    float currentDepth = NDCCoord.z;
-    //1 : in shadow 
-    // fix shadow acne(angle between normal and lightdir is large bias should also be)
-    float bias = max(0.05 * (1.0 - dot(fs_in.Normal, normalize(-dirLight.direction))), 0.005);
-    
-    float shadow = currentDepth>closestDepth? 1:0;
-    //if out of the light projection Volumn, set as 0,dont cast shadow
-    if(currentDepth>1.0) shadow = 0.0f;
+    if(NDCCoord.z>1.0) return 0.0f;
+    float shadow = PCFShadowSmooth(NDCCoord.xyz);
     return shadow;
 }
 

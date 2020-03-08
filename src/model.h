@@ -101,7 +101,8 @@ void Model::loadModel(std::string modelPath) {
 	// aiProcess_GenNormals
 	// aiProcess_SplitLargeMeshes : splite a large mesh into small meshes
 	// aiProcess_OptimizeMeshes : combine small meshes to a large mesh
-	const aiScene* scene = modelImpoter.ReadFile(modelPath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+	// aiProcess_CalcTangentSpace : calculate the tangent vector of each vertice
+	const aiScene* scene = modelImpoter.ReadFile(modelPath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |aiProcess_CalcTangentSpace);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cerr << "ERROR: fail to load model:" << modelImpoter.GetErrorString() << std::endl;
 		return;

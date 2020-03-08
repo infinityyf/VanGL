@@ -14,6 +14,14 @@ float planeVertices[] = {
 	 10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f,
 	-10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
 	 10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
+	
+	 10.0f, -0.5f /*- FLT_MIN*/,  10.0f,  0.0f, -1.0f, 0.0f,  10.0f,  0.0f,
+	-10.0f, -0.5f /*- FLT_MIN*/,  10.0f,  0.0f, -1.0f, 0.0f,   0.0f,  0.0f,
+	-10.0f, -0.5f /*- FLT_MIN*/, -10.0f,  0.0f, -1.0f, 0.0f,   0.0f, 10.0f,
+
+	 10.0f, -0.5f /*- FLT_MIN*/,  10.0f,  0.0f, -1.0f, 0.0f,  10.0f,  0.0f,
+	-10.0f, -0.5f /*- FLT_MIN*/, -10.0f,  0.0f, -1.0f, 0.0f,   0.0f, 10.0f,
+	 10.0f, -0.5f /*- FLT_MIN*/, -10.0f,  0.0f, -1.0f, 0.0f,  10.0f, 10.0f,
 };
 
 class Plane {
@@ -58,7 +66,7 @@ void Plane::Draw(StandardShader* shader,int shadowID) {
 	}
 	shader->setMatrix4("model", model);
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawArrays(GL_TRIANGLES, 0, 12);
 	glBindVertexArray(0);
 }
 

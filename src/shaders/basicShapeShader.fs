@@ -84,6 +84,23 @@ vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir,float s
 }
 
 
+float PCFShadowSmooth(vec3 NDCCoord){
+    // plane is not like mesh
+    // even it has to face it cannot avoid shadow scne, there is not distance between front and back
+    float bias = max(0.0001 * (1.0 - dot(fs_in.normal, normalize(-dirLight.direction))), 0.0000001);
+    float shadow = 0.0;
+    vec2 size = 1/textureSize(shadowMap,0);
+    for(int i=-1;i<=1;++i){
+        for(int j=-1;j<=1;++j){
+            float closestDepth = texture(shadowMap,NDCCoord.xy+vec2(i,j)*size).r;    // * is different from dot
+            shadow += (NDCCoord.z-bias)>closestDepth? 1:0;
+        }
+    }
+    shadow /= 9.0f;
+    return shadow;
+}
+
+
 //calculate shadow
 float ShadowMap(){
     //FragLightSpacePos is in NDC but it doesnt divide by w
@@ -91,14 +108,12 @@ float ShadowMap(){
     //this coord is frag coord in light space(between -1 and 1),but depthtex is between 0,1
     // so as UV coord
     NDCCoord = NDCCoord*0.5 + 0.5;
-    float closestDepth = texture(shadowMap, NDCCoord.xy).r;
-    float currentDepth = NDCCoord.z;
-    //1 : in shadow 
-    // fix shadow acne(angle between normal and lightdir is large bias should also be)
-    float bias = max(0.05 * (1.0 - dot(fs_in.normal, normalize(-dirLight.direction))), 0.005);
-    float shadow = currentDepth>closestDepth? 1:0;
-    if(currentDepth>1.0) shadow = 0.0f;
+    if(NDCCoord.z>1.0) return 0.0f;
+    float shadow = PCFShadowSmooth(NDCCoord.xyz);
     return shadow;
+
+    // fix shadow acne(angle between normal and lightdir is large bias should also be)
+    //float bias = max(0.05 * (1.0 - dot(fs_in.normal, normalize(-dirLight.direction))), 0.005);
 }
 
 void main()
