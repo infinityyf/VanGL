@@ -128,6 +128,7 @@ int main() {
 	for (int i = 0; i < nanosuit.meshes.size(); i++) {
 		tree.GenerateNodes(&nanosuit.meshes[i]);
 	}
+	int root = tree.BuildTree(0, tree.nodes.size() - 1, 0);
 	for (int i = 0; i < tree.nodes.size(); i++) {
 		if (tree.nodes[i].node.CollideWithRay(origin, dir, p1, p2)) {
 			std::cout << "hit:"<<p1.x<<","<<p1.y << "," <<p1.z<< std::endl;

@@ -27,6 +27,8 @@ namespace VANCollision {
 		bool CollideWithRay(glm::vec3& origin, glm::vec3& dir, glm::vec3& x1, glm::vec3& x2);
 		//enclose
 		void Enclosure(AABBBox* bbox);
+		//get the longest axis
+		int GetLongestAxis();
 
 		//draw debug lines
 		void DrawBox();
@@ -66,6 +68,27 @@ namespace VANCollision {
 		center = (minBound + maxBound) / 2.0f;
 	}
 
+	// enlarge the box to contain bbox
+	inline void AABBBox::Enclosure(AABBBox* bbox) {
+		minBound = Min(minBound, bbox->minBound);
+		maxBound = Max(maxBound, bbox->maxBound);
+		center = (minBound + maxBound) / 2.0f;
+	}
+
+	inline int AABBBox::GetLongestAxis() {
+		float x = maxBound.x - minBound.x;
+		float y = maxBound.y - minBound.y;
+		float z = maxBound.z - minBound.z;
+		if (x > y) {
+			if (x > z) return 0;
+			return 2;
+		}
+		else {
+			if (y > z)return 1;
+			return 2;
+		}
+	}
+
 	inline bool AABBBox::CollideWithBox(AABBBox* box) {
 		if (box->minBound.x > maxBound.x) return (false);
 		if (box->minBound.y > maxBound.y) return (false);
@@ -86,6 +109,8 @@ namespace VANCollision {
 		if (point.z < minBound.z) return (false);
 		return (true);
 	}
+
+
 
 	//intersect with ray if intersect return true and two point
 	// algorithm comes from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
@@ -124,11 +149,7 @@ namespace VANCollision {
 	}
 
 
-	inline void AABBBox::Enclosure(AABBBox* bbox) {
-		minBound = Min(minBound, bbox->minBound);
-		maxBound = Max(maxBound, bbox->maxBound);
-		center = (minBound + maxBound) / 2.0f;
-	}
+
 	inline void AABBBox::DrawBox() {
 
 	}
