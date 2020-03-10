@@ -177,7 +177,7 @@ int main() {
 		plane.Draw(&planeShader,shadowMap->depthTexture);
 
 		debugShader.use();
-		nanosuit.debugDraw(&debugShader, 0);
+		nanosuit.debugDraw(&debugShader, 15);
 		
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);

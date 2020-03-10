@@ -37,6 +37,9 @@ namespace VANCollision {
 	inline int AABBTree::BuildTree(int start, int end, int depth) {
 		//1.create a large box contains all nodes
 		AABBTreeNode currentRoot;
+		//set node is empty
+		currentRoot.node.minBound = glm::vec3(0.0f);
+		currentRoot.node.maxBound = glm::vec3(0.0f);
 		currentRoot.depth = depth;
 		for (int i = start; i <= end; i++) {
 			currentRoot.node.Enclosure(&nodes[i].node);

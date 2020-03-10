@@ -194,7 +194,7 @@ namespace VANCollision {
 			glBindVertexArray(0);
 		}
 		glBindVertexArray(BVAO);
-		glDrawArrays(GL_LINES,0,24);
+		glDrawArrays(GL_LINES,0,48);
 		glBindVertexArray(0);
 
 	}
