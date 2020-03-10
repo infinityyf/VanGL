@@ -34,6 +34,9 @@
     <Filter Include="shaders\shadowMap">
       <UniqueIdentifier>{d9ddcdcf-e74a-4a6c-95b6-f2c74003e903}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\collision_detect">
+      <UniqueIdentifier>{614bbb0a-162e-4d16-9082-ecfa940ed68e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -82,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="src\shadowMap.h">
       <Filter>include\shadow_map</Filter>
+    </ClInclude>
+    <ClInclude Include="src\collision_detect\AABBBox.h">
+      <Filter>include\collision_detect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\collision_detect\AABBTree.h">
+      <Filter>include\collision_detect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -144,6 +144,8 @@
   <ItemGroup>
     <ClInclude Include="src\basic_shape\plane.h" />
     <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\collision_detect\AABBBox.h" />
+    <ClInclude Include="src\collision_detect\AABBTree.h" />
     <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\mesh.h" />
