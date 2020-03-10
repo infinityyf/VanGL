@@ -13,10 +13,6 @@
 //basic shape
 #include "basic_shape/plane.h"
 
-//collision
-#include "collision_detect/AABBBox.h"
-#include "collision_detect/AABBTree.h"
-using namespace VANCollision;
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
@@ -52,6 +48,7 @@ int main() {
 	// create cube map (need before model
 	Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
+	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\renderShadowMap.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
@@ -88,6 +85,8 @@ int main() {
 	glUniformBlockBinding(shader.shaderProgramID, matrixIndex, BIND_POINT::MATRIX_POINT);
 	unsigned int matrixIndex1 = glGetUniformBlockIndex(planeShader.shaderProgramID, "Matrix");
 	glUniformBlockBinding(planeShader.shaderProgramID, matrixIndex1, BIND_POINT::MATRIX_POINT);
+	unsigned int matrixIndex2 = glGetUniformBlockIndex(debugShader.shaderProgramID, "Matrix");
+	glUniformBlockBinding(debugShader.shaderProgramID, matrixIndex2, BIND_POINT::MATRIX_POINT);
 	//bind uniform buffer object to bind point
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
@@ -116,27 +115,11 @@ int main() {
 
 	//load model
 	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
+	nanosuit.generateAABBTree();
 	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
 	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
 	Model planet(path + "scene\\models\\planet\\planet.obj");
 
-	//test of AABB tree
-	AABBTree tree = AABBTree();
-	glm::vec3 origin = glm::vec3(0.0f);
-	glm::vec3 dir = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 p1, p2;
-	for (int i = 0; i < nanosuit.meshes.size(); i++) {
-		tree.GenerateNodes(&nanosuit.meshes[i]);
-	}
-	int root = tree.BuildTree(0, tree.nodes.size() - 1, 0);
-	for (int i = 0; i < tree.nodes.size(); i++) {
-		if (tree.nodes[i].node.CollideWithRay(origin, dir, p1, p2)) {
-			std::cout << "hit:"<<p1.x<<","<<p1.y << "," <<p1.z<< std::endl;
-		}
-		else {
-			std::cout << "miss" << std::endl;
-		}
-	}
 
 	//load plane
 	Texture floor(path + "scene\\materials\\textures\\wood.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
@@ -193,6 +176,9 @@ int main() {
 		planeShader.setVector3("viewPos", camera.cameraPos);
 		plane.Draw(&planeShader,shadowMap->depthTexture);
 
+		debugShader.use();
+		nanosuit.debugDraw(&debugShader, 0);
+		
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);
 		blackSkybox.setCamera(&camera);

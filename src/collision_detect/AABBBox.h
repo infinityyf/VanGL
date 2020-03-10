@@ -9,6 +9,11 @@
 namespace VANCollision {
 	class AABBBox {
 	public:
+		//drawing setting
+		unsigned int BVAO;
+		unsigned int BVBO;
+		std::vector<glm::vec3> lines;
+	public:
 		glm::vec3 center;
 		glm::vec3 minBound;	//aabb min coord
 		glm::vec3 maxBound;	//aabb max coord
@@ -151,6 +156,46 @@ namespace VANCollision {
 
 
 	inline void AABBBox::DrawBox() {
+		if (lines.size() == 0) {
+			lines.push_back(glm::vec3(minBound.x, minBound.y, minBound.z));
+			lines.push_back(glm::vec3(maxBound.x, minBound.y, minBound.z));
+			lines.push_back(glm::vec3(minBound.x, maxBound.y, minBound.z));
+			lines.push_back(glm::vec3(maxBound.x, maxBound.y, minBound.z));
+			lines.push_back(glm::vec3(minBound.x, minBound.y, maxBound.z));
+			lines.push_back(glm::vec3(maxBound.x, minBound.y, maxBound.z));
+			lines.push_back(glm::vec3(minBound.x, maxBound.y, maxBound.z));
+			lines.push_back(glm::vec3(maxBound.x, maxBound.y, maxBound.z));
+												
+			lines.push_back(glm::vec3(minBound.x, minBound.y, minBound.z));
+			lines.push_back(glm::vec3(minBound.x, maxBound.y, minBound.z));
+			lines.push_back(glm::vec3(maxBound.x, minBound.y, minBound.z));
+			lines.push_back(glm::vec3(maxBound.x, maxBound.y, minBound.z));
+			lines.push_back(glm::vec3(minBound.x, minBound.y, maxBound.z));
+			lines.push_back(glm::vec3(minBound.x, maxBound.y, maxBound.z));
+			lines.push_back(glm::vec3(maxBound.x, minBound.y, maxBound.z));
+			lines.push_back(glm::vec3(maxBound.x, maxBound.y, maxBound.z));
+											
+			lines.push_back(glm::vec3(minBound.x, minBound.y, minBound.z));
+			lines.push_back(glm::vec3(minBound.x, minBound.y, maxBound.z));
+			lines.push_back(glm::vec3(maxBound.x, minBound.y, minBound.z));
+			lines.push_back(glm::vec3(maxBound.x, minBound.y, maxBound.z));
+			lines.push_back(glm::vec3(minBound.x, maxBound.y, minBound.z));
+			lines.push_back(glm::vec3(minBound.x, maxBound.y, maxBound.z));
+			lines.push_back(glm::vec3(maxBound.x, maxBound.y, minBound.z));
+			lines.push_back(glm::vec3(maxBound.x, maxBound.y, maxBound.z));
+			glGenVertexArrays(1, &BVAO);
+			glGenBuffers(1, &BVBO);
+			glBindVertexArray(BVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, BVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * lines.size(), &lines[0], GL_STATIC_DRAW);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+			glBindVertexArray(0);
+		}
+		glBindVertexArray(BVAO);
+		glDrawArrays(GL_LINES,0,24);
+		glBindVertexArray(0);
 
 	}
 }

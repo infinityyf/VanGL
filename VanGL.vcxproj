@@ -159,6 +159,8 @@
   <ItemGroup>
     <None Include="src\shaders\basicShapeShader.fs" />
     <None Include="src\shaders\basicShapeShader.vs" />
+    <None Include="src\shaders\debugShader\debugShader.fs" />
+    <None Include="src\shaders\debugShader\debugShader.vs" />
     <None Include="src\shaders\furryEffectShader\furry.fs" />
     <None Include="src\shaders\furryEffectShader\furry.gs" />
     <None Include="src\shaders\furryEffectShader\furry.vs" />

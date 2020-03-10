@@ -17,6 +17,11 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
+
+#include "collision_detect/AABBBox.h"
+#include "collision_detect/AABBTree.h"
+using namespace VANCollision;
+
 class Model {
 public:
 	std::vector<Mesh> meshes;
@@ -24,6 +29,10 @@ public:
 	//need initialize
 	glm::mat4 model;
 	std::string modelDictionary;
+
+	//aabb tree
+	AABBTree tree;
+	int root;
 	
 public:
 	Model(std::string modelPath);
@@ -41,6 +50,10 @@ public:
 	void scale(glm::vec3 scale);
 	void translate(glm::vec3 translate);
 	void rotate(glm::vec3 axis, float radian);
+
+	//collision related(must calculate after model operate)
+	void generateAABBTree();
+	void debugDraw(StandardShader* shader,int depth);
 };
 
 Model::Model(std::string modelPath) {
@@ -208,6 +221,36 @@ void Model::translate(glm::vec3 translate) {
 
 void Model::rotate(glm::vec3 axis,float radian) {
 	model = glm::rotate(model, radian,axis);
+}
+
+inline void Model::generateAABBTree()
+{
+	//building AABB tree
+	this->tree = AABBTree();
+	glm::vec3 origin = glm::vec3(0.0f);
+	glm::vec3 dir = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 p1, p2;
+	for (int i = 0; i < meshes.size(); i++) {
+		tree.GenerateNodes(&meshes[i]);
+	}
+	this->root = tree.BuildTree(0, tree.nodes.size() - 1, 0);
+	//for (int i = 0; i < tree.nodes.size(); i++) {
+	//	if (tree.nodes[i].node.CollideWithRay(origin, dir, p1, p2)) {
+	//		std::cout << "hit:" << p1.x << "," << p1.y << "," << p1.z << std::endl;
+	//	}
+	//	else {
+	//		std::cout << "miss" << std::endl;
+	//	}
+	//}
+}
+
+inline void Model::debugDraw(StandardShader* shader, int depth)
+{
+	shader->use();
+	shader->setMatrix4("model", model);
+	for (int i = root; i >= 0; i--) {
+		if (tree.nodes[i].depth == depth) tree.nodes[i].node.DrawBox();
+	}
 }
 
 #endif // !MODEL

@@ -37,6 +37,9 @@
     <Filter Include="include\collision_detect">
       <UniqueIdentifier>{614bbb0a-162e-4d16-9082-ecfa940ed68e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders\debugShader">
+      <UniqueIdentifier>{f8b7bcb4-b8b5-4712-a8f2-8ab94083620a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -144,6 +147,12 @@
     </None>
     <None Include="src\shaders\postProcess\renderShadowMap.fs">
       <Filter>shaders\postProcess</Filter>
+    </None>
+    <None Include="src\shaders\debugShader\debugShader.fs">
+      <Filter>shaders\debugShader</Filter>
+    </None>
+    <None Include="src\shaders\debugShader\debugShader.vs">
+      <Filter>shaders\debugShader</Filter>
     </None>
   </ItemGroup>
 </Project>
