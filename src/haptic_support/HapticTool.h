@@ -38,8 +38,8 @@ protected:
 public:
 	double	m_G[6][6];
 	double	m_qg[6], m_qh[6];			//physic pos and grapic pos
-	double	m_trans[3], m_rotate[3][3];		//current pos
-	double  m_transpre[3], m_rotatepre[3][3];
+	float	m_trans[3], m_rotate[3][3];		//current pos
+	float  m_transpre[3], m_rotatepre[3][3];
 	double  m_globalAngX, m_globalAngY, m_globalAngZ;
 	double  m_deviceStiffnessGingval;
 	double  m_stiffnessRatio;
@@ -74,8 +74,13 @@ void HapticTools::DrawHaptic(StandardShader* shader)
 	shader->use();
 	shader->setMatrix4("model", glm::mat4(1.0f));
 	glBindVertexArray(HVAO);
-	glDrawArrays(GL_POINT, 0, 1);
+	glBindBuffer(GL_ARRAY_BUFFER, HVBO);
+	//update haptic point position
+	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(GL_FLOAT), m_transpre, GL_DYNAMIC_DRAW);
+
+	glDrawArrays(GL_POINTS, 0, 1);
 	glBindVertexArray(0);
+	std::cout << m_transpre[0] << "," << m_transpre[1] << "," << m_transpre[2] << std::endl;
 }
 
 HapticTools::HapticTools() {

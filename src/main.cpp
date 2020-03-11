@@ -184,11 +184,10 @@ int main() {
 		plane.Draw(&planeShader,shadowMap->depthTexture);
 
 		//draw aabb tree
-		debugShader.use();
 		nanosuit.debugDraw(&debugShader, 15);
 
-		//debugShader.use();
-		//hapticManager.currentTool->DrawHaptic(&debugShader);
+		//draw haptic tool
+		currentTool->DrawHaptic(&debugShader);
 		
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);

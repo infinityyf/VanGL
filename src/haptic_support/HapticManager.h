@@ -27,7 +27,7 @@ HANDLE					g_mutex;					//thread sync
 static HHD				hHD;
 HDSchedulerHandle		hSphereCallback;			//callback handle
 static int				framecount = 0;
-static float			hapticScale = 0.1f;			//scale of coord scal
+static float			hapticScale = 0.01f;			//scale of coord scal
 static float			force[3];
 static float			m_graphicTrans[16];			//graphic tool trans
 static int				ms;
@@ -79,17 +79,17 @@ HDCallbackCode HDCALLBACK ConfigurationOptimCallback(void* data)
 		framecount++;
 		return HD_CALLBACK_CONTINUE;
 	}
-	clock_t start = clock();
+	clock_t start = clock();									//start counting
 	hdBeginFrame(hdGetCurrentDevice());
 	float device_stateR[16];
 	hdGetFloatv(HD_CURRENT_TRANSFORM, device_stateR);
-	device_stateR[12] *= hapticScale;							//获取设备的位置
+	device_stateR[12] *= hapticScale;							//get device position
 	device_stateR[13] *= hapticScale;
 	device_stateR[14] *= hapticScale;
 
-	currentTool->ForceBefore(device_stateR);						//将位置信息转存到m_trans和m_rotate中，并设置m_qH（用于计算约束								
-	currentTool->ForceCompute(force);				//计算碰撞，求解约，计算受力
-	currentTool->ForceAfter(m_graphicTrans);		//记录上一次的移动和旋转
+	currentTool->ForceBefore(device_stateR);					//将位置信息转存到m_trans和m_rotate中，并设置m_qH（用于计算约束								
+	currentTool->ForceCompute(force);							//计算碰撞，求解约，计算受力
+	currentTool->ForceAfter(m_graphicTrans);					//记录上一次的移动和旋转
 
 
 	//sent the force out
