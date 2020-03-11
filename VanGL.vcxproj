@@ -83,12 +83,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rd\openHaptic\utilities\include;3rd\openHaptic\include;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>3rd\Assimp\lib\Debug\Win32;3rd\GLFW\lib\Debug\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc140-mt.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>3rd\openHaptic\lib\x64;3rd\openHaptic\utilities\lib\x64\Debug;3rd\Assimp\lib\Debug\x64;3rd\GLFW\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;opengl32.lib;glfw.lib;hd.lib;hdu.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -97,12 +98,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rd\openHaptic\utilities\include;3rd\openHaptic\include;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>3rd\Assimp\lib\Debug\Win32;3rd\GLFW\lib\Debug\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc140-mt.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>3rd\openHaptic\lib\x64;3rd\openHaptic\utilities\lib\x64\Debug;3rd\Assimp\lib\Debug\x64;3rd\GLFW\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;opengl32.lib;glfw.lib;hd.lib;hdu.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,6 +140,8 @@
   <ItemGroup>
     <ClCompile Include="src\depthTest.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\haptic_support\CzMatrix.cpp" />
+    <ClCompile Include="src\haptic_support\GlobalMethod.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MSAA.cpp" />
   </ItemGroup>
@@ -147,6 +151,10 @@
     <ClInclude Include="src\collision_detect\AABBBox.h" />
     <ClInclude Include="src\collision_detect\AABBTree.h" />
     <ClInclude Include="src\frame.h" />
+    <ClInclude Include="src\haptic_support\CzMatrix.h" />
+    <ClInclude Include="src\haptic_support\GlobalMethod.h" />
+    <ClInclude Include="src\haptic_support\HapticManager.h" />
+    <ClInclude Include="src\haptic_support\HapticTool.h" />
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />

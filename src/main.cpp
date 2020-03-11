@@ -13,6 +13,9 @@
 //basic shape
 #include "basic_shape/plane.h"
 
+//haptic
+#include "haptic_support/HapticManager.h"
+
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
@@ -133,6 +136,10 @@ int main() {
 	//screen quad for post process
 	Screen* screen= new Screen();
 
+	//haptic
+	HapticInitPhantom();
+
+
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
 		float currentFrame = glfwGetTime();
@@ -149,8 +156,8 @@ int main() {
 		glBindBuffer(GL_UNIFORM_BUFFER, UBO);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(camera.view));
 		glBufferSubData(GL_UNIFORM_BUFFER, 64, 64, glm::value_ptr(camera.projection));
-		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.near);
-		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.far);
+		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.nearPlane);
+		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.farPlane);
 		glBufferSubData(GL_UNIFORM_BUFFER, 144, 64, glm::value_ptr(shadowMap->lightSpace));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -176,8 +183,12 @@ int main() {
 		planeShader.setVector3("viewPos", camera.cameraPos);
 		plane.Draw(&planeShader,shadowMap->depthTexture);
 
+		//draw aabb tree
 		debugShader.use();
 		nanosuit.debugDraw(&debugShader, 15);
+
+		//debugShader.use();
+		//hapticManager.currentTool->DrawHaptic(&debugShader);
 		
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);
@@ -194,6 +205,8 @@ int main() {
 
 
 	}
+	//stop haptic
+	StopHapticLoopPhantom();
 
 	//release resources
 	glfwTerminate();

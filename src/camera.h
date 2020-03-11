@@ -14,8 +14,8 @@ public:
 	static glm::vec3 cameraPos;
 	static glm::vec3 cameraFront;
 	static glm::vec3 cameraUp;
-	float near;
-	float far;
+	float nearPlane;
+	float farPlane;
 
 	//rotation information
 	//curse position
@@ -65,8 +65,8 @@ Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up, float near, float f
 
 	//yaw =glm::dot(glm::normalize(front), glm::vec3(1.0f, 0.0f, 0.0f));
 	//pitch = glm::dot(glm::normalize(front), glm::vec3(0.0f, 1.0f, 0.0f));
-	this->near = near;
-	this->far = far;
+	this->nearPlane = near;
+	this->farPlane = far;
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::mat4(1.0f);
 }
@@ -181,7 +181,7 @@ void Camera::processInput() {
 inline void Camera::updateMatrixs()
 {
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	projection = glm::perspective((float)glm::radians(fov), (float)window->windowWidth / window->windowHeight, near, far);
+	projection = glm::perspective((float)glm::radians(fov), (float)window->windowWidth / window->windowHeight, nearPlane, farPlane);
 }
 
 glm::vec3 Camera::cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);

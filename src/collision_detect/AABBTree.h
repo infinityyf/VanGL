@@ -18,7 +18,10 @@ namespace VANCollision {
 		treeNodeList nodes;
 		void GenerateNodes(Mesh* mesh);
 	
+		//build binary tree
 		int BuildTree(int start,int mid,int depth);
+		//search the tree
+		int SearchCollisionBox(glm::vec3& origin,glm::vec3& target);
 	};
 
 	inline void AABBTree::GenerateNodes(Mesh* mesh) {
@@ -26,7 +29,7 @@ namespace VANCollision {
 			glm::vec3 pos1 = mesh->vertexs[mesh->indices[i]].Position;
 			glm::vec3 pos2 = mesh->vertexs[mesh->indices[i + 1]].Position;
 			glm::vec3 pos3 = mesh->vertexs[mesh->indices[i + 2]].Position;
-			AABBTreeNode node{ 0,0,0,AABBBox(pos1,pos2,pos3) };
+			AABBTreeNode node{ -1,-1,-1,AABBBox(pos1,pos2,pos3) };
 			nodes.push_back(node);
 		}
 	}
@@ -121,6 +124,15 @@ namespace VANCollision {
 		from back search the tree
 		|**leaf**|**leaf**|`````````|**root00**|**root01**|**root10**|**root11**|**root20**|``````````````````
 		*/
+	}
+
+	//return the leaf noed index of collide box
+	inline int AABBTree::SearchCollisionBox(glm::vec3& origin, glm::vec3& target)
+	{
+
+
+		//default return root
+		return nodes.size()-1;
 	}
 }
 

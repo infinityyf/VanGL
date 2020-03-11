@@ -185,7 +185,7 @@ Skybox::Skybox(std::string picDictionary) {
 	glGenTextures(1, &skyBox);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
 
-	long hFile = 0;
+	intptr_t hFile = 0;
 	std::vector<std::string> files;
 	//file info from io.h
 	struct _finddata_t fileinfo;
@@ -193,7 +193,7 @@ Skybox::Skybox(std::string picDictionary) {
 	//use * to match all files the dictionary contains
 	if ((hFile = _findfirst(p.assign(picDictionary).append("\\*").c_str(), &fileinfo)) != -1) {
 		do {
-			// skip a subdir
+			// skip a subdir (./ or ../)
 			if (fileinfo.attrib & _A_SUBDIR) continue;
 			files.push_back(p.assign(picDictionary).append("\\").append(fileinfo.name));
 		} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1

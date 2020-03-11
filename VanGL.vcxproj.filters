@@ -40,6 +40,9 @@
     <Filter Include="shaders\debugShader">
       <UniqueIdentifier>{f8b7bcb4-b8b5-4712-a8f2-8ab94083620a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\haptic_support">
+      <UniqueIdentifier>{8feafa29-7fb1-4aba-924e-cf4e2269e643}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -53,6 +56,12 @@
     </ClCompile>
     <ClCompile Include="src\MSAA.cpp">
       <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="src\haptic_support\CzMatrix.cpp">
+      <Filter>include\haptic_support</Filter>
+    </ClCompile>
+    <ClCompile Include="src\haptic_support\GlobalMethod.cpp">
+      <Filter>include\haptic_support</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +103,18 @@
     </ClInclude>
     <ClInclude Include="src\collision_detect\AABBTree.h">
       <Filter>include\collision_detect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\haptic_support\HapticManager.h">
+      <Filter>include\haptic_support</Filter>
+    </ClInclude>
+    <ClInclude Include="src\haptic_support\HapticTool.h">
+      <Filter>include\haptic_support</Filter>
+    </ClInclude>
+    <ClInclude Include="src\haptic_support\CzMatrix.h">
+      <Filter>include\haptic_support</Filter>
+    </ClInclude>
+    <ClInclude Include="src\haptic_support\GlobalMethod.h">
+      <Filter>include\haptic_support</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
