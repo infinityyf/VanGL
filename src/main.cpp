@@ -49,12 +49,14 @@ int main() {
 
 	//shader
 	// create cube map (need before model
-	Skybox skybox(path + "scene\\materials\\textures\\skybox");
+	//Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\renderShadowMap.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
+	
+	//set light info
 	shader.use();
 	shader.setInt("PointNum", 0);
 	shader.setInt("SpotNum", 0);
@@ -95,14 +97,14 @@ int main() {
 
 
 	// use instance draw
-	glm::mat4 matrix[500];
-	int amount = 500;
-	srand(time(NULL));
-	// generate data
-	for (int i = 0; i < amount; i++) {
-		matrix[i] = glm::mat4(1.0);
-		matrix[i] = glm::translate(matrix[i], glm::vec3((float)(rand() % 100 - 50), (float)(rand() % 100 - 50), (float)(rand() % 100 - 50)));
-	}
+	//glm::mat4 matrix[500];
+	//int amount = 500;
+	//srand(time(NULL));
+	//// generate data
+	//for (int i = 0; i < amount; i++) {
+	//	matrix[i] = glm::mat4(1.0);
+	//	matrix[i] = glm::translate(matrix[i], glm::vec3((float)(rand() % 100 - 50), (float)(rand() % 100 - 50), (float)(rand() % 100 - 50)));
+	//}
 
 	//enable z buffer test
 	glEnable(GL_DEPTH_TEST);
@@ -122,6 +124,7 @@ int main() {
 	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
 	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
 	Model planet(path + "scene\\models\\planet\\planet.obj");
+
 
 
 	//load plane

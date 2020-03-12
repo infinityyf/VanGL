@@ -20,16 +20,20 @@ namespace VANCollision {
 		AABBBox() {}
 		AABBBox(Mesh* mesh);
 		AABBBox(glm::vec3& a, glm::vec3& b, glm::vec3& c);
+		//AABBBox(glm::vec3& start, glm::vec3& end);
 
-		glm::vec3 Min(glm::vec3, glm::vec3);
-		glm::vec3 Max(glm::vec3, glm::vec3);
+		static glm::vec3 Min(glm::vec3, glm::vec3);
+		static glm::vec3 Max(glm::vec3, glm::vec3);
 
 		//collision detect with another AABBbox
-		bool CollideWithBox(AABBBox* box);
+		bool CollideWithBox(AABBBox& box);
 		//collision detect with a point
 		bool CollideWithPoint(glm::vec3& point);
 		//collision detect with a ray
 		bool CollideWithRay(glm::vec3& origin, glm::vec3& dir, glm::vec3& x1, glm::vec3& x2);
+		//collision detect with a line sigment
+		bool CollideWithSegment(glm::vec3& origin, glm::vec3& end);
+
 		//enclose
 		void Enclosure(AABBBox* bbox);
 		//get the longest axis
@@ -94,13 +98,13 @@ namespace VANCollision {
 		}
 	}
 
-	inline bool AABBBox::CollideWithBox(AABBBox* box) {
-		if (box->minBound.x > maxBound.x) return (false);
-		if (box->minBound.y > maxBound.y) return (false);
-		if (box->minBound.z > maxBound.z) return (false);
-		if (box->maxBound.x < minBound.x) return (false);
-		if (box->maxBound.y < minBound.y) return (false);
-		if (box->maxBound.z < minBound.z) return (false);
+	inline bool AABBBox::CollideWithBox(AABBBox& box) {
+		if (box.minBound.x > maxBound.x) return (false);
+		if (box.minBound.y > maxBound.y) return (false);
+		if (box.minBound.z > maxBound.z) return (false);
+		if (box.maxBound.x < minBound.x) return (false);
+		if (box.maxBound.y < minBound.y) return (false);
+		if (box.maxBound.z < minBound.z) return (false);
 		return (true);
 	}
 
@@ -151,6 +155,24 @@ namespace VANCollision {
 
 		if (t1 > t0) return true;
 		else return false;
+	}
+
+	//if line segment collide current box
+	inline bool AABBBox::CollideWithSegment(glm::vec3& origin, glm::vec3& end)
+	{
+		//AABBBox lineBox = AABBBox();
+		//lineBox.minBound = AABBBox::Min(origin, end);
+		//lineBox.maxBound = AABBBox::Max(origin, end);
+		////1. if not collide box
+		//if (!this->CollideWithBox(lineBox)) return false;
+		////2. if current box contain linebox
+		////3. if line box contain current box
+		//glm::vec3 dir = end - origin;
+		//glm::vec3 p1, p2;
+		//if(!this->CollideWithRay(origin, dir,p1,p2)) return false;
+		////4. if these two intersect
+		if (!this->CollideWithPoint(origin) && !this->CollideWithPoint(end)) return false;
+		return true;
 	}
 
 

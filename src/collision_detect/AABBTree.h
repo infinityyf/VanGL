@@ -21,7 +21,7 @@ namespace VANCollision {
 		//build binary tree
 		int BuildTree(int start,int mid,int depth);
 		//search the tree
-		int SearchCollisionBox(glm::vec3& origin,glm::vec3& target);
+		int SearchCollisionBox(glm::vec3& origin,glm::vec3& target,int node);
 	};
 
 	inline void AABBTree::GenerateNodes(Mesh* mesh) {
@@ -126,13 +126,24 @@ namespace VANCollision {
 		*/
 	}
 
-	//return the leaf noed index of collide box
-	inline int AABBTree::SearchCollisionBox(glm::vec3& origin, glm::vec3& target)
+	//return the leaf node index of collide box
+	//-1 means collide with nothing
+	inline int AABBTree::SearchCollisionBox(glm::vec3& origin, glm::vec3& target,int nodeIndex)
 	{
+		bool hitRoot = false;
+		hitRoot = nodes[nodeIndex].node.CollideWithSegment(origin, target);
+		if (!hitRoot || nodeIndex == -1) {
+			//if not hit root return -1 means collide with nothing
+			return -1;
+		}
+		if (hitRoot && nodes[nodeIndex].leftTree==-1 && nodes[nodeIndex].rightTree==-1) {
+			//if hit the leaf node
+			return nodeIndex;
+		}
+		int leftIndex = SearchCollisionBox(origin, target, nodes[nodeIndex].leftTree);
+		int rightIndex = SearchCollisionBox(origin, target, nodes[nodeIndex].rightTree);
 
-
-		//default return root
-		return nodes.size()-1;
+		return (leftIndex < rightIndex) ? leftIndex : rightIndex;
 	}
 }
 
