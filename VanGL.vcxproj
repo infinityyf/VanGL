@@ -140,21 +140,26 @@
   <ItemGroup>
     <ClCompile Include="src\depthTest.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\haptic_support\Array.cc" />
     <ClCompile Include="src\haptic_support\CzMatrix.cpp" />
     <ClCompile Include="src\haptic_support\GlobalMethod.cpp" />
+    <ClCompile Include="src\haptic_support\QuadProg++.cc" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MSAA.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\basic_shape\line.h" />
     <ClInclude Include="src\basic_shape\plane.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\collision_detect\AABBBox.h" />
     <ClInclude Include="src\collision_detect\AABBTree.h" />
     <ClInclude Include="src\frame.h" />
+    <ClInclude Include="src\haptic_support\Array.hh" />
     <ClInclude Include="src\haptic_support\CzMatrix.h" />
     <ClInclude Include="src\haptic_support\GlobalMethod.h" />
     <ClInclude Include="src\haptic_support\HapticManager.h" />
     <ClInclude Include="src\haptic_support\HapticTool.h" />
+    <ClInclude Include="src\haptic_support\QuadProg++.hh" />
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />

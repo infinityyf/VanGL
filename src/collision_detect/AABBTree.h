@@ -10,26 +10,30 @@ namespace VANCollision {
 		int rightTree;		//right child index
 		int depth;
 		AABBBox node;
+		unsigned int meshID;//which mesh in model
+		unsigned int faceID;//which triangle in mesh
 	};
 	typedef std::vector<AABBTreeNode> treeNodeList;
 
 	class AABBTree {
 	public:
 		treeNodeList nodes;
-		void GenerateNodes(Mesh* mesh);
+		void GenerateNodes(Mesh* mesh, int& meshID);
 	
 		//build binary tree
 		int BuildTree(int start,int mid,int depth);
 		//search the tree
 		int SearchCollisionBox(glm::vec3& origin,glm::vec3& target,int node);
+		
 	};
 
-	inline void AABBTree::GenerateNodes(Mesh* mesh) {
+	inline void AABBTree::GenerateNodes(Mesh* mesh,int& meshID) {
 		for (int i = 0; i < mesh->indices.size(); i += 3) {
+			// change to world coord
 			glm::vec3 pos1 = mesh->vertexs[mesh->indices[i]].Position;
 			glm::vec3 pos2 = mesh->vertexs[mesh->indices[i + 1]].Position;
 			glm::vec3 pos3 = mesh->vertexs[mesh->indices[i + 2]].Position;
-			AABBTreeNode node{ -1,-1,-1,AABBBox(pos1,pos2,pos3) };
+			AABBTreeNode node{ -1,-1,-1,AABBBox(pos1,pos2,pos3) ,meshID,i};
 			nodes.push_back(node);
 		}
 	}
@@ -143,8 +147,9 @@ namespace VANCollision {
 		int leftIndex = SearchCollisionBox(origin, target, nodes[nodeIndex].leftTree);
 		int rightIndex = SearchCollisionBox(origin, target, nodes[nodeIndex].rightTree);
 
-		return (leftIndex < rightIndex) ? leftIndex : rightIndex;
+		return (leftIndex > rightIndex) ? leftIndex : rightIndex;
 	}
+
 }
 
 

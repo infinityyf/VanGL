@@ -54,6 +54,10 @@ public:
 	//collision related(must calculate after model operate)
 	void generateAABBTree();
 	void debugDraw(StandardShader* shader,int depth);
+	void debugDrawBox(StandardShader* shader, int node);
+
+	//intersect with a triangle
+	bool IntersectWithTriangle(glm::vec3& origin, glm::vec3& target, int node, glm::vec3& intersectPoint);
 };
 
 Model::Model(std::string modelPath) {
@@ -231,7 +235,7 @@ inline void Model::generateAABBTree()
 	glm::vec3 dir = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 p1, p2;
 	for (int i = 0; i < meshes.size(); i++) {
-		tree.GenerateNodes(&meshes[i]);
+		tree.GenerateNodes(&meshes[i],i);
 	}
 	this->root = tree.BuildTree(0, tree.nodes.size() - 1, 0);
 	//for (int i = 0; i < tree.nodes.size(); i++) {
@@ -251,6 +255,44 @@ inline void Model::debugDraw(StandardShader* shader, int depth)
 	for (int i = root; i >= 0; i--) {
 		if (tree.nodes[i].depth == depth) tree.nodes[i].node.DrawBox();
 	}
+}
+
+inline void Model::debugDrawBox(StandardShader* shader, int node)
+{
+	shader->use();
+	shader->setMatrix4("model", model);
+	if (node == -1) return;
+	tree.nodes[node].node.DrawBox();
+}
+
+//interesct with triangle
+//here origin and target from model coord
+//Moller-Trumbore algorithm
+inline bool Model::IntersectWithTriangle(glm::vec3& origin, glm::vec3& target, int node, glm::vec3& intersectPoint)
+{
+	if (node == -1) return false;
+	int meshID = tree.nodes[node].meshID;
+	int faceID = tree.nodes[node].faceID;
+	int indice0 = meshes[meshID].indices[faceID];
+	int indice1 = meshes[meshID].indices[faceID + 1];
+	int indice2 = meshes[meshID].indices[faceID + 2];
+	float t = glm::length(target - origin);
+	float epsilon = 1E-5f;
+	glm::vec3 dir = glm::normalize(target - origin);
+	glm::vec3 V0 = meshes[meshID].vertexs[indice0].Position;
+	glm::vec3 V1 = meshes[meshID].vertexs[indice1].Position;
+	glm::vec3 V2 = meshes[meshID].vertexs[indice2].Position;
+	glm::vec3 E1 = glm::normalize(V1 - V0);
+	glm::vec3 E2 = glm::normalize(V2 - V0);
+	glm::vec3 Y = origin - V0;
+	glm::mat3 K;
+	K[0] = E1;
+	K[1] = E2;
+	K[2] = -dir;
+	K = glm::inverse(K);
+	intersectPoint = K * Y;
+	if ((intersectPoint.x >= 0 && intersectPoint.x <= 1) && (intersectPoint.y >= 0 && intersectPoint.y <= 1) && abs(intersectPoint.z -t)<= epsilon) return true;
+	return false;
 }
 
 #endif // !MODEL

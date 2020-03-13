@@ -12,7 +12,7 @@
 
 //basic shape
 #include "basic_shape/plane.h"
-
+#include "basic_shape/line.h"
 //haptic
 #include "haptic_support/HapticManager.h"
 
@@ -118,14 +118,33 @@ int main() {
 	// have been corrected already)
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
+
+
+	glm::vec4 start(0.0f, 2.0f, 2.0f, 1.0f);
+	glm::vec4 end(0.0f, -3.0f, -5.0f, 1.0f);
+	glm::vec3 startModel, endModel;
+	startModel = start;
+	endModel = end;
+	//test line
+	Line line = Line(startModel, endModel);
+
+
 	//load model
+	glm::mat4 inversModel;
 	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
-	nanosuit.generateAABBTree();
 	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
 	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
-	Model planet(path + "scene\\models\\planet\\planet.obj");
 
-
+	nanosuit.generateAABBTree();
+	inversModel = glm::inverse(nanosuit.model);
+	start = inversModel * start;
+	end = inversModel * end;
+	startModel = start;
+	endModel = end;
+	int node = nanosuit.tree.SearchCollisionBox(startModel, endModel, nanosuit.root);
+	//intersctpoint is in model coord
+	glm::vec3 intersectPoint;
+	bool intersect = nanosuit.IntersectWithTriangle(startModel, endModel, node, intersectPoint);
 
 	//load plane
 	Texture floor(path + "scene\\materials\\textures\\wood.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
@@ -140,7 +159,7 @@ int main() {
 	Screen* screen= new Screen();
 
 	//haptic
-	HapticInitPhantom();
+	//HapticInitPhantom();
 
 
 	//render loop
@@ -187,10 +206,12 @@ int main() {
 		plane.Draw(&planeShader,shadowMap->depthTexture);
 
 		//draw aabb tree
-		nanosuit.debugDraw(&debugShader, 15);
+		//nanosuit.debugDraw(&debugShader, 15);
+		line.debugDraw(&debugShader);
+		nanosuit.debugDrawBox(&debugShader, node);
 
 		//draw haptic tool
-		currentTool->DrawHaptic(&debugShader);
+		//currentTool->DrawHaptic(&debugShader);
 		
 		//set the depth with 1 (so only draw on the pixels not cull bt object)
 		glDepthFunc(GL_LEQUAL);
@@ -208,7 +229,7 @@ int main() {
 
 	}
 	//stop haptic
-	StopHapticLoopPhantom();
+	//StopHapticLoopPhantom();
 
 	//release resources
 	glfwTerminate();

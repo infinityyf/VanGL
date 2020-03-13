@@ -17,6 +17,7 @@ namespace VANCollision {
 		glm::vec3 center;
 		glm::vec3 minBound;	//aabb min coord
 		glm::vec3 maxBound;	//aabb max coord
+
 		AABBBox() {}
 		AABBBox(Mesh* mesh);
 		AABBBox(glm::vec3& a, glm::vec3& b, glm::vec3& c);
@@ -30,7 +31,7 @@ namespace VANCollision {
 		//collision detect with a point
 		bool CollideWithPoint(glm::vec3& point);
 		//collision detect with a ray
-		bool CollideWithRay(glm::vec3& origin, glm::vec3& dir, glm::vec3& x1, glm::vec3& x2);
+		bool CollideWithRay(glm::vec3& origin, glm::vec3& dir, float& x1, float& x2);
 		//collision detect with a line sigment
 		bool CollideWithSegment(glm::vec3& origin, glm::vec3& end);
 
@@ -123,9 +124,9 @@ namespace VANCollision {
 
 	//intersect with ray if intersect return true and two point
 	// algorithm comes from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
-	inline bool AABBBox::CollideWithRay(glm::vec3& origin, glm::vec3& dir, glm::vec3& p1, glm::vec3& p2)
+	inline bool AABBBox::CollideWithRay(glm::vec3& origin, glm::vec3& dir, float& p1, float& p2)
 	{
-		glm::normalize(dir);
+		dir = glm::normalize(dir);
 		//bound value of each coord
 		float x0 = minBound.x;
 		float y0 = minBound.y;
@@ -136,22 +137,25 @@ namespace VANCollision {
 
 		//get intersect point on coordinate plane
 		// dir is normal vector so dir.x is the cosine of angle between dir and x-axis
-		float t0x = (x0 - origin.x) / dir.x;
-		float t1x = (x1 - origin.x) / dir.x;
-		float t0y = (y0 - origin.y) / dir.y;
-		float t1y = (y1 - origin.y) / dir.y;
-		float t0z = (z1 - origin.z) / dir.z;
-		float t1z = (z1 - origin.z) / dir.z;
+		float t0x = (x0 - origin.x) / (dir.x);
+		float t1x = (x1 - origin.x) / (dir.x);
+		if (t0x > t1x) swap(t0x, t1x);
+		float t0y = (y0 - origin.y) / (dir.y);
+		float t1y = (y1 - origin.y) / (dir.y);
+		if (t0y > t1y) swap(t0y, t1y);
+		float t0z = (z0 - origin.z) / (dir.z);
+		float t1z = (z1 - origin.z) / (dir.z);
+		if (t0z > t1z) swap(t0z, t1z);
 
 		//get intersect points pair(min is the bigger one)
 		float t0 = (t0x < t0y) ? t0y : t0x;
-		float t1 = (t1x < t1y) ? t1y : t1x;
+		float t1 = (t1x < t1y) ? t1x : t1y;
 		t0 = (t0 > t0z) ? t0 : t0z;
-		t1 = (t1 > t1z) ? t1 : t1z;
+		t1 = (t1 > t1z) ? t1z : t1;
 
 		//get intersect point
-		p1 = origin + t0 * dir;
-		p2 = origin + t1 * dir;
+		p1 = t0;
+		p2 = t1;
 
 		if (t1 > t0) return true;
 		else return false;
@@ -160,18 +164,16 @@ namespace VANCollision {
 	//if line segment collide current box
 	inline bool AABBBox::CollideWithSegment(glm::vec3& origin, glm::vec3& end)
 	{
-		//AABBBox lineBox = AABBBox();
-		//lineBox.minBound = AABBBox::Min(origin, end);
-		//lineBox.maxBound = AABBBox::Max(origin, end);
-		////1. if not collide box
-		//if (!this->CollideWithBox(lineBox)) return false;
-		////2. if current box contain linebox
-		////3. if line box contain current box
-		//glm::vec3 dir = end - origin;
-		//glm::vec3 p1, p2;
-		//if(!this->CollideWithRay(origin, dir,p1,p2)) return false;
-		////4. if these two intersect
-		if (!this->CollideWithPoint(origin) && !this->CollideWithPoint(end)) return false;
+
+		//if line box contain current box
+		glm::vec3 dir = end - origin;
+		float length = glm::length(dir);
+		float p1, p2;
+		if(!this->CollideWithRay(origin, dir,p1,p2)) return false;
+		if (p1 > length) return false;
+		if (p2 < 0) return false;
+		//if these two intersect
+		//if (!this->CollideWithPoint(origin) && !this->CollideWithPoint(end)) return false;
 		return true;
 	}
 

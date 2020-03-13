@@ -63,6 +63,12 @@
     <ClCompile Include="src\haptic_support\GlobalMethod.cpp">
       <Filter>include\haptic_support</Filter>
     </ClCompile>
+    <ClCompile Include="src\haptic_support\Array.cc">
+      <Filter>include\haptic_support</Filter>
+    </ClCompile>
+    <ClCompile Include="src\haptic_support\QuadProg++.cc">
+      <Filter>include\haptic_support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -115,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="src\haptic_support\GlobalMethod.h">
       <Filter>include\haptic_support</Filter>
+    </ClInclude>
+    <ClInclude Include="src\haptic_support\Array.hh">
+      <Filter>include\haptic_support</Filter>
+    </ClInclude>
+    <ClInclude Include="src\haptic_support\QuadProg++.hh">
+      <Filter>include\haptic_support</Filter>
+    </ClInclude>
+    <ClInclude Include="src\basic_shape\line.h">
+      <Filter>include\basic_shape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
