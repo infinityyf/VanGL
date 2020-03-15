@@ -160,6 +160,11 @@ inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vector.y = mesh->mNormals[i].y;
 		vector.z = mesh->mNormals[i].z;
 		vertex.Normal = vector;
+		//tangent coord
+		vector.x = mesh->mTangents[i].x;
+		vector.y = mesh->mTangents[i].z;
+		vector.z = mesh->mTangents[i].z;
+		vertex.Tangent = vector;
 
 		//assimp only allow 8 tex coords
 		if (mesh->mTextureCoords[0])
@@ -191,6 +196,7 @@ inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, SPECULAR_TEX);
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
+		//cannot use normalType to load normal map, use height map
 		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, NORMAL_TEX);
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 

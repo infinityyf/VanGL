@@ -87,7 +87,7 @@ vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir,float s
 float PCFShadowSmooth(vec3 NDCCoord){
     // plane is not like mesh
     // even it has to face it cannot avoid shadow scne, there is not distance between front and back
-    float bias = max(0.0001 * (1.0 - dot(fs_in.normal, normalize(-dirLight.direction))), 0.0000001);
+    float bias = max(0.001 * (1.0 - dot(fs_in.normal, normalize(-dirLight.direction))), 0.00001);
     float shadow = 0.0;
     vec2 size = 1/textureSize(shadowMap,0);
     for(int i=-1;i<=1;++i){

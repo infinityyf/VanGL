@@ -17,6 +17,7 @@ struct Vertex {
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 TexCoords;
+	glm::vec3 Tangent; //tangent coord 
 };
 
 class Mesh {
@@ -73,6 +74,9 @@ void Mesh::setupMesh() {
 	// tex coord
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+	//tangent vector
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
 	glBindVertexArray(0);
 	
 }
@@ -103,7 +107,12 @@ inline void Mesh::drawMesh(StandardShader* shader,Skybox* sky,int shadowID)
 			shader->setInt("material.ambient", i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
 			break; }
-		//case NORMAL_TEX: shader->setInt("material.normal", i);
+		case NORMAL_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("material.normal", i); 
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break;
+		}
 		default:
 			break;
 		}
@@ -154,7 +163,12 @@ inline void Mesh::drawMeshInstanced(StandardShader* shader, Skybox* sky, int amo
 			shader->setInt("material.ambient", i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
 			break; }
-						//case NORMAL_TEX: shader->setInt("material.normal", i);
+		case NORMAL_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("material.normal", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break;
+		}
 		default:
 			break;
 		}

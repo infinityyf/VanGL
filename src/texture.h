@@ -89,7 +89,7 @@ inline unsigned int Texture::loadTextureFromFile(const char* picName, std::strin
 	glBindTexture(GL_TEXTURE_2D, id);
 
 	// load texture flip y coordinate
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
 
 	// load texture
 	int ImageWidth, ImageHeight, nrChannels;
