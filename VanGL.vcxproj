@@ -180,6 +180,8 @@
     <None Include="src\shaders\geometry.gs" />
     <None Include="src\shaders\instanceShader\instance.fs" />
     <None Include="src\shaders\instanceShader\instance.vs" />
+    <None Include="src\shaders\ParallaxMap\parallax.fs" />
+    <None Include="src\shaders\ParallaxMap\parallax.vs" />
     <None Include="src\shaders\postProcess\postProcessShader.fs" />
     <None Include="src\shaders\postProcess\postProcessShader.vs" />
     <None Include="src\shaders\postProcess\renderShadowMap.fs" />

@@ -43,6 +43,9 @@
     <Filter Include="include\haptic_support">
       <UniqueIdentifier>{8feafa29-7fb1-4aba-924e-cf4e2269e643}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\parallax_map">
+      <UniqueIdentifier>{f6478fa6-171c-4465-a6fe-eb0564857846}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -189,6 +192,12 @@
     </None>
     <None Include="src\shaders\debugShader\debugShader.vs">
       <Filter>shaders\debugShader</Filter>
+    </None>
+    <None Include="src\shaders\ParallaxMap\parallax.fs">
+      <Filter>include\parallax_map</Filter>
+    </None>
+    <None Include="src\shaders\ParallaxMap\parallax.vs">
+      <Filter>include\parallax_map</Filter>
     </None>
   </ItemGroup>
 </Project>
