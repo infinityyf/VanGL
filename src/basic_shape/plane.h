@@ -28,6 +28,8 @@ class Plane {
 public:
 	unsigned int VBO, VAO;
 	unsigned int textureID;
+	unsigned int NormalTextureID;	//normal map(may not use)
+	unsigned int HeightTextureID;	//height map(may not use)
 	Plane(unsigned int textureID);
 	void Draw(StandardShader* shader,int shadowID=NULL);
 
@@ -56,9 +58,12 @@ Plane::Plane(unsigned int textureID) {
 
 void Plane::Draw(StandardShader* shader,int shadowID) {
 	shader->use();
-	shader->setInt("basicTex0", 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, NormalTextureID);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, HeightTextureID);
 	if (shadowID != NULL) {
 		shader->setInt("shadowMap", 1);
 		glActiveTexture(GL_TEXTURE1);
