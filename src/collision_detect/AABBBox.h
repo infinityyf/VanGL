@@ -130,7 +130,7 @@ namespace VANCollision {
 		//bound value of each coord
 		float x0 = minBound.x;
 		float y0 = minBound.y;
-		float z0 = minBound.x;
+		float z0 = minBound.z;
 		float x1 = maxBound.x;
 		float y1 = maxBound.y;
 		float z1 = maxBound.z;
