@@ -15,13 +15,15 @@
 #include "basic_shape/line.h"
 //haptic
 #include "haptic_support/HapticManager.h"
-
+//console
+#include <Windows.h>	/*console setting*/
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
 int main() {
 
-
+	//SetConsoleTextAttribute(GetStdHandle(STD_ERROR_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
+	//SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED| FOREGROUND_GREEN | FOREGROUND_BLUE);
 	int width = 800;
 	int height = 600;
 	Window window(width, height);

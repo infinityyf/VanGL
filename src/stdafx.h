@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
+
 using namespace std;
 //easy to use opengl API. it needs to be included before glfw
 //manage function pointers of openGL

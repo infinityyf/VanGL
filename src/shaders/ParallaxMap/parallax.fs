@@ -66,11 +66,36 @@ float PCFShadowSmooth(vec3 NDCCoord){
 }
 
 vec2 ParalaxMap(vec3 viewDir){
-    //get how deep to go
-    float height =  texture(heightMap, fs_in.coord).r;
-    //calculate the uv shift
-    vec2 heightMapShift = viewDir.xy/viewDir.z * height * 0.1;
-    return fs_in.coord-heightMapShift;
+    //steep parallax map
+    int numLayers = 10;
+    float layerDepth = 1.0/numLayers;
+    float currentLayerDepth = 0.0;
+    vec2 currentTexcoord = fs_in.coord;
+    float currentDepth = texture(heightMap, fs_in.coord).r;
+
+    //every step of going deeper
+    vec2 P = viewDir.xy * 0.1; 
+    vec2 deltaTexCoords = P / numLayers;
+
+    //last time test
+    vec2 lastTexcoord = currentTexcoord;
+    float lastDepth = currentDepth;
+    float lastLayerDepth = currentLayerDepth;
+
+    while(currentLayerDepth<currentDepth){
+        lastTexcoord = currentTexcoord;
+        lastDepth = currentDepth;
+        lastLayerDepth = currentLayerDepth;
+
+        currentTexcoord -= deltaTexCoords;  //delta is along the view dir need to reverse the direction
+        currentDepth = texture(heightMap, currentTexcoord).r;
+        currentLayerDepth += layerDepth;
+    }
+    float lastDelta = lastDepth - lastLayerDepth;
+    float currentDelta = currentLayerDepth - currentDepth;
+    float interpolationValue = currentDelta/(currentDelta+lastDelta);
+    currentTexcoord += deltaTexCoords*interpolationValue;
+    return currentTexcoord;
 }
 
 void main()
