@@ -153,6 +153,7 @@
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\collision_detect\AABBBox.h" />
     <ClInclude Include="src\collision_detect\AABBTree.h" />
+    <ClInclude Include="src\collision_detect\OBBBox.h" />
     <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\haptic_support\Array.hh" />
     <ClInclude Include="src\haptic_support\CzMatrix.h" />

@@ -134,6 +134,9 @@
     <ClInclude Include="src\basic_shape\line.h">
       <Filter>include\basic_shape</Filter>
     </ClInclude>
+    <ClInclude Include="src\collision_detect\OBBBox.h">
+      <Filter>include\collision_detect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\StandardShader.fs">

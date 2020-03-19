@@ -74,27 +74,28 @@ vec2 ParalaxMap(vec3 viewDir){
     float currentDepth = texture(heightMap, fs_in.coord).r;
 
     //every step of going deeper
-    vec2 P = viewDir.xy * 0.1; 
-    vec2 deltaTexCoords = P / numLayers;
+    vec2 P = viewDir.xy *0.1; 
+    vec2 deltaTexCoord = P / numLayers;
 
-    //last time test
+    //last time test for parallax occlusion mapping
     vec2 lastTexcoord = currentTexcoord;
     float lastDepth = currentDepth;
     float lastLayerDepth = currentLayerDepth;
 
-    while(currentLayerDepth<currentDepth){
+    while(currentLayerDepth < currentDepth){
         lastTexcoord = currentTexcoord;
         lastDepth = currentDepth;
         lastLayerDepth = currentLayerDepth;
 
-        currentTexcoord -= deltaTexCoords;  //delta is along the view dir need to reverse the direction
+        currentTexcoord -= deltaTexCoord;  //delta is along the view dir need to reverse the direction
         currentDepth = texture(heightMap, currentTexcoord).r;
         currentLayerDepth += layerDepth;
     }
     float lastDelta = lastDepth - lastLayerDepth;
     float currentDelta = currentLayerDepth - currentDepth;
+    //interpolate for current height
     float interpolationValue = currentDelta/(currentDelta+lastDelta);
-    currentTexcoord += deltaTexCoords*interpolationValue;
+    currentTexcoord += deltaTexCoord*interpolationValue;
     return currentTexcoord;
 }
 

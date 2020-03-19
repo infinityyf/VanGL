@@ -17,7 +17,6 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
-
 #include "collision_detect/AABBBox.h"
 #include "collision_detect/AABBTree.h"
 using namespace VANCollision;
