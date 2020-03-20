@@ -5,6 +5,25 @@
 #include <glad/glad.h>
 #include "shader.h"
 
+#define MAC_COLOR_ATTACHMENT 8
+//this device have 8 color attachment
+GLuint attachments[MAC_COLOR_ATTACHMENT] = { 
+	GL_COLOR_ATTACHMENT0,
+	GL_COLOR_ATTACHMENT1,
+	GL_COLOR_ATTACHMENT2,
+	GL_COLOR_ATTACHMENT3,
+	GL_COLOR_ATTACHMENT4,
+	GL_COLOR_ATTACHMENT5,
+	GL_COLOR_ATTACHMENT6,
+	GL_COLOR_ATTACHMENT7};
+
+//record what color attachment means
+enum COLOR_ATTACH {
+	COLOR_TEXTURE = 0,
+	BLOOM_TEXTURE = 1,
+
+};
+
 float ScreenQuad[] = {
 	// NDC coord
 		-1.0f,  1.0f,  0.0f, 1.0f,
@@ -21,6 +40,7 @@ public:
 	unsigned int FBO;
 	unsigned int texAttach;
 	unsigned int renderBufferObject;
+	unsigned int texAttachs[MAC_COLOR_ATTACHMENT];
 	
 
 	Frame(int width, int height,bool enableHDR);
@@ -36,22 +56,42 @@ Frame::Frame(int width, int height, bool enableHDR) {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	// create attachment
 	//1. texture attachment
-	glGenTextures(1, &texAttach);
-	glBindTexture(GL_TEXTURE_2D, texAttach);
-	if (enableHDR) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB16F, GL_FLOAT, NULL);
+	glGenTextures(8, texAttachs);
+	for (int i = 0; i < MAC_COLOR_ATTACHMENT; i++) {
+		glBindTexture(GL_TEXTURE_2D, texAttachs[i]);
+		if (enableHDR) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB16F, GL_FLOAT, NULL);
+		}
+		else {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		}
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		//attach to frame(32) //frame target   //color attach num    //attachment type         //mipmap
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, texAttachs[i], 0);
 	}
-	else {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	}
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	//attach to frame(32) //frame target   //color attach num    //attachment type         //mipmap
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texAttach, 0);
+	glDrawBuffers(8, attachments); //it tells gl which color attachments can be draw on
+
+	//glGenTextures(1, &texAttach);
+	//glBindTexture(GL_TEXTURE_2D, texAttach);
+	//if (enableHDR) {
+	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB16F, GL_FLOAT, NULL);
+	//}
+	//else {
+	//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	//}
+	//
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glBindTexture(GL_TEXTURE_2D, 0);
+	////attach to frame(32) //frame target   //color attach num    //attachment type         //mipmap
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texAttach, 0);
 	//2. render buffer
 	glGenRenderbuffers(1, &renderBufferObject);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferObject);

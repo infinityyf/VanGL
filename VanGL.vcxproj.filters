@@ -72,6 +72,9 @@
     <ClCompile Include="src\haptic_support\QuadProg++.cc">
       <Filter>include\haptic_support</Filter>
     </ClCompile>
+    <ClCompile Include="src\PARALLAX.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">

@@ -54,9 +54,9 @@ int main() {
 	//Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
-	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\renderShadowMap.fs").c_str());
+	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
+	StandardShader gaussionShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\gaussionBlur.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
-	StandardShader wallShader((path + "src\\shaders\\parallaxMap\\parallax.vs").c_str(), (path + "src\\shaders\\parallaxMap\\parallax.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	
 	//set light info
@@ -86,11 +86,6 @@ int main() {
 	planeShader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	planeShader.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
 	planeShader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	wallShader.use();
-	wallShader.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
-	wallShader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	wallShader.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
-	wallShader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 	//get block index
 	unsigned int matrixIndex = glGetUniformBlockIndex(shader.shaderProgramID, "Matrix");
@@ -100,8 +95,6 @@ int main() {
 	glUniformBlockBinding(planeShader.shaderProgramID, matrixIndex1, BIND_POINT::MATRIX_POINT);
 	unsigned int matrixIndex2 = glGetUniformBlockIndex(debugShader.shaderProgramID, "Matrix");
 	glUniformBlockBinding(debugShader.shaderProgramID, matrixIndex2, BIND_POINT::MATRIX_POINT);
-	unsigned int matrixIndex3 = glGetUniformBlockIndex(wallShader.shaderProgramID, "Matrix");
-	glUniformBlockBinding(wallShader.shaderProgramID, matrixIndex3, BIND_POINT::MATRIX_POINT);
 	//bind uniform buffer object to bind point
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
@@ -162,25 +155,16 @@ int main() {
 	planeShader.setInt("basicTex0", 0);
 	Plane plane(floor.textureID);
 
-	//load wall
-	Texture wallTexture(path + "scene\\materials\\textures\\brick\\bricks2.jpg", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
-	Texture wallNormal(path + "scene\\materials\\textures\\brick\\bricks2_normal.jpg", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
-	Texture wallHeight(path + "scene\\materials\\textures\\brick\\bricks2_disp.jpg", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
-	Plane wall(wallTexture.textureID);
-	wall.HeightTextureID = wallHeight.textureID;
-	wall.NormalTextureID = wallNormal.textureID;
-	wall.model = glm::translate(wall.model, glm::vec3(0.0f, 0.0f, -2.0f));
-	wall.model = glm::rotate(wall.model, 3.14f/2, glm::vec3(1.0f, 0.0f, 0.0f));
-	wallShader.use();
-	wallShader.setInt("basicTex", 0);
-	wallShader.setInt("normalMap", 1);
-	wallShader.setInt("heightMap", 2);
-
 	//shadow map 
 	ShadowMap* shadowMap = new ShadowMap(glm::vec3(3.0f, 3.0f, 3.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
 
 	//screen quad for post process
 	Screen* screen= new Screen();
+	Frame* frame = new Frame(width,height,false);
+	// pingpang buffers to get guassion blur
+	Frame* gaussionFrame1 = new Frame(width, height, false);
+	Frame* gaussionFrame2 = new Frame(width, height, false);
+	Frame* pingpangFrames[2] = { gaussionFrame1 ,gaussionFrame2 };
 
 	//haptic
 	//HapticInitPhantom();
@@ -215,7 +199,7 @@ int main() {
 		shadowMap->unBindBuffer();
 
 		// render to framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		frame->use();
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -228,10 +212,6 @@ int main() {
 		planeShader.use();
 		planeShader.setVector3("viewPos", camera.cameraPos);
 		plane.Draw(&planeShader,shadowMap->depthTexture);
-
-		wallShader.use();
-		wallShader.setVector3("viewPos", camera.cameraPos);
-		wall.Draw(&wallShader);
 
 		//draw aabb tree
 		//nanosuit.debugDraw(&debugShader, 15);
@@ -246,9 +226,27 @@ int main() {
 		blackSkybox.setCamera(&camera);
 		blackSkybox.drawSkyBox();
 
+		//calculate the gaussion blur
+		gaussionShader.use();
+		gaussionShader.setInt("screenTexture", 0);
+		for (int i = 0; i < 10; i++) {
+			gaussionShader.setInt("horizontal", i%2);
+			pingpangFrames[i % 2]->use();
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			screen->Draw(&gaussionShader,i==0?frame->texAttachs[BLOOM_TEXTURE]: pingpangFrames[1-(i % 2)]->texAttachs[BLOOM_TEXTURE]);
+		}
 
-		
-		//screen->Draw(&postShader,shadowMap->depthTexture);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glEnable(GL_DEPTH_TEST);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		postShader.use();
+		postShader.setInt("screenTexture", 0);
+		screen->Draw(&postShader, gaussionFrame2->texAttachs[BLOOM_TEXTURE]);
 
 		//check events
 		glfwPollEvents();
