@@ -1,5 +1,6 @@
 #version 330 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out vec4 BlurColor;
 in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
@@ -28,5 +29,5 @@ void main()
             result += texture(screenTexture, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
         }
     }
-    FragColor = vec4(result, 1.0);
+    BlurColor = vec4(result, 1.0);
 }

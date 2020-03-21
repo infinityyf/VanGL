@@ -251,9 +251,10 @@ int main() {
 			// send all results to frame
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, gaussionFrame2->FBO);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame->FBO);
-			//glReadBuffer(1,BLOOM_TEXTURE);	//which attachment to read
+			glReadBuffer(attachments[BLOOM_TEXTURE]);	//which attachment to read
 			glDrawBuffer(attachments[BLOOM_TEXTURE]);
 			glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			glDrawBuffers(8, attachments);// set frame draw buffers to normal
 		}
 
 
@@ -266,7 +267,7 @@ int main() {
 		//display a specifical poicture
 		//postShader.use();
 		//postShader.setInt("screenTexture", 0);
-		//screen->Draw(&postShader, frame->texAttachs[COLOR_TEXTURE]);
+		//screen->Draw(&postShader, frame->texAttachs[BLOOM_TEXTURE]);
 
 		mrtShader.use();
 		mrtShader.setInt("screenTexture", 0);

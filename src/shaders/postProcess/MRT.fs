@@ -16,7 +16,7 @@ void main()
     
 	//HDR
     //reinhard tone mapping
-    sceneColor = sceneColor/(sceneColor+vec3(1.0));
+    //sceneColor = sceneColor/(sceneColor+vec3(1.0));
     //exposure
     //color = vec3(1.0) - exp(-color*exposure)
 
