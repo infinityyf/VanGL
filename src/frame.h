@@ -8,8 +8,8 @@
 #define MAC_COLOR_ATTACHMENT 8
 //this device have 8 color attachment
 GLuint attachments[MAC_COLOR_ATTACHMENT] = { 
-	GL_COLOR_ATTACHMENT0,
-	GL_COLOR_ATTACHMENT1,
+	GL_COLOR_ATTACHMENT0,	//COLOR_TEXTURE
+	GL_COLOR_ATTACHMENT1,	//BLOOM_TEXTURE
 	GL_COLOR_ATTACHMENT2,
 	GL_COLOR_ATTACHMENT3,
 	GL_COLOR_ATTACHMENT4,
@@ -156,6 +156,9 @@ public:
 	unsigned int SVAO, SVBO;
 	Screen();
 	void Draw(StandardShader* shader,unsigned int screenTexture);
+
+	//combine defferent MRT bass
+	void DrawMRT(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT]);
 };
 
 inline Screen::Screen()
@@ -178,6 +181,17 @@ inline void Screen::Draw(StandardShader* shader,unsigned int screenTexture)
 	glBindVertexArray(SVAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, screenTexture);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+inline void Screen::DrawMRT(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT])
+{
+	shader->use();
+	glBindVertexArray(SVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[COLOR_TEXTURE]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[BLOOM_TEXTURE]);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

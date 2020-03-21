@@ -20,6 +20,11 @@
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
+//render setting
+bool BLOOM_ENABLE = true;
+
+
+
 int main() {
 
 	//SetConsoleTextAttribute(GetStdHandle(STD_ERROR_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
@@ -54,8 +59,12 @@ int main() {
 	//Skybox skybox(path + "scene\\materials\\textures\\skybox");
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
+	//show a picture
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
+	//gaussion blue
 	StandardShader gaussionShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\gaussionBlur.fs").c_str());
+	//combine mrt
+	StandardShader mrtShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\MRT.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	
@@ -199,7 +208,7 @@ int main() {
 		shadowMap->unBindBuffer();
 
 		// render to framebuffer
-		frame->use();
+		frame->use();//render into defferent color buffer
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -226,27 +235,43 @@ int main() {
 		blackSkybox.setCamera(&camera);
 		blackSkybox.drawSkyBox();
 
-		//calculate the gaussion blur
-		gaussionShader.use();
-		gaussionShader.setInt("screenTexture", 0);
-		for (int i = 0; i < 10; i++) {
-			gaussionShader.setInt("horizontal", i%2);
-			pingpangFrames[i % 2]->use();
-			glEnable(GL_DEPTH_TEST);
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			screen->Draw(&gaussionShader,i==0?frame->texAttachs[BLOOM_TEXTURE]: pingpangFrames[1-(i % 2)]->texAttachs[BLOOM_TEXTURE]);
+
+		//calculate the gaussion blur£¨bloom effect£©
+		if (BLOOM_ENABLE) {
+			gaussionShader.use();
+			gaussionShader.setInt("screenTexture", 0);
+			for (int i = 0; i < 10; i++) {
+				gaussionShader.setInt("horizontal", i % 2);
+				pingpangFrames[i % 2]->use();
+				glEnable(GL_DEPTH_TEST);
+				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				screen->Draw(&gaussionShader, i == 0 ? frame->texAttachs[BLOOM_TEXTURE] : pingpangFrames[1 - (i % 2)]->texAttachs[BLOOM_TEXTURE]);
+			}
+			// send all results to frame
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, gaussionFrame2->FBO);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame->FBO);
+			//glReadBuffer(1,BLOOM_TEXTURE);	//which attachment to read
+			glDrawBuffer(attachments[BLOOM_TEXTURE]);
+			glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		}
 
 
+		//just render a screen quad
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		postShader.use();
-		postShader.setInt("screenTexture", 0);
-		screen->Draw(&postShader, gaussionFrame2->texAttachs[BLOOM_TEXTURE]);
+		//display a specifical poicture
+		//postShader.use();
+		//postShader.setInt("screenTexture", 0);
+		//screen->Draw(&postShader, frame->texAttachs[COLOR_TEXTURE]);
+
+		mrtShader.use();
+		mrtShader.setInt("screenTexture", 0);
+		mrtShader.setInt("bloomTexture", 1);
+		screen->DrawMRT(&mrtShader, frame->texAttachs);
 
 		//check events
 		glfwPollEvents();
