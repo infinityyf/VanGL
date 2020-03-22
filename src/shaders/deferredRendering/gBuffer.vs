@@ -9,11 +9,6 @@ out VS_OUT{
     vec3 Normal;
     vec3 FragPos;
     vec2 TexCoord;
-    mat4 View;
-    mat4 Projection;
-    float Near;
-    float Far;
-    vec4 FragLightSpacePos;
 }vs_out;
 
 struct Camera{          //align
@@ -38,11 +33,6 @@ void main()
     vs_out.TexCoord = aTexCoord;
     //world coord
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
-    vs_out.View = camera.view;
-    vs_out.Projection = camera.projection;
-    vs_out.Near = camera.near;
-    vs_out.Far = camera.far;
-    vs_out.FragLightSpacePos = lightSpaceMatrix * vec4(vs_out.FragPos,1.0f);
 
     //calculate TBN matrix
     vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));

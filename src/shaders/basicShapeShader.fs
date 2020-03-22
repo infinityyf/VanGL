@@ -88,9 +88,6 @@ void main()
 {
     float shadow = 0;
     shadow = ShadowMap();
-
-    FragColor = texture(basicTex0,fs_in.coord);
-    //FragColor = vec4(1.0,0.0,0.0,1.0);
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     //vec3 spot = calculateSpotLight(spotLight,fs_in.Normal,viewDir);
     vec3 direct = calculateDirectLight(dirLight,fs_in.normal,viewDir,shadow);

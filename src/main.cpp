@@ -22,7 +22,7 @@ std::string path = "E:\\vs_workspace\\VanGL\\";
 
 //render setting
 bool BLOOM_ENABLE = true;
-bool DEFERRED_RENDERING = false;
+bool DEFERRED_RENDERING = true;
 
 
 int main() {
@@ -67,7 +67,10 @@ int main() {
 	StandardShader mrtShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\MRT.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
-	
+	//gbuffer rendering shader
+	StandardShader gBuffer((path + "src\\shaders\\deferredRendering\\gBuffer.vs").c_str(), (path + "src\\shaders\\deferredRendering\\gBuffer.fs").c_str());
+
+
 	//set light info
 	shader.use();
 	shader.setInt("PointNum", 0);
@@ -104,6 +107,8 @@ int main() {
 	glUniformBlockBinding(planeShader.shaderProgramID, matrixIndex1, BIND_POINT::MATRIX_POINT);
 	unsigned int matrixIndex2 = glGetUniformBlockIndex(debugShader.shaderProgramID, "Matrix");
 	glUniformBlockBinding(debugShader.shaderProgramID, matrixIndex2, BIND_POINT::MATRIX_POINT);
+	unsigned int matrixIndex3 = glGetUniformBlockIndex(gBuffer.shaderProgramID, "Matrix");
+	glUniformBlockBinding(gBuffer.shaderProgramID, matrixIndex3, BIND_POINT::MATRIX_POINT);
 	//bind uniform buffer object to bind point
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
@@ -213,49 +218,59 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-		shader.use();
-		shader.setVector3("viewPos", camera.cameraPos);
-		nanosuit.drawModel(&shader,&blackSkybox, shadowMap->depthTexture);
-		//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
-		planeShader.use();
-		planeShader.setVector3("viewPos", camera.cameraPos);
-		plane.Draw(&planeShader,shadowMap->depthTexture);
-
-		//draw aabb tree
-		//nanosuit.debugDraw(&debugShader, 15);
-		line.debugDraw(&debugShader);
-		nanosuit.debugDrawBox(&debugShader, node);
-
-		//draw haptic tool
-		//currentTool->DrawHaptic(&debugShader);
-		
-		//set the depth with 1 (so only draw on the pixels not cull bt object)
-		glDepthFunc(GL_LEQUAL);
-		blackSkybox.setCamera(&camera);
-		blackSkybox.drawSkyBox();
-
-
-		//calculate the gaussion blur£¨bloom effect£©
-		if (BLOOM_ENABLE) {
-			gaussionShader.use();
-			gaussionShader.setInt("screenTexture", 0);
-			for (int i = 0; i < 10; i++) {
-				gaussionShader.setInt("horizontal", i % 2);
-				pingpangFrames[i % 2]->use();
-				glEnable(GL_DEPTH_TEST);
-				glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-				screen->Draw(&gaussionShader, i == 0 ? frame->texAttachs[BLOOM_TEXTURE] : pingpangFrames[1 - (i % 2)]->texAttachs[BLOOM_TEXTURE]);
-			}
-			// send all results to frame
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, gaussionFrame2->FBO);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame->FBO);
-			glReadBuffer(attachments[BLOOM_TEXTURE]);	//which attachment to read
-			glDrawBuffer(attachments[BLOOM_TEXTURE]);
-			glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-			glDrawBuffers(8, attachments);// set frame draw buffers to normal
+		//deferred rendering
+		if (DEFERRED_RENDERING) {
+			nanosuit.drawModel(&gBuffer, &blackSkybox);
 		}
+		//forward rendering
+		else
+		{
+			shader.use();
+			shader.setVector3("viewPos", camera.cameraPos);
+			nanosuit.drawModel(&shader, &blackSkybox, shadowMap->depthTexture);
+			//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
+			planeShader.use();
+			planeShader.setVector3("viewPos", camera.cameraPos);
+			plane.Draw(&planeShader, shadowMap->depthTexture);
+
+			//draw aabb tree
+			//nanosuit.debugDraw(&debugShader, 15);
+			line.debugDraw(&debugShader);
+			nanosuit.debugDrawBox(&debugShader, node);
+
+			//draw haptic tool
+			//currentTool->DrawHaptic(&debugShader);
+
+			//set the depth with 1 (so only draw on the pixels not cull bt object)
+			glDepthFunc(GL_LEQUAL);
+			blackSkybox.setCamera(&camera);
+			blackSkybox.drawSkyBox();
+
+
+			//calculate the gaussion blur£¨bloom effect£©
+			if (BLOOM_ENABLE) {
+				gaussionShader.use();
+				gaussionShader.setInt("screenTexture", 0);
+				for (int i = 0; i < 10; i++) {
+					gaussionShader.setInt("horizontal", i % 2);
+					pingpangFrames[i % 2]->use();
+					glEnable(GL_DEPTH_TEST);
+					glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					screen->Draw(&gaussionShader, i == 0 ? frame->texAttachs[BLOOM_TEXTURE] : pingpangFrames[1 - (i % 2)]->texAttachs[BLOOM_TEXTURE]);
+				}
+				// send all results to frame
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, gaussionFrame2->FBO);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame->FBO);
+				glReadBuffer(attachments[BLOOM_TEXTURE]);	//which attachment to read
+				glDrawBuffer(attachments[BLOOM_TEXTURE]);
+				glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+				glDrawBuffers(8, attachments);// set frame draw buffers to normal
+			}
+		}
+
+
+		
 
 
 		//just render a screen quad
@@ -265,14 +280,14 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//display a specifical poicture
-		//postShader.use();
-		//postShader.setInt("screenTexture", 0);
-		//screen->Draw(&postShader, frame->texAttachs[BLOOM_TEXTURE]);
+		postShader.use();
+		postShader.setInt("screenTexture", 0);
+		screen->Draw(&postShader, frame->texAttachs[NORMAL_TEXTURE]);
 
-		mrtShader.use();
-		mrtShader.setInt("screenTexture", 0);
-		mrtShader.setInt("bloomTexture", 1);
-		screen->DrawMRT(&mrtShader, frame->texAttachs);
+		//mrtShader.use();
+		//mrtShader.setInt("screenTexture", 0);
+		//mrtShader.setInt("bloomTexture", 1);
+		//screen->DrawMRT(&mrtShader, frame->texAttachs);
 
 		//check events
 		glfwPollEvents();

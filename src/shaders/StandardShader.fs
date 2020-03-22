@@ -72,8 +72,6 @@ uniform int PointNum;
 uniform PointLight pointLights[NUM_POINT_LIGHTS];
 uniform int SpotNum;
 uniform SpotLight spotLights[NUM_SPOT_LIGHTS];
-
-
 //shadow map
 uniform sampler2D shadowMap;
 
