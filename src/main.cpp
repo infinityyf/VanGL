@@ -22,7 +22,7 @@ std::string path = "E:\\vs_workspace\\VanGL\\";
 
 //render setting
 bool BLOOM_ENABLE = true;
-
+bool DEFERRED_RENDERING = false;
 
 
 int main() {

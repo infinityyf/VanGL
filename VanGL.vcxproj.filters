@@ -46,6 +46,9 @@
     <Filter Include="include\parallax_map">
       <UniqueIdentifier>{f6478fa6-171c-4465-a6fe-eb0564857846}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders\deferred_rendering">
+      <UniqueIdentifier>{7f40032b-b440-4225-b171-97e2c00bdaf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -204,6 +207,12 @@
     </None>
     <None Include="src\shaders\ParallaxMap\parallax.vs">
       <Filter>include\parallax_map</Filter>
+    </None>
+    <None Include="src\shaders\deferredRendering\gBuffer.fs">
+      <Filter>shaders\deferred_rendering</Filter>
+    </None>
+    <None Include="src\shaders\deferredRendering\gBuffer.vs">
+      <Filter>shaders\deferred_rendering</Filter>
     </None>
   </ItemGroup>
 </Project>
