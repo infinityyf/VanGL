@@ -279,10 +279,19 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		
 		//display a specifical poicture
 		postShader.use();
 		postShader.setInt("screenTexture", 0);
+		//display mrt
+		glViewport(0, 0, width / 2, height / 2);
+		screen->Draw(&postShader, frame->texAttachs[POSITION_TEXTURE]);
+		glViewport(width / 2, height / 2, width/2, height/2);
 		screen->Draw(&postShader, frame->texAttachs[NORMAL_TEXTURE]);
+		glViewport(width / 2, 0, width / 2, height / 2);
+		screen->Draw(&postShader, frame->texAttachs[AMBIENT_TEXTURE]);
+		glViewport(0, height / 2, width / 2, height / 2);
+		screen->Draw(&postShader, frame->texAttachs[SPECULAR_TEXTURE]);
 
 		//mrtShader.use();
 		//mrtShader.setInt("screenTexture", 0);

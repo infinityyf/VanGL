@@ -5,7 +5,7 @@
 
 layout (location = 2) out vec4 FragPosition;
 layout (location = 3) out vec4 FragNormal;
-layout (location = 4) out vec4 FragAlbedo;
+layout (location = 4) out vec4 FragAmbient;
 layout (location = 5) out vec4 FragSpecular;
 
 
@@ -37,6 +37,6 @@ void main()
     //write to g buffer
     FragNormal = vec4(normal,1.0);
     FragPosition =vec4(fs_in.FragPos,1.0f);
-    FragAlbedo = texture(material.ambient,fs_in.TexCoord);
-    FragSpecular = texture(material.specular,fs_in.TexCoord);
+    FragAmbient = texture(material.ambient,fs_in.TexCoord);
+    FragSpecular = texture(material.diffuse,fs_in.TexCoord);
 }
