@@ -1,6 +1,6 @@
 #version 330 core
 layout (location = 0) out vec4 FragColor;
-layout (location = 1) out vec4 BrightColor;
+
 
 
 in VS_OUT{
@@ -92,8 +92,6 @@ void main()
     //vec3 spot = calculateSpotLight(spotLight,fs_in.Normal,viewDir);
     vec3 direct = calculateDirectLight(dirLight,fs_in.normal,viewDir,shadow);
     vec3 result = direct;
-    //FragColor =vec4(FragPos,1.0f);
+    //FragColor = texture(basicTex0,fs_in.coord);
     FragColor = vec4(result,1.0f);
-    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    if(brightness > 1.0) BrightColor = vec4(FragColor.rgb, 1.0);
 }

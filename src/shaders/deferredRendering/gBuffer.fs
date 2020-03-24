@@ -3,10 +3,12 @@
 #define NUM_POINT_LIGHTS 4
 #define NUM_SPOT_LIGHTS 4
 
+
 layout (location = 2) out vec4 FragPosition;
 layout (location = 3) out vec4 FragNormal;
 layout (location = 4) out vec4 FragAmbient;
 layout (location = 5) out vec4 FragSpecular;
+layout (location = 6) out vec4 FragDiffuse;
 
 
 in VS_OUT{
@@ -38,5 +40,6 @@ void main()
     FragNormal = vec4(normal,1.0);
     FragPosition =vec4(fs_in.FragPos,1.0f);
     FragAmbient = texture(material.ambient,fs_in.TexCoord);
-    FragSpecular = texture(material.diffuse,fs_in.TexCoord);
+    FragSpecular = texture(material.specular,fs_in.TexCoord);
+    FragDiffuse = texture(material.diffuse,fs_in.TexCoord);
 }

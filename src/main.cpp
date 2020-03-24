@@ -21,7 +21,7 @@
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
 //render setting
-bool BLOOM_ENABLE = true;
+bool BLOOM_ENABLE = false;
 bool DEFERRED_RENDERING = true;
 
 
@@ -61,15 +61,11 @@ int main() {
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	//show a picture
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
-	//gaussion blue
-	StandardShader gaussionShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\gaussionBlur.fs").c_str());
-	//combine mrt
-	StandardShader mrtShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\MRT.fs").c_str());
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	//gbuffer rendering shader
 	StandardShader gBuffer((path + "src\\shaders\\deferredRendering\\gBuffer.vs").c_str(), (path + "src\\shaders\\deferredRendering\\gBuffer.fs").c_str());
-
+	StandardShader deferredRender((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\deferredRendering\\deferred.fs").c_str());
 
 	//set light info
 	shader.use();
@@ -93,6 +89,18 @@ int main() {
 	//shader.setVector3("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	//shader.setFloat("spotLights[0].innerCutoff", 0.9f);
 	//shader.setFloat("spotLights[0].outerCutOff", 0.5f);
+	deferredRender.use();
+	deferredRender.setInt("PointNum", 0);
+	deferredRender.setInt("SpotNum", 0);
+	deferredRender.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
+	deferredRender.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	deferredRender.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
+	deferredRender.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	deferredRender.setInt("g_Position",POSITION_TEXTURE);
+	deferredRender.setInt("g_Normal", NORMAL_TEXTURE);
+	deferredRender.setInt("g_Ambient", AMBIENT_TEXTURE);
+	deferredRender.setInt("g_Specular", SPECULAR_TEXTURE);
+	deferredRender.setInt("g_Diffuse", DIFFUSE_TEXTURE);
 	planeShader.use();
 	planeShader.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
 	planeShader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
@@ -175,10 +183,7 @@ int main() {
 	//screen quad for post process
 	Screen* screen= new Screen();
 	Frame* frame = new Frame(width,height,false);
-	// pingpang buffers to get guassion blur
-	Frame* gaussionFrame1 = new Frame(width, height, false);
-	Frame* gaussionFrame2 = new Frame(width, height, false);
-	Frame* pingpangFrames[2] = { gaussionFrame1 ,gaussionFrame2 };
+	
 
 	//haptic
 	//HapticInitPhantom();
@@ -221,6 +226,29 @@ int main() {
 		//deferred rendering
 		if (DEFERRED_RENDERING) {
 			nanosuit.drawModel(&gBuffer, &blackSkybox);
+
+
+			//just render a screen quad
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			////display a specifical poicture
+			//postShader.use();
+			//postShader.setInt("screenTexture", 0);
+			////display mrt
+			//glViewport(0, 0, width / 2, height / 2);
+			//screen->Draw(&postShader, frame->texAttachs[POSITION_TEXTURE]);
+			//glViewport(width / 2, height / 2, width / 2, height / 2);
+			//screen->Draw(&postShader, frame->texAttachs[DIFFUSE_TEXTURE]);
+			//glViewport(width / 2, 0, width / 2, height / 2);
+			//screen->Draw(&postShader, frame->texAttachs[AMBIENT_TEXTURE]);
+			//glViewport(0, height / 2, width / 2, height / 2);
+			//screen->Draw(&postShader, frame->texAttachs[SPECULAR_TEXTURE]);
+
+			deferredRender.use();
+			deferredRender.setVector3("viewPos", camera.cameraPos);
+			screen->DeferredRender(&deferredRender, frame->texAttachs);
 		}
 		//forward rendering
 		else
@@ -246,57 +274,17 @@ int main() {
 			blackSkybox.setCamera(&camera);
 			blackSkybox.drawSkyBox();
 
+			//just render a screen quad
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			//calculate the gaussion blur£¨bloom effect£©
-			if (BLOOM_ENABLE) {
-				gaussionShader.use();
-				gaussionShader.setInt("screenTexture", 0);
-				for (int i = 0; i < 10; i++) {
-					gaussionShader.setInt("horizontal", i % 2);
-					pingpangFrames[i % 2]->use();
-					glEnable(GL_DEPTH_TEST);
-					glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-					screen->Draw(&gaussionShader, i == 0 ? frame->texAttachs[BLOOM_TEXTURE] : pingpangFrames[1 - (i % 2)]->texAttachs[BLOOM_TEXTURE]);
-				}
-				// send all results to frame
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, gaussionFrame2->FBO);
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frame->FBO);
-				glReadBuffer(attachments[BLOOM_TEXTURE]);	//which attachment to read
-				glDrawBuffer(attachments[BLOOM_TEXTURE]);
-				glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-				glDrawBuffers(8, attachments);// set frame draw buffers to normal
-			}
+			postShader.use();
+			postShader.setInt("screenTexture", 0);
+			//display color buffer
+			screen->Draw(&postShader, frame->texAttachs[COLOR_TEXTURE]);
 		}
-
-
-		
-
-
-		//just render a screen quad
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glEnable(GL_DEPTH_TEST);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		
-		//display a specifical poicture
-		postShader.use();
-		postShader.setInt("screenTexture", 0);
-		//display mrt
-		glViewport(0, 0, width / 2, height / 2);
-		screen->Draw(&postShader, frame->texAttachs[POSITION_TEXTURE]);
-		glViewport(width / 2, height / 2, width/2, height/2);
-		screen->Draw(&postShader, frame->texAttachs[NORMAL_TEXTURE]);
-		glViewport(width / 2, 0, width / 2, height / 2);
-		screen->Draw(&postShader, frame->texAttachs[AMBIENT_TEXTURE]);
-		glViewport(0, height / 2, width / 2, height / 2);
-		screen->Draw(&postShader, frame->texAttachs[SPECULAR_TEXTURE]);
-
-		//mrtShader.use();
-		//mrtShader.setInt("screenTexture", 0);
-		//mrtShader.setInt("bloomTexture", 1);
-		//screen->DrawMRT(&mrtShader, frame->texAttachs);
 
 		//check events
 		glfwPollEvents();

@@ -14,7 +14,7 @@ GLuint attachments[MAC_COLOR_ATTACHMENT] = {
 	GL_COLOR_ATTACHMENT3,	//NORMAL_TEXTURE
 	GL_COLOR_ATTACHMENT4,	//AMBIENT_TEXTURE
 	GL_COLOR_ATTACHMENT5,	//SPECULAR_TEXUTRE 
-	GL_COLOR_ATTACHMENT6,
+	GL_COLOR_ATTACHMENT6,	//DIFFUSE_TEXTURE
 	GL_COLOR_ATTACHMENT7};
 
 //record what color attachment means
@@ -25,6 +25,7 @@ enum COLOR_ATTACH {
 	NORMAL_TEXTURE = 3,
 	AMBIENT_TEXTURE = 4,
 	SPECULAR_TEXTURE = 5,
+	DIFFUSE_TEXTURE = 6,
 };
 
 float ScreenQuad[] = {
@@ -161,7 +162,8 @@ public:
 	void Draw(StandardShader* shader,unsigned int screenTexture);
 
 	//combine defferent MRT bass
-	void DrawMRT(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT]);
+	void DeferredRender(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT]);
+
 };
 
 inline Screen::Screen()
@@ -187,14 +189,24 @@ inline void Screen::Draw(StandardShader* shader,unsigned int screenTexture)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-inline void Screen::DrawMRT(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT])
+inline void Screen::DeferredRender(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT])
 {
 	shader->use();
 	glBindVertexArray(SVAO);
-	glActiveTexture(GL_TEXTURE0);
+	/*glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, screenTexture[COLOR_TEXTURE]);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, screenTexture[BLOOM_TEXTURE]);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[BLOOM_TEXTURE]);*/
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[POSITION_TEXTURE]);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[NORMAL_TEXTURE]);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[AMBIENT_TEXTURE]);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[SPECULAR_TEXTURE]);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, screenTexture[DIFFUSE_TEXTURE]);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

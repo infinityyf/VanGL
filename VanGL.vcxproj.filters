@@ -214,5 +214,8 @@
     <None Include="src\shaders\deferredRendering\gBuffer.vs">
       <Filter>shaders\deferred_rendering</Filter>
     </None>
+    <None Include="src\shaders\deferredRendering\deferred.fs">
+      <Filter>shaders\deferred_rendering</Filter>
+    </None>
   </ItemGroup>
 </Project>
