@@ -9,7 +9,7 @@ uniform sampler2D screenTexture;    //do nothing just show the
 void main()
 { 
     float gamma = 2.2f;
-    vec3 color = texture(screenTexture, TexCoords).rgb;
+    vec4 color = texture(screenTexture, TexCoords);
 
 	//HDR
     //reinhard tone mapping
@@ -20,5 +20,6 @@ void main()
     //gamma correction
     //color = pow(color,vec4(1.0/gamma));
 
-    FragColor = vec4(color,1.0);
+    //FragColor = vec4(color,1.0);
+    FragColor = color;
 }

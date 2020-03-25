@@ -47,29 +47,24 @@ public:
 	unsigned int texAttachs[MAC_COLOR_ATTACHMENT];
 	
 
-	Frame(int width, int height,bool enableHDR);
+	Frame(int width, int height);
 	//support MSAA
 	Frame(int width, int height,int msaa,bool enableHDR);
 
 	void use();
 };
 
-Frame::Frame(int width, int height, bool enableHDR) {
+Frame::Frame(int width, int height) {
+	glGenTextures(8, texAttachs);
 	glGenFramebuffers(1, &FBO);
 	// also can be binded to GL_READ_FRAMEBUFFER or GL_DRAW_FRAMEBUFFER
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	// create attachment
 	//1. texture attachment
-	glGenTextures(8, texAttachs);
+	
 	for (int i = 0; i < MAC_COLOR_ATTACHMENT; i++) {
 		glBindTexture(GL_TEXTURE_2D, texAttachs[i]);
-		if (enableHDR) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB16F, GL_FLOAT, NULL);
-		}
-		else {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		}
-
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -77,6 +72,7 @@ Frame::Frame(int width, int height, bool enableHDR) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		//attach to frame(32) //frame target   //color attach num    //attachment type         //mipmap
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, texAttachs[i], 0);
+		std::cout << "bind color buffer:" << texAttachs[i] << std::endl;
 	}
 	glDrawBuffers(8, attachments); //it tells gl which color attachments can be draw on
 
@@ -102,10 +98,12 @@ Frame::Frame(int width, int height, bool enableHDR) {
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferObject);
-
+	std::cout << "bind render buffer:" << renderBufferObject << std::endl;
 	// framebuffer set up success
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!"<< fboStatus << std::endl;
+		
 	}
 	// now rendering result cannot be blited to screen (need to activate default buffer)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -124,10 +122,10 @@ inline Frame::Frame(int width, int height, int msaa, bool enableHDR)
 	glGenTextures(1, &texAttach);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texAttach);
 	if (enableHDR) {
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGB16F, width, height, GL_TRUE);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGBA16F, width, height, GL_TRUE);
 	}
 	else {
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGB, width, height, GL_TRUE);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGBA, width, height, GL_TRUE);
 	}
 	//glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, msaa, GL_RGB, width, height,GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);

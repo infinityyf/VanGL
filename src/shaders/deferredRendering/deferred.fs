@@ -139,6 +139,9 @@ void main()
     vec3 specualr = texture(g_Specular,TexCoords).rgb;
     vec3 diffuse = texture(g_Diffuse,TexCoords).rgb;
 
+    //depth of frag
+    float depth = texture(g_Position,TexCoords).a;
+
     vec3 viewDir = normalize(viewPos - position);
     vec3 refDir = reflect(-viewDir,normal);
 
@@ -157,4 +160,5 @@ void main()
     vec3 result = spot + point + direct;
 
     FragColor = vec4(result,1.0f);
+    //FragColor = vec4(depth,depth,depth,1.0f);
 }

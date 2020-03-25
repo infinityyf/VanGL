@@ -90,12 +90,19 @@ int main() {
 	//shader.setFloat("spotLights[0].innerCutoff", 0.9f);
 	//shader.setFloat("spotLights[0].outerCutOff", 0.5f);
 	deferredRender.use();
-	deferredRender.setInt("PointNum", 0);
+	deferredRender.setInt("PointNum", 1);
 	deferredRender.setInt("SpotNum", 0);
 	deferredRender.setVector3("dirLight.direction", glm::vec3(-1.0f, -1.0f, -1.0f));
 	deferredRender.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	deferredRender.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
 	deferredRender.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	deferredRender.setVector3("pointLights[0].position", glm::vec3(0.0f, 1.0f, 1.0f));
+	deferredRender.setVector3("pointLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	deferredRender.setVector3("pointLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	deferredRender.setVector3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	deferredRender.setFloat("pointLights[0].constant", 1.0f);
+	deferredRender.setFloat("pointLights[0].linear", 0.22f);
+	deferredRender.setFloat("pointLights[0].quadratic", 0.2f);
 	deferredRender.setInt("g_Position",POSITION_TEXTURE);
 	deferredRender.setInt("g_Normal", NORMAL_TEXTURE);
 	deferredRender.setInt("g_Ambient", AMBIENT_TEXTURE);
@@ -182,7 +189,7 @@ int main() {
 
 	//screen quad for post process
 	Screen* screen= new Screen();
-	Frame* frame = new Frame(width,height,false);
+	Frame* frame = new Frame(width,height);
 	
 
 	//haptic
@@ -226,7 +233,6 @@ int main() {
 		//deferred rendering
 		if (DEFERRED_RENDERING) {
 			nanosuit.drawModel(&gBuffer, &blackSkybox);
-
 
 			//just render a screen quad
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);

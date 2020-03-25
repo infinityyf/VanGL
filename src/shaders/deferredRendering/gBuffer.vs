@@ -9,6 +9,8 @@ out VS_OUT{
     vec3 Normal;
     vec3 FragPos;
     vec2 TexCoord;
+    float near;
+    float far;
 }vs_out;
 
 struct Camera{          //align
@@ -27,6 +29,9 @@ layout(std140) uniform Matrix{
 
 uniform mat4 model;
 
+
+
+
 void main()
 {
     gl_Position = camera.projection * camera.view * model * vec4(aPos, 1.0);
@@ -43,4 +48,6 @@ void main()
     mat3 TBN = mat3(T, B, N);
     vs_out.TBN = TBN;
     vs_out.Normal = aNormal;
+    vs_out.near = camera.near;
+    vs_out.far = camera.far;
 }
