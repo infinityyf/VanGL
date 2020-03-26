@@ -9,6 +9,7 @@
 #include "shader.h"
 #include "frame.h"
 #include "shadowMap.h"
+#include "AO/SSAO.h"
 
 //basic shape
 #include "basic_shape/plane.h"
@@ -66,6 +67,7 @@ int main() {
 	//gbuffer rendering shader
 	StandardShader gBuffer((path + "src\\shaders\\deferredRendering\\gBuffer.vs").c_str(), (path + "src\\shaders\\deferredRendering\\gBuffer.fs").c_str());
 	StandardShader deferredRender((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\deferredRendering\\deferred.fs").c_str());
+	StandardShader ssaoShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\ssao.fs").c_str());
 
 	//set light info
 	shader.use();
@@ -75,20 +77,6 @@ int main() {
 	shader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	shader.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
 	shader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	//shader.setVector3("pointLights[0].position", glm::vec3(1.0f, 1.0f, -1.0f));
-	//shader.setVector3("pointLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	//shader.setVector3("pointLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	//shader.setVector3("pointLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	//shader.setFloat("pointLights[0].constant", 1.0f);
-	//shader.setFloat("pointLights[0].linear", 0.22f);
-	//shader.setFloat("pointLights[0].quadratic", 0.2f);
-	//shader.setVector3("spotLights[0].position", glm::vec3(0.0f, 1.0f, 0.0f));
-	//shader.setVector3("spotLights[0].direction", glm::vec3(0.0f, -1.0f, 0.0f));
-	//shader.setVector3("spotLights[0].ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	//shader.setVector3("spotLights[0].diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	//shader.setVector3("spotLights[0].specular", glm::vec3(1.0f, 1.0f, 1.0f));
-	//shader.setFloat("spotLights[0].innerCutoff", 0.9f);
-	//shader.setFloat("spotLights[0].outerCutOff", 0.5f);
 	deferredRender.use();
 	deferredRender.setInt("PointNum", 1);
 	deferredRender.setInt("SpotNum", 0);
@@ -114,6 +102,10 @@ int main() {
 	planeShader.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
 	planeShader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
+	ssaoShader.use();
+	ssaoShader.setInt("width", width);
+	ssaoShader.setInt("height", height);
+
 	//get block index
 	unsigned int matrixIndex = glGetUniformBlockIndex(shader.shaderProgramID, "Matrix");
 	// bind matrix uniform to 2 binding point
@@ -124,6 +116,8 @@ int main() {
 	glUniformBlockBinding(debugShader.shaderProgramID, matrixIndex2, BIND_POINT::MATRIX_POINT);
 	unsigned int matrixIndex3 = glGetUniformBlockIndex(gBuffer.shaderProgramID, "Matrix");
 	glUniformBlockBinding(gBuffer.shaderProgramID, matrixIndex3, BIND_POINT::MATRIX_POINT);
+	unsigned int samplerIndex1 = glGetUniformBlockIndex(ssaoShader.shaderProgramID, "Samples");
+	glUniformBlockBinding(ssaoShader.shaderProgramID, samplerIndex1, BIND_POINT::SSAO_SAMPLER_POINT);
 	//bind uniform buffer object to bind point
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
@@ -149,8 +143,6 @@ int main() {
 	//enable gamma correction (but some textures will be corrected twice, because they 
 	// have been corrected already)
 	//glEnable(GL_FRAMEBUFFER_SRGB);
-
-
 
 	glm::vec4 start(0.0f, 2.0f, 2.0f, 1.0f);
 	glm::vec4 end(0.0f, -3.0f, -5.0f, 1.0f);
@@ -190,8 +182,7 @@ int main() {
 	//screen quad for post process
 	Screen* screen= new Screen();
 	Frame* frame = new Frame(width,height);
-	
-
+	SSAO* ssao = new SSAO(width, height);
 	//haptic
 	//HapticInitPhantom();
 
@@ -218,7 +209,6 @@ int main() {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		//shadow pass
-		//generate shadow map
 		shadowMap->bindBuffer(width,height);
 		nanosuit.drawModel(shadowMap->depthShader, &blackSkybox);
 		plane.Draw(shadowMap->depthShader);
@@ -234,7 +224,19 @@ int main() {
 		if (DEFERRED_RENDERING) {
 			nanosuit.drawModel(&gBuffer, &blackSkybox);
 
-			//just render a screen quad
+			//apply ssao
+			glBindFramebuffer(GL_FRAMEBUFFER, ssao->ssaoFBO);
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			ssaoShader.use();
+			ssaoShader.setMatrix4("projection", camera.projection);
+			glBindBuffer(GL_UNIFORM_BUFFER, ssao->ssaoUBO);
+			glBufferSubData(GL_UNIFORM_BUFFER, 0, 768, glm::value_ptr(ssao->ssaoNoise[0]));
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			screen->DrawSSAO(&ssaoShader, frame->texAttachs[POSITION_TEXTURE], frame->texAttachs[NORMAL_TEXTURE],ssao->noiseTexture);
+
+			//just render a screen quad(for display)
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glEnable(GL_DEPTH_TEST);
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -251,10 +253,13 @@ int main() {
 			//screen->Draw(&postShader, frame->texAttachs[AMBIENT_TEXTURE]);
 			//glViewport(0, height / 2, width / 2, height / 2);
 			//screen->Draw(&postShader, frame->texAttachs[SPECULAR_TEXTURE]);
+			postShader.use();
+			postShader.setInt("screenTexture", 0);
+			screen->Draw(&postShader, ssao->ssaoColorBuffer);
 
-			deferredRender.use();
+			/*deferredRender.use();
 			deferredRender.setVector3("viewPos", camera.cameraPos);
-			screen->DeferredRender(&deferredRender, frame->texAttachs);
+			screen->DeferredRender(&deferredRender, frame->texAttachs);*/
 		}
 		//forward rendering
 		else

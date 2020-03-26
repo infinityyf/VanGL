@@ -49,6 +49,12 @@
     <Filter Include="shaders\deferred_rendering">
       <UniqueIdentifier>{7f40032b-b440-4225-b171-97e2c00bdaf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\SSAO">
+      <UniqueIdentifier>{953e78a1-14f9-43df-92c6-8eb292633670}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\AO">
+      <UniqueIdentifier>{ae70bace-1d35-4ec3-98ae-c64728933c70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -142,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="src\collision_detect\OBBBox.h">
       <Filter>include\collision_detect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SSAO\SSAO.h">
+      <Filter>include\SSAO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AO\SSAO.h">
+      <Filter>shaders\AO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

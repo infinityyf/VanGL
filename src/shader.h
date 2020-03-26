@@ -23,6 +23,7 @@ badbit: error occured
 
 enum BIND_POINT {
 	MATRIX_POINT = 0,
+	SSAO_SAMPLER_POINT = 1,
 };
 
 class StandardShader

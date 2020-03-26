@@ -150,6 +150,7 @@
     <ClCompile Include="src\PARALLAX.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AO\SSAO.h" />
     <ClInclude Include="src\basic_shape\line.h" />
     <ClInclude Include="src\basic_shape\plane.h" />
     <ClInclude Include="src\camera.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="src\model.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\shadowMap.h" />
+    <ClInclude Include="src\SSAO\SSAO.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\texture.h" />
     <ClInclude Include="src\window.h" />
