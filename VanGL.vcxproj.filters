@@ -13,12 +13,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="shaders\furry shader">
-      <UniqueIdentifier>{dd31c651-d9d5-4bf3-a3ed-f79f73c9986c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="shaders\instance shader">
-      <UniqueIdentifier>{4dc40ab0-adac-44d7-8b9e-b6ffe2f6d41f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\basic_shape">
       <UniqueIdentifier>{659d31e4-2115-4441-b17b-dfbad87405f5}</UniqueIdentifier>
     </Filter>
@@ -46,14 +40,26 @@
     <Filter Include="include\parallax_map">
       <UniqueIdentifier>{f6478fa6-171c-4465-a6fe-eb0564857846}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shaders\deferred_rendering">
-      <UniqueIdentifier>{7f40032b-b440-4225-b171-97e2c00bdaf4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\SSAO">
       <UniqueIdentifier>{953e78a1-14f9-43df-92c6-8eb292633670}</UniqueIdentifier>
     </Filter>
     <Filter Include="shaders\AO">
       <UniqueIdentifier>{ae70bace-1d35-4ec3-98ae-c64728933c70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\particle_system">
+      <UniqueIdentifier>{b902fed6-4b21-4ad6-bf4d-bddf1eafbac0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\deferredRendering">
+      <UniqueIdentifier>{7f40032b-b440-4225-b171-97e2c00bdaf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\furryShader">
+      <UniqueIdentifier>{dd31c651-d9d5-4bf3-a3ed-f79f73c9986c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\instanceShader">
+      <UniqueIdentifier>{4dc40ab0-adac-44d7-8b9e-b6ffe2f6d41f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\particleShader">
+      <UniqueIdentifier>{ff21b013-711c-4ac0-9631-7c4848ec3f01}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -62,12 +68,6 @@
     </ClCompile>
     <ClCompile Include="src\glad.c">
       <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\depthTest.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MSAA.cpp">
-      <Filter>include</Filter>
     </ClCompile>
     <ClCompile Include="src\haptic_support\CzMatrix.cpp">
       <Filter>include\haptic_support</Filter>
@@ -81,8 +81,8 @@
     <ClCompile Include="src\haptic_support\QuadProg++.cc">
       <Filter>include\haptic_support</Filter>
     </ClCompile>
-    <ClCompile Include="src\PARALLAX.cpp">
-      <Filter>include</Filter>
+    <ClCompile Include="src\particleRendering.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +155,12 @@
     <ClInclude Include="src\AO\SSAO.h">
       <Filter>shaders\AO</Filter>
     </ClInclude>
+    <ClInclude Include="src\particle_system\particles.h">
+      <Filter>include\particle_system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\particle_system\ODE.h">
+      <Filter>include\particle_system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\StandardShader.fs">
@@ -167,19 +173,19 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="src\shaders\furryEffectShader\furry.fs">
-      <Filter>shaders\furry shader</Filter>
+      <Filter>shaders\furryShader</Filter>
     </None>
     <None Include="src\shaders\furryEffectShader\furry.gs">
-      <Filter>shaders\furry shader</Filter>
+      <Filter>shaders\furryShader</Filter>
     </None>
     <None Include="src\shaders\furryEffectShader\furry.vs">
-      <Filter>shaders\furry shader</Filter>
+      <Filter>shaders\furryShader</Filter>
     </None>
     <None Include="src\shaders\instanceShader\instance.fs">
-      <Filter>shaders\instance shader</Filter>
+      <Filter>shaders\instanceShader</Filter>
     </None>
     <None Include="src\shaders\instanceShader\instance.vs">
-      <Filter>shaders\instance shader</Filter>
+      <Filter>shaders\instanceShader</Filter>
     </None>
     <None Include="src\shaders\basicShapeShader.fs">
       <Filter>shaders</Filter>
@@ -221,13 +227,19 @@
       <Filter>include\parallax_map</Filter>
     </None>
     <None Include="src\shaders\deferredRendering\gBuffer.fs">
-      <Filter>shaders\deferred_rendering</Filter>
+      <Filter>shaders\deferredRendering</Filter>
     </None>
     <None Include="src\shaders\deferredRendering\gBuffer.vs">
-      <Filter>shaders\deferred_rendering</Filter>
+      <Filter>shaders\deferredRendering</Filter>
     </None>
     <None Include="src\shaders\deferredRendering\deferred.fs">
-      <Filter>shaders\deferred_rendering</Filter>
+      <Filter>shaders\deferredRendering</Filter>
+    </None>
+    <None Include="src\shaders\particleShader\particle.vs">
+      <Filter>shaders\particleShader</Filter>
+    </None>
+    <None Include="src\shaders\particleShader\particle.fs">
+      <Filter>shaders\particleShader</Filter>
     </None>
   </ItemGroup>
 </Project>

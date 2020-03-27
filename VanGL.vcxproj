@@ -139,15 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\depthTest.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\haptic_support\Array.cc" />
     <ClCompile Include="src\haptic_support\CzMatrix.cpp" />
     <ClCompile Include="src\haptic_support\GlobalMethod.cpp" />
     <ClCompile Include="src\haptic_support\QuadProg++.cc" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\MSAA.cpp" />
-    <ClCompile Include="src\PARALLAX.cpp" />
+    <ClCompile Include="src\particleRendering.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AO\SSAO.h" />
@@ -167,6 +165,8 @@
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />
+    <ClInclude Include="src\particle_system\ODE.h" />
+    <ClInclude Include="src\particle_system\particles.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\shadowMap.h" />
     <ClInclude Include="src\SSAO\SSAO.h" />
@@ -190,6 +190,8 @@
     <None Include="src\shaders\instanceShader\instance.vs" />
     <None Include="src\shaders\ParallaxMap\parallax.fs" />
     <None Include="src\shaders\ParallaxMap\parallax.vs" />
+    <None Include="src\shaders\particleShader\particle.fs" />
+    <None Include="src\shaders\particleShader\particle.vs" />
     <None Include="src\shaders\postProcess\postProcessShader.fs" />
     <None Include="src\shaders\postProcess\postProcessShader.vs" />
     <None Include="src\shaders\postProcess\renderShadowMap.fs" />
