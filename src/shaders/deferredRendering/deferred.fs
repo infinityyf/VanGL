@@ -129,6 +129,7 @@ uniform sampler2D g_Normal;
 uniform sampler2D g_Ambient;
 uniform sampler2D g_Specular;
 uniform sampler2D g_Diffuse;
+uniform sampler2D g_SSAO;
 
 void main()
 {
@@ -138,6 +139,7 @@ void main()
     vec3 ambient = texture(g_Ambient,TexCoords).rgb;
     vec3 specualr = texture(g_Specular,TexCoords).rgb;
     vec3 diffuse = texture(g_Diffuse,TexCoords).rgb;
+    float ssao = texture(g_SSAO,TexCoords).r;
 
     //depth of frag
     float depth = texture(g_Position,TexCoords).a;
@@ -159,6 +161,6 @@ void main()
 
     vec3 result = spot + point + direct;
 
-    FragColor = vec4(result,1.0f);
+    FragColor = vec4(result*ssao,1.0f);
     //FragColor = vec4(depth,depth,depth,1.0f);
 }

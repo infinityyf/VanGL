@@ -11,6 +11,7 @@ layout(std140) uniform Samples{
 };
 //uniform vec3 samples[64];
 uniform mat4 projection;
+uniform mat4 view;
 uniform int width;
 uniform int height;
 
@@ -32,17 +33,20 @@ void main()
     for(int i = 0; i < 64; ++i)
     {
         vec3 sample = TBN * samples[i];     //just a coord translate
-        sample = fragPos + sample * 1.0f;  //from tangent coord to world coord
+        sample = fragPos + sample * 0.001f;  //from tangent coord to world coord
 
-        vec4 offset = vec4(sample, 1.0);//???
-        offset = projection * offset;   //clip coord
-        offset.xyz /= offset.w;
-        offset.xyz = offset.xyz * 0.5 + 0.5;    //to 0-1
+        vec4 samplePoint = vec4(sample, 1.0);//???
+        vec4 sampleView = view* samplePoint;
+        float depth = -sampleView.z;
+        samplePoint = projection *view* samplePoint;   //clip coord
+        samplePoint.xyz /= samplePoint.w;
+        samplePoint.xyz = samplePoint.xyz * 0.5 + 0.5;    //to 0-1
 
 
-        float sampleDepth = texture(gPositionDepth, offset.xy).w;//get depth
-        occlusion += (sampleDepth < sample.z ? 1.0 : 0.0);
+        float sampleDepth = texture(gPositionDepth, samplePoint.xy).w;//get mesh depth
+        float rangeCheck = smoothstep(0.0, 1.0, 0.001 / abs(depth - sampleDepth));
+        occlusion += (sampleDepth <= depth ? 1.0 : 0.0) * rangeCheck;  
     }
-    //FragColor = occlusion / 64;
-    FragColor = fragPos.x;
+    FragColor =occlusion /64;
+    //FragColor = randomVec.x;
 }

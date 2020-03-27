@@ -160,7 +160,7 @@ public:
 	void Draw(StandardShader* shader,unsigned int screenTexture);
 
 	//combine defferent MRT bass
-	void DeferredRender(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT]);
+	void DeferredRender(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT], unsigned int ssaoTexture);
 
 	void DrawSSAO(StandardShader* shader, GLuint gPositionDepth, GLuint gNormal, GLuint gNoise);
 
@@ -189,7 +189,7 @@ inline void Screen::Draw(StandardShader* shader,unsigned int screenTexture)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-inline void Screen::DeferredRender(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT])
+inline void Screen::DeferredRender(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT], unsigned int ssaoTexture)
 {
 	shader->use();
 	glBindVertexArray(SVAO);
@@ -207,6 +207,8 @@ inline void Screen::DeferredRender(StandardShader* shader, unsigned int screenTe
 	glBindTexture(GL_TEXTURE_2D, screenTexture[SPECULAR_TEXTURE]);
 	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_2D, screenTexture[DIFFUSE_TEXTURE]);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, ssaoTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

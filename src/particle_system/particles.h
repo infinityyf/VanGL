@@ -1,32 +1,24 @@
 #pragma once
 #ifndef PARTICLE_H
 #define PARTICLE_H
-
+#include <random>
+#include <vector>
 #include <stdlib.h>
 #include <glad/glad.h>
 
 #include "../shader.h"
-
-struct Particle {
-	float position[3];
-	float vilocity[3];
-	float mass;
-	float force[3];
-};
+#include "ODE.h"
 
 class Particles {
 public:
-	Particle* particleList;
-	float* drawBuffer;
+	std::vector<Particle> particleList;
+	std::vector<float> drawBuffer;
 	int particleNum;
 	float time;
 
 	Particles(int num);
-	~Particles();
-
 	void uploadToODE();
 	void downloadFromODE();
-
 	GLuint PVBO,PVAO;
 	void drawPaticles(StandardShader* shader);
 
@@ -34,38 +26,37 @@ public:
 
 Particles::Particles(int num) {
 	particleNum = num;
-	particleList = (Particle*)malloc(sizeof(Particle)*num);
-	drawBuffer = (float*)malloc(sizeof(float) * num * 3);
+	particleList = std::vector<Particle>(num);
+	drawBuffer = std::vector<float>(num * 3);
 	time = 0.0f;
+	std::uniform_real_distribution<GLfloat> randomFloats(0.0f, 1.0f);	//generate random distribution
+	std::default_random_engine generator;	//generate engine
 	for (int i = 0; i < num; i++) {
-		particleList[i] = Particle();
-		particleList[i].position[0] = 0.0f;
-		particleList[i].position[1] = 0.0f + i/(float)num;
-		particleList[i].position[2] = 0.0f;
-		particleList[i].vilocity[0] = 0.0f;
-		particleList[i].vilocity[1] = 0.0f;
-		particleList[i].vilocity[2] = 0.0f;
+		particleList[i].position[0] = randomFloats(generator) * 2.0 - 1.0;
+		particleList[i].position[1] = randomFloats(generator) * 2.0 + 1.0;
+		particleList[i].position[2] = randomFloats(generator) * 2.0 - 1.0;
+		particleList[i].velocity[0] = (randomFloats(generator) * 2.0 - 1.0)/10;
+		particleList[i].velocity[1] = (randomFloats(generator) * 2.0 - 1.0)/10;
+		particleList[i].velocity[2] = (randomFloats(generator) * 2.0 - 1.0)/10;
+		particleList[i].force[0] = 0.0f;
+		particleList[i].force[1] = -0.1f;
+		particleList[i].force[2] = 0.0f;
 		particleList[i].mass = 1.0f;
 	}
 	glGenVertexArrays(1, &PVAO);
 	glGenBuffers(1, &PVBO);
 	glBindVertexArray(PVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, PVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * particleNum*3, drawBuffer, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * particleNum*3, &drawBuffer[0], GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 3, (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GL_FLOAT), (void*)0);
 	glBindVertexArray(0);
 
 }
 
-Particles::~Particles() {
-	free(particleList);
-}
-
 inline void Particles::uploadToODE()
 {
-
-
+	ODE::ode(particleList, 0.1f);
 }
 
 inline void Particles::downloadFromODE()
@@ -82,7 +73,7 @@ inline void Particles::drawPaticles(StandardShader* shader)
 	shader->use();
 	glBindVertexArray(PVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, PVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * particleNum * 3, drawBuffer, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * particleNum * 3, &drawBuffer[0], GL_DYNAMIC_DRAW);
 
 	glDrawArrays(GL_POINTS, 0, particleNum);
 	glBindVertexArray(0);
