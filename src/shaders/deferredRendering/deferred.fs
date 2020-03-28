@@ -50,7 +50,7 @@ float Blinn_Phong(vec3 viewDir,vec3 lightDir,vec3 Normal,float shininess){
 }
 
 //directlight calculation
-vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir,vec3 g_ambient,vec3 g_specualr,vec3 g_diffuse){
+vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir,vec3 g_ambient,vec3 g_specualr,vec3 g_diffuse,float ssao){
     vec3 lightDir = normalize(-dirLight.direction);
     //diffuse
     float diff = max(dot(lightDir,Normal),0.0f);
@@ -62,12 +62,12 @@ vec3 calculateDirectLight(DirLight dirLight , vec3 Normal , vec3 viewDir,vec3 g_
     vec3 specular = spec * dirLight.specular * g_specualr;
 
     //ambient
-    vec3 ambient = dirLight.ambient * g_ambient;
+    vec3 ambient = dirLight.ambient * g_ambient*ssao;
     return diffuse + specular + ambient;
 }
 
 //point light calculation
-vec3 calculatePointLight(PointLight pointLight , vec3 Normal , vec3 viewDir, vec3 g_ambient,vec3 g_specualr,vec3 g_diffuse,vec3 g_position){
+vec3 calculatePointLight(PointLight pointLight , vec3 Normal , vec3 viewDir, vec3 g_ambient,vec3 g_specualr,vec3 g_diffuse,vec3 g_position,float ssao){
     vec3 lightDir =normalize(pointLight.position - g_position);
     //diffuse
     float diff = max(dot(lightDir,Normal),0.0f);
@@ -79,7 +79,7 @@ vec3 calculatePointLight(PointLight pointLight , vec3 Normal , vec3 viewDir, vec
     vec3 specular = spec * pointLight.specular * g_specualr;
 
     //ambient
-    vec3 ambient = pointLight.ambient * g_ambient;
+    vec3 ambient = pointLight.ambient * g_ambient*ssao;
 
     //attenuation
     float dist = length(pointLight.position - g_position);
@@ -92,7 +92,7 @@ vec3 calculatePointLight(PointLight pointLight , vec3 Normal , vec3 viewDir, vec
 }
 
 //spotlight calculation
-vec3 calculateSpotLight(SpotLight spotLight , vec3 Normal , vec3 viewDir, vec3 g_ambient,vec3 g_specualr,vec3 g_diffuse,vec3 g_position){
+vec3 calculateSpotLight(SpotLight spotLight , vec3 Normal , vec3 viewDir, vec3 g_ambient,vec3 g_specualr,vec3 g_diffuse,vec3 g_position,float ssao){
     vec3 lightDir = normalize(spotLight.position - g_position);
     //diffuse
     float diff = max(dot(lightDir,Normal),0.0f);
@@ -104,7 +104,7 @@ vec3 calculateSpotLight(SpotLight spotLight , vec3 Normal , vec3 viewDir, vec3 g
     vec3 specular = spec * spotLight.specular * g_specualr;
 
     //ambient
-    vec3 ambient = spotLight.ambient * g_ambient;
+    vec3 ambient = spotLight.ambient * g_ambient*ssao;
 
     //attenuation
     float theta =max(dot(-lightDir,normalize(spotLight.direction)),0.0f);
@@ -135,12 +135,12 @@ void main()
 {
     
     vec3 normal = texture(g_Normal,TexCoords).rgb;
+    normal = normal*2.0f - 1.0f;
     vec3 position = texture(g_Position,TexCoords).rgb;
     vec3 ambient = texture(g_Ambient,TexCoords).rgb;
     vec3 specualr = texture(g_Specular,TexCoords).rgb;
     vec3 diffuse = texture(g_Diffuse,TexCoords).rgb;
     float ssao = texture(g_SSAO,TexCoords).r;
-
     //depth of frag
     float depth = texture(g_Position,TexCoords).a;
 
@@ -150,17 +150,16 @@ void main()
     //calculate all lights
     vec3 point = vec3(0.0f);
     for(int i=0;i<min(PointNum,NUM_POINT_LIGHTS);i++){
-        point += calculatePointLight(pointLights[i],normal,viewDir,ambient,specualr,diffuse,position);
+        point += calculatePointLight(pointLights[i],normal,viewDir,ambient,specualr,diffuse,position,ssao);
     }
     vec3 spot = vec3(0.0f);
     for(int i=0;i<min(SpotNum,NUM_SPOT_LIGHTS);i++){
-        spot += calculateSpotLight(spotLights[i],normal,viewDir,ambient,specualr,diffuse,position);
+        spot += calculateSpotLight(spotLights[i],normal,viewDir,ambient,specualr,diffuse,position,ssao);
     }
     vec3 direct = vec3(0.0f);
-    direct += calculateDirectLight(dirLight,normal,viewDir,ambient,specualr,diffuse);
+    direct += calculateDirectLight(dirLight,normal,viewDir,ambient,specualr,diffuse,ssao);
 
     vec3 result = spot + point + direct;
 
-    FragColor = vec4(result*ssao,1.0f);
-    //FragColor = vec4(depth,depth,depth,1.0f);
+    FragColor = vec4(result,1.0f);
 }

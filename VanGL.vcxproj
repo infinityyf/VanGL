@@ -78,6 +78,10 @@
     <OutDir>bin\$(Configuration)\$(Platform)</OutDir>
     <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>bin\$(Configuration)\$(Platform)</OutDir>
+    <IntDir>obj\$(Configuration)\$(Platform)</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -131,11 +135,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>3rd\openHaptic\utilities\include;3rd\openHaptic\include;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>3rd\openHaptic\lib\x64;3rd\openHaptic\utilities\lib\x64\Debug;3rd\Assimp\lib\Debug\x64;3rd\GLFW\lib\Debug\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;opengl32.lib;glfw.lib;hd.lib;hdu.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

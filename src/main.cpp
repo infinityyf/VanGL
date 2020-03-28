@@ -184,6 +184,10 @@ int main() {
 	Screen* screen= new Screen();
 	Frame* frame = new Frame(width,height);
 	SSAO* ssao = new SSAO(width, height);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, ssao->ssaoUBO);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, 1024, glm::value_ptr(ssao->ssaoKernel[0]));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	//haptic
 	//HapticInitPhantom();
 
@@ -233,9 +237,7 @@ int main() {
 			ssaoShader.use();
 			ssaoShader.setMatrix4("projection", camera.projection);
 			ssaoShader.setMatrix4("view", camera.view);
-			glBindBuffer(GL_UNIFORM_BUFFER, ssao->ssaoUBO);
-			glBufferSubData(GL_UNIFORM_BUFFER, 0, 768, glm::value_ptr(ssao->ssaoNoise[0]));
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			
 			screen->DrawSSAO(&ssaoShader, frame->texAttachs[POSITION_TEXTURE], frame->texAttachs[NORMAL_TEXTURE],ssao->noiseTexture);
 
 			//just render a screen quad(for display)
@@ -250,18 +252,18 @@ int main() {
 			//glViewport(0, 0, width / 2, height / 2);
 			//screen->Draw(&postShader, frame->texAttachs[POSITION_TEXTURE]);
 			//glViewport(width / 2, height / 2, width / 2, height / 2);
-			//screen->Draw(&postShader, frame->texAttachs[DIFFUSE_TEXTURE]);
+			//screen->Draw(&postShader, frame->texAttachs[NORMAL_TEXTURE]);
 			//glViewport(width / 2, 0, width / 2, height / 2);
 			//screen->Draw(&postShader, frame->texAttachs[AMBIENT_TEXTURE]);
 			//glViewport(0, height / 2, width / 2, height / 2);
 			//screen->Draw(&postShader, frame->texAttachs[SPECULAR_TEXTURE]);
-			postShader.use();
+			/*postShader.use();
 			postShader.setInt("screenTexture", 0);
-			screen->Draw(&postShader, ssao->ssaoColorBuffer);
+			screen->Draw(&postShader, ssao->ssaoColorBuffer);*/
 
-			/*deferredRender.use();
+			deferredRender.use();
 			deferredRender.setVector3("viewPos", camera.cameraPos);
-			screen->DeferredRender(&deferredRender, frame->texAttachs, ssao->ssaoColorBuffer);*/
+			screen->DeferredRender(&deferredRender, frame->texAttachs, ssao->ssaoColorBuffer);
 		}
 		//forward rendering
 		else

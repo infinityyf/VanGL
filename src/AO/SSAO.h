@@ -74,7 +74,7 @@ SSAO::SSAO(int width, int height) {
 	//generate sampler uniform buffer
 	glGenBuffers(1, &ssaoUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, ssaoUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 512, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, 2046, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindBufferBase(GL_UNIFORM_BUFFER,BIND_POINT::SSAO_SAMPLER_POINT , ssaoUBO);
 	

@@ -43,6 +43,7 @@ void main()
     vec3 normal = texture(material.normal,fs_in.TexCoord).rgb;
     normal = normalize(normal*2.0f - 1.0f);// change into vector not color
     normal = normalize(fs_in.TBN * normal);// change normal from tangent coord to world coord
+    normal = (normal+1.0f)/2.0f;
     float fragDepth = depthToEyeCoord(gl_FragCoord.z);
     //write to g buffer
     FragNormal = vec4(normal,1.0);
