@@ -163,7 +163,7 @@ public:
 	void DeferredRender(StandardShader* shader, unsigned int screenTexture[MAC_COLOR_ATTACHMENT], unsigned int ssaoTexture);
 
 	void DrawSSAO(StandardShader* shader, GLuint gPositionDepth, GLuint gNormal, GLuint gNoise);
-
+	void DrawSSAOBlur(StandardShader* shader, GLuint ssao);
 };
 
 inline Screen::Screen()
@@ -230,6 +230,16 @@ inline void Screen::DrawSSAO(StandardShader* shader, GLuint gPositionDepth, GLui
 
 }
 
+inline void Screen::DrawSSAOBlur(StandardShader* shader, GLuint ssao)
+{
+	shader->use();
+	glBindVertexArray(SVAO);
+	//uniform vec3 samples[64];
+	glActiveTexture(GL_TEXTURE0);
+	shader->setInt("ssaoTexture", 0);
+	glBindTexture(GL_TEXTURE_2D, ssao);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
+}
 
 #endif

@@ -14,7 +14,9 @@ public:
 	std::vector<glm::vec3> ssaoNoise;
 	GLuint noiseTexture;
 	GLuint ssaoFBO;
+	GLuint ssaoBlurFBO;
 	GLuint ssaoColorBuffer;
+	GLuint ssaoBlurColorBuffer;
 	GLuint ssaoUBO;
 	int width, height;
 	SSAO(int width,int height);
@@ -67,6 +69,19 @@ SSAO::SSAO(int width, int height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
 	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+		std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << fboStatus << std::endl;
+	}
+	//generate blur frame
+	glGenFramebuffers(1, &ssaoBlurFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+	glGenTextures(1, &ssaoBlurColorBuffer);
+	glBindTexture(GL_TEXTURE_2D, ssaoBlurColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RGB, GL_FLOAT, NULL);//just need one channel
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurColorBuffer, 0);
+	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
 		std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << fboStatus << std::endl;
 	}

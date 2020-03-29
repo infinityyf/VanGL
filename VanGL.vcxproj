@@ -176,7 +176,6 @@
     <ClInclude Include="src\particle_system\particles.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\shadowMap.h" />
-    <ClInclude Include="src\SSAO\SSAO.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\texture.h" />
     <ClInclude Include="src\window.h" />
@@ -202,6 +201,7 @@
     <None Include="src\shaders\postProcess\postProcessShader.fs" />
     <None Include="src\shaders\postProcess\postProcessShader.vs" />
     <None Include="src\shaders\postProcess\renderShadowMap.fs" />
+    <None Include="src\shaders\postProcess\ssao.fs" />
     <None Include="src\shaders\shadowMap\simpleDepthShader.fs" />
     <None Include="src\shaders\shadowMap\simpleDepthShader.vs" />
     <None Include="src\shaders\skyboxShader\skyBox.fs" />

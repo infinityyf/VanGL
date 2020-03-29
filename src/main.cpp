@@ -68,7 +68,7 @@ int main() {
 	StandardShader gBuffer((path + "src\\shaders\\deferredRendering\\gBuffer.vs").c_str(), (path + "src\\shaders\\deferredRendering\\gBuffer.fs").c_str());
 	StandardShader deferredRender((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\deferredRendering\\deferred.fs").c_str());
 	StandardShader ssaoShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\ssao.fs").c_str());
-
+	StandardShader ssaoBlurShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\ssaoBlur.fs").c_str());
 	//set light info
 	shader.use();
 	shader.setInt("PointNum", 0);
@@ -237,8 +237,14 @@ int main() {
 			ssaoShader.use();
 			ssaoShader.setMatrix4("projection", camera.projection);
 			ssaoShader.setMatrix4("view", camera.view);
-			
 			screen->DrawSSAO(&ssaoShader, frame->texAttachs[POSITION_TEXTURE], frame->texAttachs[NORMAL_TEXTURE],ssao->noiseTexture);
+
+			//apply ssao blur
+			glBindFramebuffer(GL_FRAMEBUFFER, ssao->ssaoBlurFBO);
+			glEnable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			screen->DrawSSAOBlur(&ssaoBlurShader, ssao->ssaoBlurColorBuffer);
 
 			//just render a screen quad(for display)
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -263,7 +269,7 @@ int main() {
 
 			deferredRender.use();
 			deferredRender.setVector3("viewPos", camera.cameraPos);
-			screen->DeferredRender(&deferredRender, frame->texAttachs, ssao->ssaoColorBuffer);
+			screen->DeferredRender(&deferredRender, frame->texAttachs, ssao->ssaoBlurColorBuffer);
 		}
 		//forward rendering
 		else
