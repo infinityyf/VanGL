@@ -29,9 +29,17 @@ inline void ODE::ode(std::vector<Particle>& particleList, float delatTime) {
 		particleList[particleIndex].position[0] += particleList[particleIndex].velocity[0] * delatTime;
 		particleList[particleIndex].position[1] += particleList[particleIndex].velocity[1] * delatTime;
 		particleList[particleIndex].position[2] += particleList[particleIndex].velocity[2] * delatTime;
-		particleList[particleIndex].velocity[0] += (particleList[particleIndex].force[0]/ particleList[particleIndex].mass)*delatTime;
-		particleList[particleIndex].velocity[1] += (particleList[particleIndex].force[1]/ particleList[particleIndex].mass)*delatTime;
-		particleList[particleIndex].velocity[2] += (particleList[particleIndex].force[2]/ particleList[particleIndex].mass)*delatTime;
+		if (particleList[particleIndex].position[1] < -1) {
+			particleList[particleIndex].velocity[0] /=2;
+			particleList[particleIndex].velocity[1] = -particleList[particleIndex].velocity[1] * 0.5;
+			particleList[particleIndex].velocity[2] /= 2;
+		}
+		else {
+			particleList[particleIndex].velocity[0] += (particleList[particleIndex].force[0] / particleList[particleIndex].mass) * delatTime;
+			particleList[particleIndex].velocity[1] += (particleList[particleIndex].force[1] / particleList[particleIndex].mass) * delatTime;
+			particleList[particleIndex].velocity[2] += (particleList[particleIndex].force[2] / particleList[particleIndex].mass) * delatTime;
+		}
+		
 	}
 }
 
