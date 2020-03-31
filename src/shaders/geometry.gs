@@ -42,8 +42,9 @@ vec4 explode(vec4 pos,vec3 nor,float time){
     return pos + vec4(direction, 0.0);
 }
 
-
+//gl_PositionIn,gl_TexCoordIn[][] setting bt these variables
 void main(){
+    //gs_in is not support by all version
     vec3 normal = GetNormal();
     gl_Position = explode(gl_in[0].gl_Position,normal,time);
     gs_out.TexCoord = gs_in[0].TexCoord;

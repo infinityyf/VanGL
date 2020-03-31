@@ -58,6 +58,12 @@
     <Filter Include="shaders\particleShader">
       <UniqueIdentifier>{ff21b013-711c-4ac0-9631-7c4848ec3f01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\mass_spring">
+      <UniqueIdentifier>{0da6eeb8-8115-49b6-9f92-33a0e3d959a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\deformShader">
+      <UniqueIdentifier>{9b77be71-f25b-44f7-98ac-3c5f95fc360b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -155,6 +161,18 @@
     <ClInclude Include="src\AO\SSAO.h">
       <Filter>include\SSAO</Filter>
     </ClInclude>
+    <ClInclude Include="src\mass_spring\MassParticle.h">
+      <Filter>include\mass_spring</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mass_spring\SpringLink.h">
+      <Filter>include\mass_spring</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mass_spring\DynamicWorld.h">
+      <Filter>include\mass_spring</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mass_spring\DynamicMesh.h">
+      <Filter>include\mass_spring</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\StandardShader.fs">
@@ -237,6 +255,12 @@
     </None>
     <None Include="src\shaders\postProcess\ssao.fs">
       <Filter>shaders\postProcess</Filter>
+    </None>
+    <None Include="src\shaders\deformShader\deform.fs">
+      <Filter>shaders\deformShader</Filter>
+    </None>
+    <None Include="src\shaders\deformShader\deform.vs">
+      <Filter>shaders\deformShader</Filter>
     </None>
   </ItemGroup>
 </Project>

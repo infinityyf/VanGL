@@ -170,6 +170,10 @@
     <ClInclude Include="src\haptic_support\HapticTool.h" />
     <ClInclude Include="src\haptic_support\QuadProg++.hh" />
     <ClInclude Include="src\light.h" />
+    <ClInclude Include="src\mass_spring\DynamicMesh.h" />
+    <ClInclude Include="src\mass_spring\DynamicWorld.h" />
+    <ClInclude Include="src\mass_spring\MassParticle.h" />
+    <ClInclude Include="src\mass_spring\SpringLink.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />
     <ClInclude Include="src\particle_system\ODE.h" />
@@ -188,6 +192,8 @@
     <None Include="src\shaders\deferredRendering\deferred.fs" />
     <None Include="src\shaders\deferredRendering\gBuffer.fs" />
     <None Include="src\shaders\deferredRendering\gBuffer.vs" />
+    <None Include="src\shaders\deformShader\deform.fs" />
+    <None Include="src\shaders\deformShader\deform.vs" />
     <None Include="src\shaders\furryEffectShader\furry.fs" />
     <None Include="src\shaders\furryEffectShader\furry.gs" />
     <None Include="src\shaders\furryEffectShader\furry.vs" />

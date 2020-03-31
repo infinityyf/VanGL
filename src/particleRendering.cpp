@@ -11,8 +11,11 @@
 #include "basic_shape/plane.h"
 #include "basic_shape/line.h"
 
-//particles
+//physic
 #include "particle_system/particles.h"
+#include "mass_spring/DynamicWorld.h"
+//model
+#include "model.h"
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
@@ -36,12 +39,15 @@ int main() {
 	camera.SetCursorCallBack();
 	camera.SetScrollCallBack();
 
-	Particles particles(10000);
-	glm::vec3 start(0.0f, 2.0f, 2.0f);
-	glm::vec3 end(0.0f, -3.0f, -5.0f);
-	Line line = Line(start, end);
-	StandardShader particleShader((path + "src\\shaders\\particleShader\\particle.vs").c_str(), (path + "src\\shaders\\particleShader\\particle.fs").c_str());
 
+	//create mass_particle model
+	DynamicWorld* world = new DynamicWorld();
+	Model rock(path + "scene\\models\\rock\\rock.obj");
+	world->addDynamicMesh(&(rock.meshes[0]));
+
+	//Particles particles(10000);
+	StandardShader particleShader((path + "src\\shaders\\particleShader\\particle.vs").c_str(), (path + "src\\shaders\\particleShader\\particle.fs").c_str());
+	StandardShader deformShader((path + "src\\shaders\\deformShader\\deform.vs").c_str(), (path + "src\\shaders\\deformShader\\deform.fs").c_str());
 	unsigned int UBO;
 	glGenBuffers(1, &UBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO);
@@ -51,14 +57,13 @@ int main() {
 
 	unsigned int samplerIndex1 = glGetUniformBlockIndex(particleShader.shaderProgramID, "Matrix");
 	glUniformBlockBinding(particleShader.shaderProgramID, samplerIndex1, BIND_POINT::MATRIX_POINT);
+	unsigned int samplerIndex2 = glGetUniformBlockIndex(deformShader.shaderProgramID, "Matrix");
+	glUniformBlockBinding(deformShader.shaderProgramID, samplerIndex2, BIND_POINT::MATRIX_POINT);
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
-	//enable z buffer test
+
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_STENCIL_TEST);
 	glEnable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT);
-	//enable multisample
 	glEnable(GL_MULTISAMPLE);
 
 
@@ -85,9 +90,12 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//send to solve and draw
-		particles.uploadToODE();
-		particles.drawPaticles(&particleShader);
-
+		//particles.uploadToODE();
+		//particles.drawPaticles(&particleShader);
+		world->updatePyhsics();
+		world->updateGraphic();
+		deformShader.use();
+		world->render();
 
 		glfwPollEvents();
 		glfwSwapBuffers(window.window);
