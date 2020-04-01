@@ -20,6 +20,8 @@
 #include <iostream>
 #include "HapticTool.h"
 
+
+
 HDCallbackCode HDCALLBACK ConfigurationOptimCallback(void* data);
 
 static HapticTools*		currentTool = NULL;			//haptic tool pointer
@@ -39,7 +41,7 @@ void	GetCurrentForce(float* f);					//copy force to f
 float	GetScale();
 int		getms();
 
-
+DynamicWorld* world;								//soft object simulator
 int getms() {
 	return ms;
 }
@@ -88,7 +90,8 @@ HDCallbackCode HDCALLBACK ConfigurationOptimCallback(void* data)
 	device_stateR[14] *= hapticScale;
 
 	currentTool->ForceBefore(device_stateR);					//将位置信息转存到m_trans和m_rotate中，并设置m_qH（用于计算约束								
-	currentTool->ForceCompute(force);							//计算碰撞，求解约，计算受力
+	
+	if(world != nullptr)currentTool->ForceCompute(force,world);		//计算碰撞，求解约，计算受力
 	currentTool->ForceAfter(m_graphicTrans);					//记录上一次的移动和旋转
 
 
@@ -108,6 +111,10 @@ void GetCurrentForce(float* f) {
 	f[0] = force[0];
 	f[1] = force[1];
 	f[2] = force[2];
+}
+
+void SetWorld(DynamicWorld* dworld) {
+	world = dworld;
 }
 
 

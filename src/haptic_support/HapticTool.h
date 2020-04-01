@@ -8,7 +8,7 @@
 #include "GlobalMethod.h"
 #include <glad/glad.h>
 #include "../shader.h"
-
+#include "../mass_spring/DynamicWorld.h"
 #define EPS 0.000001
 #define MAXFORCESQ 27.0f
 #define MAXFORCE 5.196152422706632f//sqrt(27)
@@ -43,6 +43,7 @@ public:
 	double  m_globalAngX, m_globalAngY, m_globalAngZ;
 	double  m_deviceStiffnessGingval;
 	double  m_stiffnessRatio;
+	double	m_deviceRadius;
 
 public:
 
@@ -52,7 +53,7 @@ public:
 
 	void ForceBefore(float* deviceTrans);	//fetch transform to m_trans and m_rotate
 
-	void ForceCompute(float* force);		//calculate collision and force
+	void ForceCompute(float* force, DynamicWorld* world);		//calculate collision and force
 
 	void ForceAfter(float* trans);			//send transform to grapich trans to draw
 
@@ -97,6 +98,8 @@ HapticTools::HapticTools() {
 
 	m_stiffnessRatio = 1000.0f;
 
+	m_deviceRadius = 0.01f;
+
 	//rendering setting
 	glGenVertexArrays(1, &HVAO);
 	glGenBuffers(1, &HVBO);
@@ -133,7 +136,7 @@ void HapticTools::ForceBefore(float* deviceTrans) {
 	m_qh[2] = m_trans[2];
 }
 
-void HapticTools::ForceCompute(float* force) {
+void HapticTools::ForceCompute(float* force, DynamicWorld* world) {
 	m_rotatepre[0][0] = m_rotate[0][0];
 	m_rotatepre[1][0] = m_rotate[1][0];
 	m_rotatepre[2][0] = m_rotate[2][0];
@@ -146,8 +149,54 @@ void HapticTools::ForceCompute(float* force) {
 	m_transpre[0] = m_qh[0];
 	m_transpre[1] = m_qh[1];
 	m_transpre[2] = m_qh[2];
+	vec3d forceHaptic = vec3d(0.0);
+	vec3d pos(m_transpre[0], m_transpre[1], m_transpre[2]);
 	//Force compute
+	for (int i = 0; i < world->m_meshes.size(); i++) {
+		for (int j = 0; j < world->m_meshes[i].m_particles.size(); j++) {
+			vec3d nodePos = world->m_meshes[i].m_particles[j].m_position;
+			vec3d f = computeForce(pos, m_deviceRadius, nodePos,0.1f, 1.0f);
+			if (glm::length(f)> 0)
+			{
+				vec3d tmpfrc = -f;
+				world->m_meshes[i].m_particles[j].m_externalForce =tmpfrc;
+			}
+			forceHaptic+=f;
+		}
+	}
+
 	force[0] = force[1] = force[2] = 0.0;
+}
+
+vec3d computeForce(const vec3d& a_cursor,
+	double a_cursorRadius,
+	const vec3d& a_spherePos,
+	double a_radius,
+	double a_stiffness)
+{
+
+	// compute the reaction forces between the tool and the ith sphere.
+	vec3d force = vec3d(0.0);
+	vec3d vSphereCursor = a_cursor - a_spherePos;
+
+	// check if both objects are intersecting
+	if (glm::length(vSphereCursor) < 0.0000001)
+	{
+		return (force);
+	}
+
+	if (glm::length(vSphereCursor) > (a_cursorRadius + a_radius))
+	{
+		return (force);
+	}
+
+	// compute penetration distance between tool and surface of sphere
+	double penetrationDistance = (a_cursorRadius + a_radius) - glm::length(vSphereCursor);
+	vec3d forceDirection = glm::normalize(vSphereCursor);
+	force = (penetrationDistance * a_stiffness) *forceDirection;
+
+	// return result
+	return (force);
 }
 
 //calculate axis angle from rotation matrix

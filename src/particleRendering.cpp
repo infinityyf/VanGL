@@ -17,6 +17,9 @@
 //model
 #include "model.h"
 
+//haptic
+#include "haptic_support/HapticManager.h"
+
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
 //render setting
@@ -46,6 +49,7 @@ int main() {
 	world->addDynamicMesh(&(rock.meshes[0]));
 
 	//Particles particles(10000);
+	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	StandardShader particleShader((path + "src\\shaders\\particleShader\\particle.vs").c_str(), (path + "src\\shaders\\particleShader\\particle.fs").c_str());
 	StandardShader deformShader((path + "src\\shaders\\deformShader\\deform.vs").c_str(), (path + "src\\shaders\\deformShader\\deform.fs").c_str());
 	unsigned int UBO;
@@ -66,7 +70,7 @@ int main() {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
 
-
+	HapticInitPhantom();
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
 		float currentFrame = glfwGetTime();
@@ -92,7 +96,8 @@ int main() {
 		//send to solve and draw
 		//particles.uploadToODE();
 		//particles.drawPaticles(&particleShader);
-		world->updatePyhsics();
+		currentTool->DrawHaptic(&debugShader);
+		//world->updatePyhsics();
 		world->updateGraphic();
 		deformShader.use();
 		world->render();
@@ -100,7 +105,7 @@ int main() {
 		glfwPollEvents();
 		glfwSwapBuffers(window.window);
 	}
-
+	StopHapticLoopPhantom();
 	//release resources
 	glfwTerminate();
 
