@@ -173,6 +173,9 @@
     <ClInclude Include="src\mass_spring\DynamicMesh.h">
       <Filter>include\mass_spring</Filter>
     </ClInclude>
+    <ClInclude Include="src\haptic_support\Thread.h">
+      <Filter>include\haptic_support</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\StandardShader.fs">

@@ -34,14 +34,13 @@ static float			force[3];
 static float			m_graphicTrans[16];			//graphic tool trans
 static int				ms;
 
-int		HapticInitPhantom();						//init haptic loop
+int		HapticInitPhantom(DynamicWorld* world);						//init haptic loop
 void	StopHapticLoopPhantom();					//stop haptic loop
-void	GetProxyToolTrans(float* t);				//copy m_graphicTrans to t
 void	GetCurrentForce(float* f);					//copy force to f
 float	GetScale();
 int		getms();
 
-DynamicWorld* world;								//soft object simulator
+
 int getms() {
 	return ms;
 }
@@ -49,17 +48,16 @@ int getms() {
 float GetScale() {
 	return hapticScale;
 }
-int HapticInitPhantom()
+int HapticInitPhantom(DynamicWorld *world)
 {
 	currentTool = new HapticTools();
-
+	currentTool->world = world;
 	hHD = hdInitDevice(HD_DEFAULT_DEVICE);		// Initialize the default haptic device.
 	hdEnable(HD_FORCE_OUTPUT);					// Start the servo scheduler and enable forces.
 
 	hdStartScheduler();
-
-	// Application loop - schedule our call to the main callback.
-	hSphereCallback = hdScheduleAsynchronous(ConfigurationOptimCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+	//hSphereCallback = 
+	hdScheduleSynchronous(ConfigurationOptimCallback, 0, HD_MAX_SCHEDULER_PRIORITY);
 
 	//printf("Press ESC to quit.\n\n");
 	g_mutex = CreateMutex(NULL, FALSE, "mutex_for_all_particals");
@@ -70,7 +68,7 @@ int HapticInitPhantom()
 void StopHapticLoopPhantom()
 {
 	hdStopScheduler();
-	hdUnschedule(hSphereCallback);
+	//hdUnschedule(hSphereCallback);
 	hdDisableDevice(hHD);
 	return;
 }
@@ -90,21 +88,19 @@ HDCallbackCode HDCALLBACK ConfigurationOptimCallback(void* data)
 	device_stateR[14] *= hapticScale;
 
 	currentTool->ForceBefore(device_stateR);					//将位置信息转存到m_trans和m_rotate中，并设置m_qH（用于计算约束								
+	if(currentTool->world != nullptr){
+		//std::cout << "dynamic"<< std::endl;
+		currentTool->ForceCompute(force);		//计算碰撞，求解约，计算受力
+	}
+	//currentTool->world->updatePyhsics();
+
 	
-	if(world != nullptr)currentTool->ForceCompute(force,world);		//计算碰撞，求解约，计算受力
-	currentTool->ForceAfter(m_graphicTrans);					//记录上一次的移动和旋转
-
-
 	//sent the force out
 	hdMakeCurrentDevice(hHD);
 	//hdSetFloatv(HD_CURRENT_FORCE, force);
 	hdEndFrame(hdGetCurrentDevice());
 	ms = clock() - start;
 	return HD_CALLBACK_CONTINUE;
-}
-//获取优化后工具的位姿
-void GetProxyToolTrans(float* t) {
-	memcpy(t, m_graphicTrans, 16 * sizeof(float));
 }
 
 void GetCurrentForce(float* f) {
@@ -113,9 +109,6 @@ void GetCurrentForce(float* f) {
 	f[2] = force[2];
 }
 
-void SetWorld(DynamicWorld* dworld) {
-	world = dworld;
-}
 
 
 #endif // !HAPRICMANAGER

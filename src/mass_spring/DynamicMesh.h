@@ -133,7 +133,7 @@ inline void DynamicMesh::render()
 	glBindVertexArray(DVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, DVBO);
 	glBufferData(GL_ARRAY_BUFFER, m_vertexs.size() * sizeof(DynamicVertex), &m_vertexs[0], GL_DYNAMIC_DRAW);
-	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_POINTS, m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 #endif // !DYNAMIC_MESH

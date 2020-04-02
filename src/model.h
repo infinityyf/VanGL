@@ -118,7 +118,7 @@ void Model::loadModel(std::string modelPath) {
 	// aiProcess_SplitLargeMeshes : splite a large mesh into small meshes
 	// aiProcess_OptimizeMeshes : combine small meshes to a large mesh
 	// aiProcess_CalcTangentSpace : calculate the tangent vector of each vertice
-	const aiScene* scene = modelImpoter.ReadFile(modelPath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |aiProcess_CalcTangentSpace);
+	const aiScene* scene = modelImpoter.ReadFile(modelPath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |aiProcess_CalcTangentSpace|aiProcess_GenNormals);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cerr << "ERROR: fail to load model:" << modelImpoter.GetErrorString() << std::endl;
 		return;
@@ -155,16 +155,19 @@ inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
 		vertex.Position = vector;
-		vector.x = mesh->mNormals[i].x;
-		vector.y = mesh->mNormals[i].y;
-		vector.z = mesh->mNormals[i].z;
-		vertex.Normal = vector;
-		//tangent coord
-		vector.x = mesh->mTangents[i].x;
-		vector.y = mesh->mTangents[i].z;
-		vector.z = mesh->mTangents[i].z;
-		vertex.Tangent = vector;
-
+		if (mesh->mNormals != nullptr) {
+			vector.x = mesh->mNormals[i].x;
+			vector.y = mesh->mNormals[i].y;
+			vector.z = mesh->mNormals[i].z;
+			vertex.Normal = vector;
+		}
+		if (mesh->mTangents != nullptr) {
+			//tangent coord
+			vector.x = mesh->mTangents[i].x;
+			vector.y = mesh->mTangents[i].z;
+			vector.z = mesh->mTangents[i].z;
+			vertex.Tangent = vector;
+		}
 		//assimp only allow 8 tex coords
 		if (mesh->mTextureCoords[0])
 		{

@@ -169,6 +169,7 @@
     <ClInclude Include="src\haptic_support\HapticManager.h" />
     <ClInclude Include="src\haptic_support\HapticTool.h" />
     <ClInclude Include="src\haptic_support\QuadProg++.hh" />
+    <ClInclude Include="src\haptic_support\Thread.h" />
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\mass_spring\DynamicMesh.h" />
     <ClInclude Include="src\mass_spring\DynamicWorld.h" />

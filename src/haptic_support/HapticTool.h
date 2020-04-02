@@ -36,14 +36,14 @@ public:
 protected:
 	CDdeque m_CDInfoArray;
 public:
-	double	m_G[6][6];
+
 	double	m_qg[6], m_qh[6];			//physic pos and grapic pos
 	float	m_trans[3], m_rotate[3][3];		//current pos
 	float  m_transpre[3], m_rotatepre[3][3];
 	double  m_globalAngX, m_globalAngY, m_globalAngZ;
-	double  m_deviceStiffnessGingval;
-	double  m_stiffnessRatio;
+
 	double	m_deviceRadius;
+	DynamicWorld* world;								//soft object simulator
 
 public:
 
@@ -53,7 +53,7 @@ public:
 
 	void ForceBefore(float* deviceTrans);	//fetch transform to m_trans and m_rotate
 
-	void ForceCompute(float* force, DynamicWorld* world);		//calculate collision and force
+	void ForceCompute(float* force);		//calculate collision and force
 
 	void ForceAfter(float* trans);			//send transform to grapich trans to draw
 
@@ -66,6 +66,8 @@ public:
 	//void RestoreQgPrevious();
 
 	void copyTrans();
+
+	vec3d computeForcePaticle(const vec3d& a_cursor, double a_cursorRadius, const vec3d& a_spherePos, double a_radius, double a_stiffness);
 
 
 };
@@ -81,7 +83,7 @@ void HapticTools::DrawHaptic(StandardShader* shader)
 
 	glDrawArrays(GL_POINTS, 0, 1);
 	glBindVertexArray(0);
-	std::cout << m_transpre[0] << "," << m_transpre[1] << "," << m_transpre[2] << std::endl;
+	
 }
 
 HapticTools::HapticTools() {
@@ -89,17 +91,7 @@ HapticTools::HapticTools() {
 	m_globalAngX = 0;
 	m_globalAngY = 0;
 	m_globalAngZ = 0;
-
-	memset(m_G, 0, 32 * sizeof(double));
-	m_G[0][0] = m_G[1][1] = m_G[2][2] = 1.0;
-	m_G[3][3] = m_G[4][4] = m_G[5][5] = 1000.0;
-
-	m_deviceStiffnessGingval = 0.9f;
-
-	m_stiffnessRatio = 1000.0f;
-
-	m_deviceRadius = 0.01f;
-
+	m_deviceRadius = 5.0f;
 	//rendering setting
 	glGenVertexArrays(1, &HVAO);
 	glGenBuffers(1, &HVBO);
@@ -136,7 +128,7 @@ void HapticTools::ForceBefore(float* deviceTrans) {
 	m_qh[2] = m_trans[2];
 }
 
-void HapticTools::ForceCompute(float* force, DynamicWorld* world) {
+void HapticTools::ForceCompute(float* force) {
 	m_rotatepre[0][0] = m_rotate[0][0];
 	m_rotatepre[1][0] = m_rotate[1][0];
 	m_rotatepre[2][0] = m_rotate[2][0];
@@ -152,23 +144,23 @@ void HapticTools::ForceCompute(float* force, DynamicWorld* world) {
 	vec3d forceHaptic = vec3d(0.0);
 	vec3d pos(m_transpre[0], m_transpre[1], m_transpre[2]);
 	//Force compute
-	for (int i = 0; i < world->m_meshes.size(); i++) {
-		for (int j = 0; j < world->m_meshes[i].m_particles.size(); j++) {
-			vec3d nodePos = world->m_meshes[i].m_particles[j].m_position;
-			vec3d f = computeForce(pos, m_deviceRadius, nodePos,0.1f, 1.0f);
-			if (glm::length(f)> 0)
-			{
-				vec3d tmpfrc = -f;
-				world->m_meshes[i].m_particles[j].m_externalForce =tmpfrc;
-			}
-			forceHaptic+=f;
-		}
-	}
-
+	//for (int i = 0; i < world->m_meshes.size(); i++) {
+	//	for (int j = 0; j < world->m_meshes[i].m_particles.size(); j++) {
+	//		vec3d nodePos = world->m_meshes[i].m_particles[j].m_position;
+	//		vec3d f = computeForcePaticle(pos, m_deviceRadius, nodePos,0.1f, 5.0f);
+	//		if (glm::length(f)> 0)
+	//		{
+	//			vec3d tmpfrc = -f;
+	//			world->m_meshes[i].m_particles[j].m_externalForce =tmpfrc;
+	//		}
+	//		forceHaptic+=f;
+	//	}
+	//}
+	
 	force[0] = force[1] = force[2] = 0.0;
 }
 
-vec3d computeForce(const vec3d& a_cursor,
+vec3d HapticTools::computeForcePaticle(const vec3d& a_cursor,
 	double a_cursorRadius,
 	const vec3d& a_spherePos,
 	double a_radius,
