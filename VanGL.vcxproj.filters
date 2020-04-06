@@ -34,9 +34,6 @@
     <Filter Include="shaders\debugShader">
       <UniqueIdentifier>{f8b7bcb4-b8b5-4712-a8f2-8ab94083620a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\haptic_support">
-      <UniqueIdentifier>{8feafa29-7fb1-4aba-924e-cf4e2269e643}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\parallax_map">
       <UniqueIdentifier>{f6478fa6-171c-4465-a6fe-eb0564857846}</UniqueIdentifier>
     </Filter>
@@ -71,18 +68,6 @@
     </ClCompile>
     <ClCompile Include="src\glad.c">
       <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\haptic_support\CzMatrix.cpp">
-      <Filter>include\haptic_support</Filter>
-    </ClCompile>
-    <ClCompile Include="src\haptic_support\GlobalMethod.cpp">
-      <Filter>include\haptic_support</Filter>
-    </ClCompile>
-    <ClCompile Include="src\haptic_support\Array.cc">
-      <Filter>include\haptic_support</Filter>
-    </ClCompile>
-    <ClCompile Include="src\haptic_support\QuadProg++.cc">
-      <Filter>include\haptic_support</Filter>
     </ClCompile>
     <ClCompile Include="src\particleRendering.cpp">
       <Filter>source</Filter>
@@ -128,24 +113,6 @@
     <ClInclude Include="src\collision_detect\AABBTree.h">
       <Filter>include\collision_detect</Filter>
     </ClInclude>
-    <ClInclude Include="src\haptic_support\HapticManager.h">
-      <Filter>include\haptic_support</Filter>
-    </ClInclude>
-    <ClInclude Include="src\haptic_support\HapticTool.h">
-      <Filter>include\haptic_support</Filter>
-    </ClInclude>
-    <ClInclude Include="src\haptic_support\CzMatrix.h">
-      <Filter>include\haptic_support</Filter>
-    </ClInclude>
-    <ClInclude Include="src\haptic_support\GlobalMethod.h">
-      <Filter>include\haptic_support</Filter>
-    </ClInclude>
-    <ClInclude Include="src\haptic_support\Array.hh">
-      <Filter>include\haptic_support</Filter>
-    </ClInclude>
-    <ClInclude Include="src\haptic_support\QuadProg++.hh">
-      <Filter>include\haptic_support</Filter>
-    </ClInclude>
     <ClInclude Include="src\basic_shape\line.h">
       <Filter>include\basic_shape</Filter>
     </ClInclude>
@@ -161,20 +128,8 @@
     <ClInclude Include="src\AO\SSAO.h">
       <Filter>include\SSAO</Filter>
     </ClInclude>
-    <ClInclude Include="src\mass_spring\MassParticle.h">
+    <ClInclude Include="src\mass_spring\MassSpring.h">
       <Filter>include\mass_spring</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mass_spring\SpringLink.h">
-      <Filter>include\mass_spring</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mass_spring\DynamicWorld.h">
-      <Filter>include\mass_spring</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mass_spring\DynamicMesh.h">
-      <Filter>include\mass_spring</Filter>
-    </ClInclude>
-    <ClInclude Include="src\haptic_support\Thread.h">
-      <Filter>include\haptic_support</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

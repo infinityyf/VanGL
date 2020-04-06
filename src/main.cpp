@@ -14,22 +14,17 @@
 //basic shape
 #include "basic_shape/plane.h"
 #include "basic_shape/line.h"
-//haptic
-#include "haptic_support/HapticManager.h"
-//console
-#include <Windows.h>	/*console setting*/
+
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
 //render setting
 bool BLOOM_ENABLE = false;
-bool DEFERRED_RENDERING = true;
+bool DEFERRED_RENDERING = false;
 
 
 int main() {
 
-	//SetConsoleTextAttribute(GetStdHandle(STD_ERROR_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
-	//SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED| FOREGROUND_GREEN | FOREGROUND_BLUE);
 	int width = 800;
 	int height = 600;
 	Window window(width, height);
@@ -145,31 +140,10 @@ int main() {
 	// have been corrected already)
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
-	glm::vec4 start(0.0f, 2.0f, 2.0f, 1.0f);
-	glm::vec4 end(0.0f, -3.0f, -5.0f, 1.0f);
-	glm::vec3 startModel, endModel;
-	startModel = start;
-	endModel = end;
-	//test line
-	Line line = Line(startModel, endModel);
-
-
 	//load model
-	glm::mat4 inversModel;
 	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
 	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
 	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
-
-	nanosuit.generateAABBTree();
-	inversModel = glm::inverse(nanosuit.model);
-	start = inversModel * start;
-	end = inversModel * end;
-	startModel = start;
-	endModel = end;
-	int node = nanosuit.tree.SearchCollisionBox(startModel, endModel, nanosuit.root);
-	//intersctpoint is in model coord
-	glm::vec3 intersectPoint;
-	bool intersect = nanosuit.IntersectWithTriangle(startModel, endModel, node, intersectPoint);
 
 	//load plane
 	Texture floor(path + "scene\\materials\\textures\\wood.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
@@ -188,8 +162,6 @@ int main() {
 	glBindBuffer(GL_UNIFORM_BUFFER, ssao->ssaoUBO);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, 1024, glm::value_ptr(ssao->ssaoKernel[0]));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	//haptic
-	//HapticInitPhantom();
 
 
 	//render loop
@@ -282,13 +254,6 @@ int main() {
 			planeShader.setVector3("viewPos", camera.cameraPos);
 			plane.Draw(&planeShader, shadowMap->depthTexture);
 
-			//draw aabb tree
-			//nanosuit.debugDraw(&debugShader, 15);
-			line.debugDraw(&debugShader);
-			nanosuit.debugDrawBox(&debugShader, node);
-
-			//draw haptic tool
-			//currentTool->DrawHaptic(&debugShader);
 
 			//set the depth with 1 (so only draw on the pixels not cull bt object)
 			glDepthFunc(GL_LEQUAL);

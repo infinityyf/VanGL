@@ -74,7 +74,7 @@ namespace VANCollision {
 				nodes[i].node = nodes[mid].node;
 
 				nodes[mid].leftTree = leftSubTree;
-				nodes[mid].rightTree = nodes[i].rightTree;
+				nodes[mid].rightTree = rightSubTree;
 				nodes[mid].node = leftBox;
 				mid--;
 			}
