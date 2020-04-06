@@ -15,12 +15,14 @@
 #include "basic_shape/plane.h"
 #include "basic_shape/line.h"
 
+//cube map
+#include "light_probe/cubeMapGenerate.h"
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
 //render setting
 bool BLOOM_ENABLE = false;
-bool DEFERRED_RENDERING = true;
+bool DEFERRED_RENDERING = false;
 
 
 int main() {
@@ -52,8 +54,12 @@ int main() {
 
 	//shader
 	// create cube map (need before model
-	//Skybox skybox(path + "scene\\materials\\textures\\skybox");
+	CubeMap* cubeMap = new CubeMap();
+	cubeMap->cubeMapFromHDR(path + "scene\\materials\\HDR\\Playa_Sunrise\\Playa_Sunrise_8k.jpg");
+	Skybox skybox(" ");
+
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
+
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	//show a picture
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
@@ -112,21 +118,12 @@ int main() {
 	glUniformBlockBinding(debugShader.shaderProgramID, matrixIndex2, BIND_POINT::MATRIX_POINT);
 	unsigned int matrixIndex3 = glGetUniformBlockIndex(gBuffer.shaderProgramID, "Matrix");
 	glUniformBlockBinding(gBuffer.shaderProgramID, matrixIndex3, BIND_POINT::MATRIX_POINT);
+	unsigned int matrixIndex4 = glGetUniformBlockIndex(skybox.shader->shaderProgramID, "Matrix");
+	glUniformBlockBinding(skybox.shader->shaderProgramID, matrixIndex4, BIND_POINT::MATRIX_POINT);
 	unsigned int samplerIndex1 = glGetUniformBlockIndex(ssaoShader.shaderProgramID, "Samples");
 	glUniformBlockBinding(ssaoShader.shaderProgramID, samplerIndex1, BIND_POINT::SSAO_SAMPLER_POINT);
 	//bind uniform buffer object to bind point
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
-
-
-	// use instance draw
-	//glm::mat4 matrix[500];
-	//int amount = 500;
-	//srand(time(NULL));
-	//// generate data
-	//for (int i = 0; i < amount; i++) {
-	//	matrix[i] = glm::mat4(1.0);
-	//	matrix[i] = glm::translate(matrix[i], glm::vec3((float)(rand() % 100 - 50), (float)(rand() % 100 - 50), (float)(rand() % 100 - 50)));
-	//}
 
 	//enable z buffer test
 	glEnable(GL_DEPTH_TEST);
@@ -187,7 +184,7 @@ int main() {
 
 		//shadow pass
 		shadowMap->bindBuffer(width,height);
-		nanosuit.drawModel(shadowMap->depthShader, &blackSkybox);
+		nanosuit.drawModel(shadowMap->depthShader, blackSkybox.skyBox);
 		plane.Draw(shadowMap->depthShader);
 		shadowMap->unBindBuffer();
 
@@ -199,7 +196,7 @@ int main() {
 
 		//deferred rendering
 		if (DEFERRED_RENDERING) {
-			nanosuit.drawModel(&gBuffer, &blackSkybox);
+			nanosuit.drawModel(&gBuffer, blackSkybox.skyBox);
 
 			//apply ssao
 			glBindFramebuffer(GL_FRAMEBUFFER, ssao->ssaoFBO);
@@ -246,10 +243,10 @@ int main() {
 		//forward rendering
 		else
 		{
+			
 			shader.use();
 			shader.setVector3("viewPos", camera.cameraPos);
-			nanosuit.drawModel(&shader, &blackSkybox, shadowMap->depthTexture);
-			//nanosuit.drawModelInstaced(&shader, &skybox, amount, matrix);
+			nanosuit.drawModel(&shader, cubeMap->envCubeMap, shadowMap->depthTexture);
 			planeShader.use();
 			planeShader.setVector3("viewPos", camera.cameraPos);
 			plane.Draw(&planeShader, shadowMap->depthTexture);
@@ -257,15 +254,14 @@ int main() {
 
 			//set the depth with 1 (so only draw on the pixels not cull bt object)
 			glDepthFunc(GL_LEQUAL);
-			blackSkybox.setCamera(&camera);
-			blackSkybox.drawSkyBox();
+			skybox.drawSkyBox(cubeMap->envCubeMap);
 
 			//just render a screen quad
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glEnable(GL_DEPTH_TEST);
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+			
 			postShader.use();
 			postShader.setInt("screenTexture", 0);
 			//display color buffer

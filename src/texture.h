@@ -177,52 +177,55 @@ public:
 	Skybox(std::string picDictionary);
 
 public:
-	void setCamera(Camera* camera);
 	void drawSkyBox();
+	void drawSkyBox(unsigned int sky);
 };
 
 Skybox::Skybox(std::string picDictionary) {
-	glGenTextures(1, &skyBox);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
+	if (picDictionary==" ") {
+		glGenTextures(1, &skyBox);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
 
-	intptr_t hFile = 0;
-	std::vector<std::string> files;
-	//file info from io.h
-	struct _finddata_t fileinfo;
-	std::string p;
-	//use * to match all files the dictionary contains
-	if ((hFile = _findfirst(p.assign(picDictionary).append("\\*").c_str(), &fileinfo)) != -1) {
-		do {
-			// skip a subdir (./ or ../)
-			if (fileinfo.attrib & _A_SUBDIR) continue;
-			files.push_back(p.assign(picDictionary).append("\\").append(fileinfo.name));
-		} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
-		_findclose(hFile);
-	}
-	int width, height, nrChannels;
-	// load texture flip y coordinate
-	stbi_set_flip_vertically_on_load(false);
+		intptr_t hFile = 0;
+		std::vector<std::string> files;
+		//file info from io.h
+		struct _finddata_t fileinfo;
+		std::string p;
+		//use * to match all files the dictionary contains
+		if ((hFile = _findfirst(p.assign(picDictionary).append("\\*").c_str(), &fileinfo)) != -1) {
+			do {
+				// skip a subdir (./ or ../)
+				if (fileinfo.attrib & _A_SUBDIR) continue;
+				files.push_back(p.assign(picDictionary).append("\\").append(fileinfo.name));
+			} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
+			_findclose(hFile);
+		}
+		int width, height, nrChannels;
+		// load texture flip y coordinate
+		stbi_set_flip_vertically_on_load(false);
 
-	for (unsigned int i = 0; i < files.size(); i++)
-	{
-		std::cout <<"load skybox images:"<< files[i] << std::endl;
-		unsigned char* data = stbi_load(files[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data)
+		for (unsigned int i = 0; i < files.size(); i++)
 		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
+			std::cout << "load skybox images:" << files[i] << std::endl;
+			unsigned char* data = stbi_load(files[i].c_str(), &width, &height, &nrChannels, 0);
+			if (data)
+			{
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				stbi_image_free(data);
+			}
+			else
+			{
+				std::cerr << "ERROR: Cubemap texture failed to load at path: " << files[i] << std::endl;
+				stbi_image_free(data);
+			}
 		}
-		else
-		{
-			std::cerr << "ERROR: Cubemap texture failed to load at path: " << files[i] << std::endl;
-			stbi_image_free(data);
-		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	
 
 
 	glGenBuffers(1, &skyVBO);
@@ -243,19 +246,22 @@ Skybox::Skybox(std::string picDictionary) {
 	
 }
 
-inline void Skybox::setCamera(Camera* camera)
-{
-	shader->use();
-	shader->setMatrix4("projection", camera->projection);
-	shader->setMatrix4("view", camera->view);
-}
-
 inline void Skybox::drawSkyBox()
 {
 	shader->use();
 	glBindVertexArray(skyVAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+}
+
+inline void Skybox::drawSkyBox(unsigned int sky)
+{
+	shader->use();
+	glBindVertexArray(skyVAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, sky);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glBindVertexArray(0);
 }

@@ -35,8 +35,8 @@ public:
 	
 public:
 	Model(std::string modelPath);
-	void drawModel(StandardShader* shader, Skybox* sky, int shadowID = NULL);
-	void drawModelInstaced(StandardShader* shader, Skybox* sky, int amount,glm::mat4 *matrix);
+	void drawModel(StandardShader* shader, unsigned int sky, int shadowID = NULL);
+	void drawModelInstaced(StandardShader* shader, unsigned int sky, int amount,glm::mat4 *matrix);
 	
 	void loadModel(std::string modelPath);
 	void processNode(aiNode* node, const aiScene* scene);
@@ -65,7 +65,7 @@ Model::Model(std::string modelPath) {
 	model = glm::mat4(1.0f);
 }
 
-inline void Model::drawModel(StandardShader* shader,Skybox* sky,int shadowID)
+inline void Model::drawModel(StandardShader* shader, unsigned int sky,int shadowID)
 {
 	shader->use();
 	shader->setMatrix4("model",model);
@@ -74,7 +74,7 @@ inline void Model::drawModel(StandardShader* shader,Skybox* sky,int shadowID)
 	}
 }
 
-inline void Model::drawModelInstaced(StandardShader* shader, Skybox* sky, int amount, glm::mat4* matrix)
+inline void Model::drawModelInstaced(StandardShader* shader, unsigned int sky, int amount, glm::mat4* matrix)
 {
 	unsigned int instanceVBO;
 	// attach a new buffer then will be attah to each mesh's VAO
