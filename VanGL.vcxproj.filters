@@ -61,15 +61,18 @@
     <Filter Include="shaders\deformShader">
       <UniqueIdentifier>{9b77be71-f25b-44f7-98ac-3c5f95fc360b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders\PBR">
+      <UniqueIdentifier>{c6ca7753-0f5f-4773-be3b-3552cfd89800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\light_probe">
+      <UniqueIdentifier>{cd94b099-22a0-44f9-8630-aa46da7f0b52}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="src\glad.c">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="src\particleRendering.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="src\mass_spring\MassSpring.h">
       <Filter>include\mass_spring</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light_probe\cubeMapGenerate.h">
+      <Filter>include\light_probe</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -219,6 +225,12 @@
     </None>
     <None Include="src\shaders\deformShader\deform.vs">
       <Filter>shaders\deformShader</Filter>
+    </None>
+    <None Include="src\shaders\PBR\pbr.fs">
+      <Filter>shaders\PBR</Filter>
+    </None>
+    <None Include="src\shaders\PBR\pbr.vs">
+      <Filter>shaders\PBR</Filter>
     </None>
   </ItemGroup>
 </Project>

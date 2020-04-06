@@ -6,7 +6,6 @@ layout (location = 3) in vec3 aTangent;
 
 out VS_OUT{
     mat3 TBN;
-    vec3 Normal;
     vec3 FragPos;
     vec2 TexCoord;
     mat4 View;
@@ -52,5 +51,4 @@ void main()
     vec3 B = normalize(cross(T,N));    //left hand
     mat3 TBN = mat3(T, B, N);
     vs_out.TBN = TBN;
-    vs_out.Normal = aNormal;
 }

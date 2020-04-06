@@ -148,7 +148,6 @@
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\particleRendering.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AO\SSAO.h" />
@@ -160,6 +159,7 @@
     <ClInclude Include="src\collision_detect\OBBBox.h" />
     <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\light.h" />
+    <ClInclude Include="src\light_probe\cubeMapGenerate.h" />
     <ClInclude Include="src\mass_spring\MassSpring.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />
@@ -191,6 +191,8 @@
     <None Include="src\shaders\ParallaxMap\parallax.vs" />
     <None Include="src\shaders\particleShader\particle.fs" />
     <None Include="src\shaders\particleShader\particle.vs" />
+    <None Include="src\shaders\PBR\pbr.fs" />
+    <None Include="src\shaders\PBR\pbr.vs" />
     <None Include="src\shaders\postProcess\postProcessShader.fs" />
     <None Include="src\shaders\postProcess\postProcessShader.vs" />
     <None Include="src\shaders\postProcess\renderShadowMap.fs" />
