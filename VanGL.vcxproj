@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\源.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AO\SSAO.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="src\model.h" />
     <ClInclude Include="src\particle_system\ODE.h" />
     <ClInclude Include="src\particle_system\particles.h" />
+    <ClInclude Include="src\PBRModel.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\shadowMap.h" />
     <ClInclude Include="src\stdafx.h" />

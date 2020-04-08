@@ -22,8 +22,10 @@ enum TEX_TYPE
 	SPECULAR_TEX = 1,
 	AMBIENT_TEX = 2,
 	NORMAL_TEX = 3,
-	HEIGHT_TEX = 4
-
+	HEIGHT_TEX = 4,
+	METALLIC_TEX = 5,
+	ROUGHNESS_TEX = 6,
+	AO_TEX = 7,
 };
 
 class Texture {

@@ -67,6 +67,12 @@
     <Filter Include="shaders\cubeMapShader">
       <UniqueIdentifier>{fb123759-9cec-4b3d-b4c5-af707266b179}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\model_loader">
+      <UniqueIdentifier>{8e241987-c03c-45a2-9c73-d39fd1da1bf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\test">
+      <UniqueIdentifier>{e7a5d497-514e-472e-a6bb-d4c2314b3a24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -74,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="src\glad.c">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\源.cpp">
+      <Filter>source\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,13 +101,7 @@
     <ClInclude Include="src\camera.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="src\model.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="src\light.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mesh.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="src\frame.h">
@@ -133,6 +136,15 @@
     </ClInclude>
     <ClInclude Include="src\light_probe\cubeMapGenerate.h">
       <Filter>include\light_probe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh.h">
+      <Filter>include\model_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model.h">
+      <Filter>include\model_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PBRModel.h">
+      <Filter>include\model_loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,7 @@
 //rendering
 #include "camera.h"
 #include "model.h"
+#include "PBRModel.h"
 #include "shader.h"
 #include "frame.h"
 #include "shadowMap.h"
@@ -55,11 +56,11 @@ int main() {
 	//shader
 	// create cube map (need before model
 	CubeMap* cubeMap = new CubeMap();
-	cubeMap->cubeMapFromHDR(path + "scene\\materials\\HDR\\Playa_Sunrise\\Playa_Sunrise_8k.jpg");
+	cubeMap->cubeMapFromHDR(path + "scene\\materials\\HDR\\Ridgecrest_Road\\Ridgecrest_Road_4k_Bg.jpg");
 	Skybox skybox(" ");
 
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
-
+	StandardShader pbrShader((path + "src\\shaders\\PBR\\pbr.vs").c_str(), (path + "src\\shaders\\PBR\\pbr.fs").c_str());
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	//show a picture
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
@@ -103,10 +104,10 @@ int main() {
 	planeShader.setVector3("dirLight.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	planeShader.setVector3("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
 	planeShader.setVector3("dirLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
 	ssaoShader.use();
 	ssaoShader.setInt("width", width);
 	ssaoShader.setInt("height", height);
+
 
 	//get block index
 	unsigned int matrixIndex = glGetUniformBlockIndex(shader.shaderProgramID, "Matrix");
@@ -120,6 +121,8 @@ int main() {
 	glUniformBlockBinding(gBuffer.shaderProgramID, matrixIndex3, BIND_POINT::MATRIX_POINT);
 	unsigned int matrixIndex4 = glGetUniformBlockIndex(skybox.shader->shaderProgramID, "Matrix");
 	glUniformBlockBinding(skybox.shader->shaderProgramID, matrixIndex4, BIND_POINT::MATRIX_POINT);
+
+
 	unsigned int samplerIndex1 = glGetUniformBlockIndex(ssaoShader.shaderProgramID, "Samples");
 	glUniformBlockBinding(ssaoShader.shaderProgramID, samplerIndex1, BIND_POINT::SSAO_SAMPLER_POINT);
 	//bind uniform buffer object to bind point
@@ -138,9 +141,13 @@ int main() {
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
 	//load model
-	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
-	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
-	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
+	Model nanosuit(path + "scene\\models\\Cerberus\\Cerberus_LP.FBX");
+	//PBR MODEL
+	PBRModel model(path + "scene\\models\\Cerberus\\Cerberus_LP.FBX");
+
+	nanosuit.scale(glm::vec3(0.01f, 0.01f, 0.01f));
+	nanosuit.rotate(glm::vec3(1.0, 0.0, 0.0), -3.14 / 2);
+	//nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
 
 	//load plane
 	Texture floor(path + "scene\\materials\\textures\\wood.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
@@ -185,7 +192,7 @@ int main() {
 		//shadow pass
 		shadowMap->bindBuffer(width,height);
 		nanosuit.drawModel(shadowMap->depthShader, blackSkybox.skyBox);
-		plane.Draw(shadowMap->depthShader);
+		//plane.Draw(shadowMap->depthShader);
 		shadowMap->unBindBuffer();
 
 		// render to framebuffer
@@ -247,14 +254,16 @@ int main() {
 			shader.use();
 			shader.setVector3("viewPos", camera.cameraPos);
 			nanosuit.drawModel(&shader, cubeMap->envCubeMap, shadowMap->depthTexture);
-			planeShader.use();
-			planeShader.setVector3("viewPos", camera.cameraPos);
-			plane.Draw(&planeShader, shadowMap->depthTexture);
+
+			//planeShader.use();
+			//planeShader.setVector3("viewPos", camera.cameraPos);
+			//plane.Draw(&planeShader, shadowMap->depthTexture);
 
 
 			//set the depth with 1 (so only draw on the pixels not cull bt object)
 			glDepthFunc(GL_LEQUAL);
 			skybox.drawSkyBox(cubeMap->envCubeMap);
+
 
 			//just render a screen quad
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -274,8 +283,6 @@ int main() {
 
 
 	}
-	//stop haptic
-	//StopHapticLoopPhantom();
 
 	//release resources
 	glfwTerminate();

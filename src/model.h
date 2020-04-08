@@ -59,7 +59,8 @@ public:
 	bool IntersectWithTriangle(glm::vec3& origin, glm::vec3& target, int node, glm::vec3& intersectPoint);
 };
 
-Model::Model(std::string modelPath) {
+//load model in normal way
+inline Model::Model(std::string modelPath) {
 	// load data from file
 	loadModel(modelPath);
 	model = glm::mat4(1.0f);
@@ -195,7 +196,7 @@ inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, DIFFUSE_TEX);
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		std::vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, SPECULAR_TEX);
+		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, SPECULAR_TEX);
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 		//cannot use normalType to load normal map, use height map

@@ -27,7 +27,10 @@ public:
 	std::vector<Texture> textures;
 	Mesh(std::vector<Vertex> vertexs, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	void setupMesh();
+	//draw in traditional way
 	void drawMesh(StandardShader* shader, unsigned int sky, int shadowID=NULL);
+	//draw in PBR way
+	void drawMeshPBR(StandardShader* shader, unsigned int irradiance, int shadowID = NULL);
 	void drawMeshInstanced(StandardShader* shader, unsigned int sky, int amount);
 public:
 	unsigned int VBO;
@@ -133,6 +136,63 @@ inline void Mesh::drawMesh(StandardShader* shader, unsigned int sky,int shadowID
 	glBindVertexArray(VAO);
 	// third parameter data type
 	// forth parameter offset 
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+inline void Mesh::drawMeshPBR(StandardShader* shader, unsigned int irradiance, int shadowID)
+{
+	shader->use();
+	unsigned int i;
+	for (i = 0; i < textures.size(); i++) {
+
+		unsigned int type = textures[i].textureType;
+		switch (type)
+		{
+			// set texture1 uniform to texture unit0(bind with GPU texture unit not data)
+			//case AMBIENT_TEX: shader->setInt("material.ambient", i);
+		case AMBIENT_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("PBRmaterial.albedoMap", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		case NORMAL_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("PBRmaterial.normalMap", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		case METALLIC_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("PBRmaterial.metallicMap", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		case ROUGHNESS_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("PBRmaterial.rougnnessMap", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break;}
+		case AO_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			shader->setInt("PBRmaterial.aoMap", i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		default:
+			break;
+		}
+
+	}
+	// load sky box
+	glActiveTexture(GL_TEXTURE0 + i);
+	shader->setInt("PBRmaterial.irradianceMap", i);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradiance);
+	if (shadowID != NULL) {
+		//load shadow map
+		glActiveTexture(GL_TEXTURE0 + (i + 1));
+		shader->setInt("shadowMap", (i + 1));
+		glBindTexture(GL_TEXTURE_2D, shadowID);
+	}
+
+	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
