@@ -45,6 +45,7 @@ void main()
     vs_out.FragLightSpacePos = lightSpaceMatrix * vec4(vs_out.FragPos,1.0f);
 
     //calculate TBN matrix
+   // mat3 normalMatrix = mat3(transpose(inverse( model)));
     vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));
     vec3 N = normalize(vec3(model * vec4(aNormal,    0.0)));
     // re-orthogonalize T with respect to N

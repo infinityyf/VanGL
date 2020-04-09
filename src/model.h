@@ -119,7 +119,7 @@ void Model::loadModel(std::string modelPath) {
 	// aiProcess_SplitLargeMeshes : splite a large mesh into small meshes
 	// aiProcess_OptimizeMeshes : combine small meshes to a large mesh
 	// aiProcess_CalcTangentSpace : calculate the tangent vector of each vertice
-	const aiScene* scene = modelImpoter.ReadFile(modelPath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |aiProcess_CalcTangentSpace|aiProcess_GenNormals);
+	const aiScene* scene = modelImpoter.ReadFile(modelPath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs |aiProcess_CalcTangentSpace| aiProcess_GenSmoothNormals);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cerr << "ERROR: fail to load model:" << modelImpoter.GetErrorString() << std::endl;
 		return;
@@ -165,7 +165,7 @@ inline Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		if (mesh->mTangents != nullptr) {
 			//tangent coord
 			vector.x = mesh->mTangents[i].x;
-			vector.y = mesh->mTangents[i].z;
+			vector.y = mesh->mTangents[i].y;
 			vector.z = mesh->mTangents[i].z;
 			vertex.Tangent = vector;
 		}

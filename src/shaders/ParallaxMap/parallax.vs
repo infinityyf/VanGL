@@ -42,7 +42,7 @@ void main()
     vec3 N = normalize(vec3(model * vec4(aNormal,0.0)));
     // re-orthogonalize T with respect to N
     T = normalize(T - dot(T, N) * N);
-    vec3 B = normalize(cross(T,N));    //left hand
+    vec3 B = normalize(cross(N,T));    //left hand
     mat3 TBN = mat3(T, B, N);
     vs_out.TBN = TBN;
 }

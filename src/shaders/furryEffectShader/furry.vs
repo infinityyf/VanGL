@@ -1,10 +1,14 @@
 #version 330 core
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 normal;
+layout (location = 0) in vec3 aPos;   // 位置变量的属性位置值为 0 
+layout (location = 1) in vec3 aNormal; // 颜色变量的属性位置值为 1
 layout (location = 2) in vec2 aTexCoord;
+layout (location = 3) in vec3 aTangent;
+
 
 out VS_OUT{
-    vec3 Normal;
+    vec3 bitangent;
+    vec3 normal;
+    vec3 tangent;
 }vs_out;
 
 struct Camera{          //align
@@ -24,6 +28,11 @@ layout(std140) uniform Matrix{
 uniform mat4 model;
 
 void main(){
-    gl_Position = camera.projection * camera.view * model * vec4(position, 1.0);
-    vs_out.Normal = normal;
+    gl_Position = camera.projection * camera.view * model * vec4(aPos, 1.0);
+    mat3 normalMatrix = mat3(transpose(inverse(camera.view * model)));
+    vec3 N = normalize(vec3(camera.projection * vec4(normalMatrix * aNormal, 0.0)));
+    vec3 T =normalize(vec3(camera.projection * vec4(normalMatrix * aTangent, 0.0)));
+    vs_out.tangent = T;
+    vs_out.normal = N;
+    vs_out.bitangent = normalize(cross(N,T)); 
 }

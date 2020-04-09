@@ -104,7 +104,7 @@ inline Mesh PBRModel::processMesh(aiMesh* mesh, const aiScene* scene)
 		if (mesh->mTangents != nullptr) {
 			//tangent coord
 			vector.x = mesh->mTangents[i].x;
-			vector.y = mesh->mTangents[i].z;
+			vector.y = mesh->mTangents[i].y;
 			vector.z = mesh->mTangents[i].z;
 			vertex.Tangent = vector;
 		}

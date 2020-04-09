@@ -35,7 +35,7 @@ int main() {
 	//get cursor but make it invisible
 	window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f),0.1f,100.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f),0.01f,100.0f);
 	camera.linkToWindow(&window);
 	//register size change call back
 	camera.SetFramebufferSizeCallback();
@@ -58,19 +58,20 @@ int main() {
 	CubeMap* cubeMap = new CubeMap();
 	cubeMap->cubeMapFromHDR(path + "scene\\materials\\HDR\\Ridgecrest_Road\\Ridgecrest_Road_4k_Bg.jpg");
 	Skybox skybox(" ");
-
+	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
+	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
 	StandardShader pbrShader((path + "src\\shaders\\PBR\\pbr.vs").c_str(), (path + "src\\shaders\\PBR\\pbr.fs").c_str());
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	//show a picture
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
-	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
-	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	//gbuffer rendering shader
 	StandardShader gBuffer((path + "src\\shaders\\deferredRendering\\gBuffer.vs").c_str(), (path + "src\\shaders\\deferredRendering\\gBuffer.fs").c_str());
 	StandardShader deferredRender((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\deferredRendering\\deferred.fs").c_str());
 	StandardShader ssaoShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\ssao.fs").c_str());
 	StandardShader ssaoBlurShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\ssaoBlur.fs").c_str());
+	//gepmetry
+	StandardShader furryShader((path + "src\\shaders\\furryEffectShader\\furry.vs").c_str(), (path + "src\\shaders\\furryEffectShader\\furry.fs").c_str(), (path + "src\\shaders\\furryEffectShader\\furry.gs").c_str());
 	//set light info
 	shader.use();
 	shader.setInt("PointNum", 0);
@@ -121,7 +122,8 @@ int main() {
 	glUniformBlockBinding(gBuffer.shaderProgramID, matrixIndex3, BIND_POINT::MATRIX_POINT);
 	unsigned int matrixIndex4 = glGetUniformBlockIndex(skybox.shader->shaderProgramID, "Matrix");
 	glUniformBlockBinding(skybox.shader->shaderProgramID, matrixIndex4, BIND_POINT::MATRIX_POINT);
-
+	unsigned int matrixIndex5 = glGetUniformBlockIndex(pbrShader.shaderProgramID, "Matrix");
+	glUniformBlockBinding(pbrShader.shaderProgramID, matrixIndex5, BIND_POINT::MATRIX_POINT);
 
 	unsigned int samplerIndex1 = glGetUniformBlockIndex(ssaoShader.shaderProgramID, "Samples");
 	glUniformBlockBinding(ssaoShader.shaderProgramID, samplerIndex1, BIND_POINT::SSAO_SAMPLER_POINT);
@@ -141,13 +143,15 @@ int main() {
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 
 	//load model
-	Model nanosuit(path + "scene\\models\\Cerberus\\Cerberus_LP.FBX");
+	Model nanosuit(path + "scene\\models\\nanosuit_reflection\\nanosuit.obj");
+	nanosuit.scale(glm::vec3(0.1f, 0.1f, 0.1f));
+	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
 	//PBR MODEL
-	PBRModel model(path + "scene\\models\\Cerberus\\Cerberus_LP.FBX");
+	PBRModel gun(path + "scene\\models\\Cerberus\\Cerberus_LP.FBX");
+	gun.scale(glm::vec3(0.01f, 0.01f, 0.01f));
+	gun.rotate(glm::vec3(1.0, 0.0, 0.0), -3.14 / 2);
 
-	nanosuit.scale(glm::vec3(0.01f, 0.01f, 0.01f));
-	nanosuit.rotate(glm::vec3(1.0, 0.0, 0.0), -3.14 / 2);
-	//nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
+	
 
 	//load plane
 	Texture floor(path + "scene\\materials\\textures\\wood.png", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB);
@@ -250,10 +254,14 @@ int main() {
 		//forward rendering
 		else
 		{
-			
+
 			shader.use();
 			shader.setVector3("viewPos", camera.cameraPos);
 			nanosuit.drawModel(&shader, cubeMap->envCubeMap, shadowMap->depthTexture);
+			
+			//pbrShader.use();
+			//pbrShader.setVector3("viewPos", camera.cameraPos);
+			//gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap);
 
 			//planeShader.use();
 			//planeShader.setVector3("viewPos", camera.cameraPos);

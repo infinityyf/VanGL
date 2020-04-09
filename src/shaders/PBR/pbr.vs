@@ -12,7 +12,7 @@ out VS_OUT{
     mat4 Projection;
     float Near;
     float Far;
-    vec4 FragLightSpacePos;
+    vec4 FragLightSpacePos; //support shadow
 }vs_out;
 
 struct Camera{          //align

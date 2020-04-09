@@ -163,7 +163,7 @@ void Camera::processInput() {
 	//get key press event
 	if (glfwGetKey(window->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window->window, true);
 	// adjust accordingly if use more time to render then move faster
-	float cameraSpeed = 2.5f * deltaTime;
+	float cameraSpeed = 0.5f * deltaTime;
 	if (glfwGetKey(window->window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * cameraFront;
 	if (glfwGetKey(window->window, GLFW_KEY_S) == GLFW_PRESS)
