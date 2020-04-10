@@ -28,7 +28,7 @@ public:
 
 public:
 	PBRModel(std::string modelPath);
-	void drawPBRModel(StandardShader* shader, unsigned int irradiance, int shadowID = NULL);
+	void drawPBRModel(StandardShader* shader, unsigned int irradiance, unsigned int prefilter, unsigned int brdfLUT, int shadowID = NULL);
 
 	void loadModel(std::string modelPath);
 	void processNode(aiNode* node, const aiScene* scene);
@@ -46,12 +46,12 @@ inline PBRModel::PBRModel(std::string modelPath) {
 	model = glm::mat4(1.0f);
 }
 
-inline void PBRModel::drawPBRModel(StandardShader* shader, unsigned int irradiance, int shadowID)
+inline void PBRModel::drawPBRModel(StandardShader* shader, unsigned int irradiance, unsigned int prefilter,unsigned int brdfLUT, int shadowID)
 {
 	shader->use();
 	shader->setMatrix4("model", model);
 	for (int i = 0; i < meshes.size(); i++) {
-		meshes[i].drawMeshPBR(shader, irradiance, shadowID);
+		meshes[i].drawMeshPBR(shader, irradiance,prefilter,brdfLUT, shadowID);
 	}
 }
 

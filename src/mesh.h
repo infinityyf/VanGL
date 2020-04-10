@@ -30,7 +30,7 @@ public:
 	//draw in traditional way
 	void drawMesh(StandardShader* shader, unsigned int sky, int shadowID=NULL);
 	//draw in PBR way
-	void drawMeshPBR(StandardShader* shader, unsigned int irradiance, int shadowID = NULL);
+	void drawMeshPBR(StandardShader* shader, unsigned int irradiance, unsigned int prefilter, unsigned int brdfLUT, int shadowID = NULL);
 	void drawMeshInstanced(StandardShader* shader, unsigned int sky, int amount);
 public:
 	unsigned int VBO;
@@ -140,7 +140,7 @@ inline void Mesh::drawMesh(StandardShader* shader, unsigned int sky,int shadowID
 	glBindVertexArray(0);
 }
 
-inline void Mesh::drawMeshPBR(StandardShader* shader, unsigned int irradiance, int shadowID)
+inline void Mesh::drawMeshPBR(StandardShader* shader, unsigned int irradiance, unsigned int prefilter, unsigned int brdfLUT, int shadowID)
 {
 	shader->use();
 	unsigned int i;
@@ -181,10 +181,19 @@ inline void Mesh::drawMeshPBR(StandardShader* shader, unsigned int irradiance, i
 		}
 
 	}
-	// load sky box
+	// load cube maps
 	glActiveTexture(GL_TEXTURE0 + i);
-	shader->setInt("PBRmaterial.irradianceMap", i);
+	shader->setInt("irradianceMap", i);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, irradiance);
+	i++;
+	glActiveTexture(GL_TEXTURE0 + i);
+	shader->setInt("prefilterMap", i);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilter);
+	i++;
+	glActiveTexture(GL_TEXTURE0 + i);
+	shader->setInt("brdfMap", i);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, brdfLUT);
+	i++;
 	if (shadowID != NULL) {
 		//load shadow map
 		glActiveTexture(GL_TEXTURE0 + (i + 1));

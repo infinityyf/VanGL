@@ -36,10 +36,50 @@ public:
 	unsigned int textureType;
 
 	Texture() {};
+	Texture(const std::string picPath);
 	Texture(const std::string picPath, GLint wrap_s, GLint wrap_t, GLint min_filter, GLint mag_filter,GLint format);
 	void setTextureType(unsigned int type);
 	unsigned int loadTextureFromFile(const char* picName,std::string dictionary);
 };
+
+inline Texture::Texture(const std::string picPath)
+{
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	// load texture flip y coordinate
+	stbi_set_flip_vertically_on_load(false);
+
+	// load texture
+	int ImageWidth, ImageHeight, nrChannels;
+	unsigned char* data = stbi_load(picPath.c_str(), &ImageWidth, &ImageHeight, &nrChannels, 0);
+	if (data) {
+		//check the pic format(use channel)
+		GLenum format = GL_RGB;
+		if (nrChannels == 1) format = GL_RED;
+		else if (nrChannels == 2) format = GL_RG;
+		else if (nrChannels == 3) format = GL_RGB;
+		else if (nrChannels == 4) format = GL_RGBA;
+
+		// set texture wrap mode
+		// set each coordinate s or t(function name means the value type set to texture)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// set texture filter mode
+		// set min or mag filter function
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// set date(set the second parameter to use mipmap or use glgenerateMipmap)
+		glTexImage2D(GL_TEXTURE_2D, 0, format, ImageWidth, ImageHeight, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cerr << "ERROR: fail to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
 
 Texture::Texture(const std::string picPath, GLint wrap_s, GLint wrap_t, GLint min_filter, GLint mag_filter,GLint format) {
 	// generate texture
@@ -100,6 +140,7 @@ inline unsigned int Texture::loadTextureFromFile(const char* picName, std::strin
 		//check the pic format(use channel)
 		GLenum format = GL_RGB;
 		if (nrChannels == 1) format = GL_RED;
+		else if (nrChannels == 2) format = GL_RG;
 		else if (nrChannels == 3) format = GL_RGB;
 		else if (nrChannels == 4) format = GL_RGBA;
 

@@ -150,7 +150,7 @@ int main() {
 	PBRModel gun(path + "scene\\models\\Cerberus\\Cerberus_LP.FBX");
 	gun.scale(glm::vec3(0.01f, 0.01f, 0.01f));
 	gun.rotate(glm::vec3(1.0, 0.0, 0.0), -3.14 / 2);
-
+	Texture brdf("scene\\materials\\PBR\\ibl_brdf_lut.png");
 	
 
 	//load plane
@@ -255,13 +255,13 @@ int main() {
 		else
 		{
 
-			shader.use();
-			shader.setVector3("viewPos", camera.cameraPos);
-			nanosuit.drawModel(&shader, cubeMap->envCubeMap, shadowMap->depthTexture);
+			//shader.use();
+			//shader.setVector3("viewPos", camera.cameraPos);
+			//nanosuit.drawModel(&shader, cubeMap->envCubeMap, shadowMap->depthTexture);
 			
-			//pbrShader.use();
-			//pbrShader.setVector3("viewPos", camera.cameraPos);
-			//gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap);
+			pbrShader.use();
+			pbrShader.setVector3("viewPos", camera.cameraPos);
+			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, brdf.textureID);
 
 			//planeShader.use();
 			//planeShader.setVector3("viewPos", camera.cameraPos);

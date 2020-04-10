@@ -61,7 +61,7 @@ void main(){
         float NdotL = max(dot(N, L), 0.0);
         if(NdotL > 0.0)
         {
-            prefilteredColor += texture(environmentMap, L).rgb * NdotL;//带权求和取平均
+            prefilteredColor += texture(environmentMap, L).rgb * NdotL;//带权求和取平均（这也是对重要性采样积分之后的简化结果）
             totalWeight      += NdotL;
         }  
     }

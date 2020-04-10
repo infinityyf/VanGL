@@ -20,7 +20,6 @@ in VS_OUT{
 
 //material
 struct StandardMaterial{
-    samplerCube irradianceMap;
     sampler2D albedoMap;
     sampler2D normalMap;
     sampler2D metallicMap;
@@ -28,6 +27,9 @@ struct StandardMaterial{
     sampler2D aoMap;
 };
 uniform StandardMaterial PBRmaterial;
+uniform samplerCube prefilterMap;
+uniform samplerCube irradianceMap;
+uniform sampler2D brdfMap;
 uniform vec3 viewPos;
 
 //F
@@ -58,7 +60,9 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
     float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;  //have different form
+    float k = (r*r) / 8.0;  //直接光照的时候用
+    //float a = roughness;
+    //float k = (a * a) / 2.0;//IBL的时候用
 
     float nom   = NdotV;
     float denom = NdotV * (1.0 - k) + k;
@@ -103,9 +107,17 @@ void main()
     //vec3 ks = fresnelSchlick(max(dot(normal,viewDir),0.0),F0); //specular component
     vec3 ks = fresnelSchlickRoughness(max(dot(normal, viewDir), 0.0), F0, roughness);
     vec3 kd = 1.0 - ks;
+    kd *= 1.0 - metallic;
     //整个漫反射部分
-    vec3 irradiance = texture(PBRmaterial.irradianceMap, normal).rgb;
+    vec3 irradiance = texture(irradianceMap, normal).rgb;
     vec3 diffuse    = irradiance * albedo;
-    vec3 ambient    = (kd * diffuse) * ao;
+    
+    //镜面反射部分
+    vec3 prefilter = textureLod(prefilterMap,normal,1.2).rgb;
+    
+    vec2 envBRDF  = texture(brdfMap, vec2(max(dot(normal, viewDir), 0.0), roughness)).rg;
+    vec3 specular = prefilter * (F0 * envBRDF.x + envBRDF.y);
+
+    vec3 ambient    = (kd * diffuse + ks*specular) * ao;
     FragColor = vec4(ambient,1.0f);
 }
