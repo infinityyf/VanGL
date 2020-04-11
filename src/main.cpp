@@ -261,7 +261,7 @@ int main() {
 			
 			pbrShader.use();
 			pbrShader.setVector3("viewPos", camera.cameraPos);
-			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, brdf.textureID);
+			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, cubeMap->brdfLUTTexture);
 
 			//planeShader.use();
 			//planeShader.setVector3("viewPos", camera.cameraPos);

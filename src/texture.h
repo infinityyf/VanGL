@@ -48,7 +48,7 @@ inline Texture::Texture(const std::string picPath)
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	// load texture flip y coordinate
-	stbi_set_flip_vertically_on_load(false);
+	stbi_set_flip_vertically_on_load(true);
 
 	// load texture
 	int ImageWidth, ImageHeight, nrChannels;

@@ -192,7 +192,7 @@ inline void Mesh::drawMeshPBR(StandardShader* shader, unsigned int irradiance, u
 	i++;
 	glActiveTexture(GL_TEXTURE0 + i);
 	shader->setInt("brdfMap", i);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, brdfLUT);
+	glBindTexture(GL_TEXTURE_2D, brdfLUT);
 	i++;
 	if (shadowID != NULL) {
 		//load shadow map

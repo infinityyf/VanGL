@@ -215,18 +215,18 @@ inline void CubeMap::cubeMapFromHDR(std::string path) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//brdfShader = new StandardShader("E:\\vs_workspace\\VanGL\\src\\shaders\\postProcess\\postProcessShader.vs", "E:\\vs_workspace\\VanGL\\src\\shaders\\cubeMapShader\\BRDFintegration.fs");
-	//glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
-	//glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);//not rendering cubemap
+	brdfShader = new StandardShader("E:\\vs_workspace\\VanGL\\src\\shaders\\postProcess\\postProcessShader.vs", "E:\\vs_workspace\\VanGL\\src\\shaders\\cubeMapShader\\BRDFintegration.fs");
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);//not rendering cubemap
 
-	//glViewport(0, 0, 512, 512);
-	//brdfShader->use();
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//renderQuad();
+	glViewport(0, 0, 512, 512);
+	brdfShader->use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	renderQuad();
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //draw a cube

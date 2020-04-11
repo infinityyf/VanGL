@@ -93,6 +93,9 @@ void main()
     vec3 viewDir = viewPos - fs_in.FragPos;
     viewDir = normalize(viewDir);
 
+    vec3 reflectDir = reflect(-viewDir,normal);
+    reflectDir = normalize(reflectDir);
+
     float metallic = texture(PBRmaterial.metallicMap,fs_in.TexCoord).r;
 
     float roughness = texture(PBRmaterial.rougnnessMap,fs_in.TexCoord).r;
@@ -113,11 +116,11 @@ void main()
     vec3 diffuse    = irradiance * albedo;
     
     //镜面反射部分
-    vec3 prefilter = textureLod(prefilterMap,normal,1.2).rgb;
+    vec3 prefilter = textureLod(prefilterMap,reflectDir,1.2).rgb;
     
     vec2 envBRDF  = texture(brdfMap, vec2(max(dot(normal, viewDir), 0.0), roughness)).rg;
     vec3 specular = prefilter * (F0 * envBRDF.x + envBRDF.y);
 
-    vec3 ambient    = (kd * diffuse + ks*specular) * ao;
+    vec3 ambient    = (kd * diffuse + specular) * ao;
     FragColor = vec4(ambient,1.0f);
 }
