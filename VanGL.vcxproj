@@ -103,7 +103,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>3rd\openHaptic\utilities\include;3rd\openHaptic\include;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rd\imgui\integration;3rd\imgui;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -135,7 +135,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>3rd\openHaptic\utilities\include;3rd\openHaptic\include;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rd\imgui;3rd\openHaptic\utilities\include;3rd\openHaptic\include;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,11 +146,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="3rd\imgui\imgui.cpp" />
+    <ClCompile Include="3rd\imgui\imgui_demo.cpp" />
+    <ClCompile Include="3rd\imgui\imgui_draw.cpp" />
+    <ClCompile Include="3rd\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="3rd\imgui\integration\imgui_impl_glfw.cpp" />
+    <ClCompile Include="3rd\imgui\integration\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="3rd\imgui\integration\imgui_impl_win32.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\源.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rd\imgui\imconfig.h" />
+    <ClInclude Include="3rd\imgui\imgui.h" />
+    <ClInclude Include="3rd\imgui\imgui_internal.h" />
+    <ClInclude Include="3rd\imgui\imstb_rectpack.h" />
+    <ClInclude Include="3rd\imgui\imstb_textedit.h" />
+    <ClInclude Include="3rd\imgui\imstb_truetype.h" />
+    <ClInclude Include="3rd\imgui\integration\imgui_impl_glfw.h" />
+    <ClInclude Include="3rd\imgui\integration\imgui_impl_opengl3.h" />
+    <ClInclude Include="3rd\imgui\integration\imgui_impl_win32.h" />
     <ClInclude Include="src\AO\SSAO.h" />
     <ClInclude Include="src\basic_shape\line.h" />
     <ClInclude Include="src\basic_shape\plane.h" />
