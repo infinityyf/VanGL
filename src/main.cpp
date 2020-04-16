@@ -38,7 +38,7 @@ int main() {
 	Window window(width, height);
 	if (window.window == NULL) return -1;
 	//get cursor but make it invisible
-	window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f),0.01f,100.0f);
 	camera.linkToWindow(&window);
@@ -186,7 +186,7 @@ int main() {
 	// Setup Platform/Renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
-
+	float metal = 1.0f;
 
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
@@ -277,6 +277,7 @@ int main() {
 			
 			pbrShader.use();
 			pbrShader.setVector3("viewPos", camera.cameraPos);
+			pbrShader.setFloat("metal", metal);
 			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, cubeMap->brdfLUTTexture);
 
 			//planeShader.use();
@@ -309,9 +310,9 @@ int main() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+		ImGui::Begin("rendering setting");                          // Create a window called "Hello, world!" and append into it.
+		ImGui::SliderFloat("metal", &metal, 0.0f, 1.0f);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

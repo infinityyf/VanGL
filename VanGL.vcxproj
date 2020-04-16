@@ -103,7 +103,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>3rd\imgui\integration;3rd\imgui;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>3rd\glad\include;3rd\imgui\integration;3rd\imgui;3rd\Assimp\include;3rd\glm;3rd\GLAD\include;3rd\STB\include;3rd\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

@@ -1,4 +1,6 @@
 #version 330 core
+//#extension GL_ARB_shading_language_include : require
+//#include "/StandardShader.glsl"
 //support more than one spotlight
 #define NUM_POINT_LIGHTS 4
 #define NUM_SPOT_LIGHTS 4
@@ -31,7 +33,7 @@ uniform samplerCube prefilterMap;
 uniform samplerCube irradianceMap;
 uniform sampler2D brdfMap;
 uniform vec3 viewPos;
-
+uniform float metal;
 //F
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
@@ -96,7 +98,7 @@ void main()
     vec3 reflectDir = reflect(-viewDir,normal);
     reflectDir = normalize(reflectDir);
 
-    float metallic = texture(PBRmaterial.metallicMap,fs_in.TexCoord).r;
+    float metallic = texture(PBRmaterial.metallicMap,fs_in.TexCoord).r*metal;
 
     float roughness = texture(PBRmaterial.rougnnessMap,fs_in.TexCoord).r;
 

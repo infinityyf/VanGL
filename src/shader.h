@@ -196,5 +196,27 @@ inline void StandardShader::setVector3(const std::string& name, const glm::vec3 
 	glUniform3fv(location, 1, glm::value_ptr(vec));
 }
 
+void AddCommonShaderFile(const std::string& fileName)
+{
+	std::string shaderCode;
+	std::ifstream shaderFile;
+	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try {
+		//open file
+		shaderFile.open(fileName);
+		std::stringstream shaderStream;
+
+		//rdbuf: use another stream to output this stream content
+		shaderStream << shaderFile.rdbuf();
+		shaderFile.close();
+
+		shaderCode = shaderStream.str();
+	}
+	catch (std::ifstream::failure error) {
+		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
+	}
+	string fullFileName = "/" + fileName + ".glsl";
+	glNamedStringARB(GL_SHADER_INCLUDE_ARB, fullFileName.size(), fullFileName.c_str(), shaderCode.size(), shaderCode.c_str());
+}
 
 #endif
