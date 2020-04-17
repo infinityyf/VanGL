@@ -26,14 +26,23 @@ enum BIND_POINT {
 	SSAO_SAMPLER_POINT = 1,
 };
 
+
+
 class StandardShader
 {
 public:
+	// called once before use shader
+	static void createIncludeShaderFile(const GLchar* includePath);
+	const GLchar* shaderSearchPath;
+	
+
+
 	// shader ID
 	unsigned int shaderProgramID;
 
 	// get source code 
-	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath = nullptr);
+	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath = nullptr,bool include = false);
+	
 	// use program
 	void use();
 
@@ -48,8 +57,10 @@ public:
 	void useTexture(const std::string& shaderName);
 };
 
-inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath)
+inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath, bool include)
 {
+
+	shaderSearchPath = "/";
 	//open file
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -112,10 +123,13 @@ inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fr
 	int  success;
 	char infoLog[512];
 
-
-
+	
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vShaderCode, NULL);
+	//add include shader
+	if (include) {
+		glCompileShaderIncludeARB(vertexShader, 1, &shaderSearchPath, nullptr);
+	}
 	glCompileShader(vertexShader);
 
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -127,6 +141,9 @@ inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fr
 
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
+	if (include) {
+		glCompileShaderIncludeARB(fragmentShader, 1, &shaderSearchPath, nullptr);
+	}
 	glCompileShader(fragmentShader);
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
@@ -162,6 +179,8 @@ inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fr
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	if (geometryPath != nullptr) glDeleteShader(geometryShader);
+
+	
 }
 
 void StandardShader::use() {
@@ -196,14 +215,17 @@ inline void StandardShader::setVector3(const std::string& name, const glm::vec3 
 	glUniform3fv(location, 1, glm::value_ptr(vec));
 }
 
-void AddCommonShaderFile(const std::string& fileName)
+void StandardShader::createIncludeShaderFile(const GLchar* includePath)
 {
+
+	std::string filePath = includePath;
+
 	std::string shaderCode;
 	std::ifstream shaderFile;
 	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 	try {
 		//open file
-		shaderFile.open(fileName);
+		shaderFile.open(filePath);
 		std::stringstream shaderStream;
 
 		//rdbuf: use another stream to output this stream content
@@ -215,8 +237,12 @@ void AddCommonShaderFile(const std::string& fileName)
 	catch (std::ifstream::failure error) {
 		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
 	}
-	string fullFileName = "/" + fileName + ".glsl";
-	glNamedStringARB(GL_SHADER_INCLUDE_ARB, fullFileName.size(), fullFileName.c_str(), shaderCode.size(), shaderCode.c_str());
+	//get include shader filename
+	std::string fileName = filePath.substr(filePath.find_last_of('\\')+1, filePath.length() - filePath.find_last_of('\\'));
+	std::string shaderFileName = "/" + fileName;
+	glNamedStringARB(GL_SHADER_INCLUDE_ARB, shaderFileName.size(), shaderFileName.c_str(), shaderCode.size(), shaderCode.c_str());
 }
+
+
 
 #endif

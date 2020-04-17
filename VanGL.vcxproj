@@ -155,6 +155,7 @@
     <ClCompile Include="3rd\imgui\integration\imgui_impl_win32.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\源.cpp" />
   </ItemGroup>
   <ItemGroup>

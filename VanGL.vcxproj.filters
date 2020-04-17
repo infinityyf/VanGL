@@ -111,6 +111,9 @@
     <ClCompile Include="3rd\imgui\integration\imgui_impl_win32.cpp">
       <Filter>include\gui\integration</Filter>
     </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">

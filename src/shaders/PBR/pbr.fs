@@ -1,6 +1,6 @@
 #version 330 core
-//#extension GL_ARB_shading_language_include : require
-//#include "/StandardShader.glsl"
+#extension GL_ARB_shading_language_include : require
+#include "/StandardShader.glsl"
 //support more than one spotlight
 #define NUM_POINT_LIGHTS 4
 #define NUM_SPOT_LIGHTS 4
@@ -100,7 +100,7 @@ void main()
 
     float metallic = texture(PBRmaterial.metallicMap,fs_in.TexCoord).r*metal;
 
-    float roughness = texture(PBRmaterial.rougnnessMap,fs_in.TexCoord).r;
+    float roughness = texture(PBRmaterial.rougnnessMap,fs_in.TexCoord).r*test;
 
     float ao = texture(PBRmaterial.aoMap,fs_in.TexCoord).r;
 

@@ -26,6 +26,7 @@
 
 std::string path = "E:\\vs_workspace\\VanGL\\";
 
+
 //render setting
 bool BLOOM_ENABLE = false;
 bool DEFERRED_RENDERING = false;
@@ -59,6 +60,8 @@ int main() {
 
 
 	//shader
+	//init include shaders
+	StandardShader::createIncludeShaderFile((path + "src\\shaders\\includeShader\\StandardShader.glsl").c_str());
 	// create cube map (need before model
 	CubeMap* cubeMap = new CubeMap();
 	cubeMap->cubeMapFromHDR(path + "scene\\materials\\HDR\\Ridgecrest_Road\\Ridgecrest_Road_4k_Bg.jpg");
@@ -66,7 +69,7 @@ int main() {
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
-	StandardShader pbrShader((path + "src\\shaders\\PBR\\pbr.vs").c_str(), (path + "src\\shaders\\PBR\\pbr.fs").c_str());
+	StandardShader pbrShader((path + "src\\shaders\\PBR\\pbr.vs").c_str(), (path + "src\\shaders\\PBR\\pbr.fs").c_str(),nullptr, true);
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
 	//show a picture
 	StandardShader postShader((path + "src\\shaders\\postProcess\\postProcessShader.vs").c_str(), (path + "src\\shaders\\postProcess\\postProcessShader.fs").c_str());
@@ -187,7 +190,7 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 	float metal = 1.0f;
-
+	float test = 1.0f;
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
 		float currentFrame = glfwGetTime();
@@ -278,6 +281,7 @@ int main() {
 			pbrShader.use();
 			pbrShader.setVector3("viewPos", camera.cameraPos);
 			pbrShader.setFloat("metal", metal);
+			pbrShader.setFloat("test", test);
 			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, cubeMap->brdfLUTTexture);
 
 			//planeShader.use();
@@ -312,6 +316,7 @@ int main() {
 		ImGui::NewFrame();
 		ImGui::Begin("rendering setting");                          // Create a window called "Hello, world!" and append into it.
 		ImGui::SliderFloat("metal", &metal, 0.0f, 1.0f);
+		ImGui::SliderFloat("test", &test, 0.0f, 1.0f);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 		ImGui::Render();
