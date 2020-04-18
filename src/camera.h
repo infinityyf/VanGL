@@ -176,6 +176,8 @@ void Camera::processInput() {
 		cameraPos += glm::normalize(cameraUp) * cameraSpeed;
 	if (glfwGetKey(window->window, GLFW_KEY_Q) == GLFW_PRESS)
 		cameraPos -= glm::normalize(cameraUp) * cameraSpeed;
+	//if (glfwGetKey(window->window, GLFW_KEY_1) == GLFW_PRESS)
+
 }
 
 inline void Camera::updateMatrixs()

@@ -33,7 +33,7 @@ uniform samplerCube prefilterMap;
 uniform samplerCube irradianceMap;
 uniform sampler2D brdfMap;
 uniform vec3 viewPos;
-uniform float metal;
+
 //F
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
@@ -100,9 +100,9 @@ void main()
 
     float metallic = texture(PBRmaterial.metallicMap,fs_in.TexCoord).r*metal;
 
-    float roughness = texture(PBRmaterial.rougnnessMap,fs_in.TexCoord).r*test;
+    float roughness = texture(PBRmaterial.rougnnessMap,fs_in.TexCoord).r*roughness;
 
-    float ao = texture(PBRmaterial.aoMap,fs_in.TexCoord).r;
+    float ao = texture(PBRmaterial.aoMap,fs_in.TexCoord).r*aoScale;
 
     //如果是非金属就用0.04，如果是金属，就根据金属度设置为albedo
     vec3 F0 = vec3(0.04); 

@@ -79,6 +79,9 @@
     <Filter Include="include\gui\integration">
       <UniqueIdentifier>{2b6e5090-de16-4bb3-bd75-a42ac32ba1ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\global_illumination">
+      <UniqueIdentifier>{86efb372-dfe4-4067-9b42-91f21963107a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">

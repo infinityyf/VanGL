@@ -190,7 +190,8 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 	float metal = 1.0f;
-	float test = 1.0f;
+	float roughness = 1.0f;
+	float aoScale = 1.0f;
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
 		float currentFrame = glfwGetTime();
@@ -281,7 +282,8 @@ int main() {
 			pbrShader.use();
 			pbrShader.setVector3("viewPos", camera.cameraPos);
 			pbrShader.setFloat("metal", metal);
-			pbrShader.setFloat("test", test);
+			pbrShader.setFloat("roughness", roughness);
+			pbrShader.setFloat("aoScale", aoScale);
 			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, cubeMap->brdfLUTTexture);
 
 			//planeShader.use();
@@ -316,7 +318,8 @@ int main() {
 		ImGui::NewFrame();
 		ImGui::Begin("rendering setting");                          // Create a window called "Hello, world!" and append into it.
 		ImGui::SliderFloat("metal", &metal, 0.0f, 1.0f);
-		ImGui::SliderFloat("test", &test, 0.0f, 1.0f);
+		ImGui::SliderFloat("roughness", &roughness, 0.0f, 1.0f);
+		ImGui::SliderFloat("aoScale", &aoScale, 0.0f, 1.0f);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 		ImGui::Render();
