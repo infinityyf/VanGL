@@ -156,6 +156,7 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\tessellation.cpp" />
     <ClCompile Include="src\源.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -224,6 +225,9 @@
     <None Include="src\shaders\skyboxShader\skyBox.vs" />
     <None Include="src\shaders\StandardShader.fs" />
     <None Include="src\shaders\StandardShader.vs" />
+    <None Include="src\shaders\tessellationShader\tessellation.vs" />
+    <None Include="src\shaders\tessellationShader\tessellationTCS.glsl" />
+    <None Include="src\shaders\tessellationShader\tessellationTES.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

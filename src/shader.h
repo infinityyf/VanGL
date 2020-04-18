@@ -42,7 +42,7 @@ public:
 
 	// get source code 
 	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath = nullptr,bool include = false);
-	
+	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* tessellationTCL, const GLchar* tessellationTEL, bool include = false);
 	// use program
 	void use();
 
@@ -181,6 +181,156 @@ inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fr
 	if (geometryPath != nullptr) glDeleteShader(geometryShader);
 
 	
+}
+
+inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* tessellationTCL, const GLchar* tessellationTEL, bool include)
+{
+	shaderSearchPath = "/";
+	//set tesselation patch vertices number
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	//open file
+	std::string vertexCode;
+	std::string fragmentCode;
+	std::string tcsCode;
+	std::string tesCode;
+
+	std::ifstream vShaderFile;
+	std::ifstream fShaderFile;
+	std::ifstream tcsShaderFile;
+	std::ifstream tesShaderFile;
+
+
+	//set exception bit(use bit operator)
+	//this function can get or set exception mask
+	//then we can use try catch
+	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	tcsShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	tesShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+
+	//stream has 4 bit: goodbit, eofbit, failbit, badbit
+	//when goodbit is false stream will close
+	try {
+		//open file
+		vShaderFile.open(vertexPath);
+		fShaderFile.open(fragmentPath);
+		tcsShaderFile.open(tessellationTCL);
+		tesShaderFile.open(tessellationTEL);
+
+
+		std::stringstream vShaderStream, fShaderStream,tcsShaderStream,tesShaderStream;
+
+		//rdbuf: use another stream to output this stream content
+		vShaderStream << vShaderFile.rdbuf();
+		fShaderStream << fShaderFile.rdbuf();
+		tcsShaderStream << tcsShaderFile.rdbuf();
+		tesShaderStream << tesShaderFile.rdbuf();
+		vShaderFile.close();
+		fShaderFile.close();
+		tcsShaderFile.close();
+		tesShaderFile.close();
+
+		vertexCode = vShaderStream.str();
+		fragmentCode = fShaderStream.str();
+		tcsCode = tcsShaderStream.str();
+		tesCode = tesShaderStream.str();
+
+	}
+	catch (std::ifstream::failure error) {
+		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
+	}
+
+	//source code
+	const char* vShaderCode = vertexCode.c_str();
+	const char* fShaderCode = fragmentCode.c_str();
+	const char* tcsShaderCode = tcsCode.c_str();
+	const char* tesShaderCode = tesCode.c_str();
+
+
+	//compile vertex shader runtime
+	unsigned int vertexShader;
+	//compile fragment shader runtime
+	unsigned int fragmentShader;
+	unsigned int tcsShader;
+	unsigned int tesShader;
+
+	//check result
+	int  success;
+	char infoLog[512];
+
+
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vShaderCode, NULL);
+	//add include shader
+	if (include) {
+		glCompileShaderIncludeARB(vertexShader, 1, &shaderSearchPath, nullptr);
+	}
+	glCompileShader(vertexShader);
+
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cerr << "ERROR IN VERTEX SHADER:\n" << infoLog << std::endl;
+	}
+
+
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
+	if (include) {
+		glCompileShaderIncludeARB(fragmentShader, 1, &shaderSearchPath, nullptr);
+	}
+	glCompileShader(fragmentShader);
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cerr << "ERROR IN FRAGMENT SHADER:\n" << infoLog << std::endl;
+	}
+
+	tcsShader = glCreateShader(GL_TESS_CONTROL_SHADER);
+	glShaderSource(tcsShader, 1, &tcsShaderCode, NULL);
+	if (include) {
+		glCompileShaderIncludeARB(tcsShader, 1, &shaderSearchPath, nullptr);
+	}
+	glCompileShader(tcsShader);
+	glGetShaderiv(tcsShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(tcsShader, 512, NULL, infoLog);
+		std::cerr << "ERROR IN TCS SHADER:\n" << infoLog << std::endl;
+	}
+
+
+	tesShader = glCreateShader(GL_TESS_EVALUATION_SHADER);
+	glShaderSource(tesShader, 1, &tesShaderCode, NULL);
+	if (include) {
+		glCompileShaderIncludeARB(tesShader, 1, &shaderSearchPath, nullptr);
+	}
+	glCompileShader(tesShader);
+	glGetShaderiv(tesShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(tesShader, 512, NULL, infoLog);
+		std::cerr << "ERROR IN TES SHADER:\n" << infoLog << std::endl;
+	}
+
+
+	//link shader to shader program object. it will be activated when rendering
+	shaderProgramID = glCreateProgram();
+	glAttachShader(shaderProgramID, vertexShader);
+	glAttachShader(shaderProgramID, fragmentShader);
+	glAttachShader(shaderProgramID, tcsShader);
+	glAttachShader(shaderProgramID, tesShader);
+	
+	glLinkProgram(shaderProgramID);
+	glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgramID, 512, NULL, infoLog);
+		std::cerr << "ERROR IN LINK:\n" << infoLog << std::endl;
+	}
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+
+
 }
 
 void StandardShader::use() {

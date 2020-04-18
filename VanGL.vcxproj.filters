@@ -82,6 +82,9 @@
     <Filter Include="include\global_illumination">
       <UniqueIdentifier>{86efb372-dfe4-4067-9b42-91f21963107a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders\tessellationShader">
+      <UniqueIdentifier>{f077767f-794d-4d38-b826-f4d1fcce40d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -116,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="src\shader.cpp">
       <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tessellation.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -309,6 +315,15 @@
     </None>
     <None Include="src\shaders\cubeMapShader\diffuseIrradiance.fs">
       <Filter>shaders\cubeMapShader</Filter>
+    </None>
+    <None Include="src\shaders\tessellationShader\tessellation.vs">
+      <Filter>shaders\tessellationShader</Filter>
+    </None>
+    <None Include="src\shaders\tessellationShader\tessellationTCS.glsl">
+      <Filter>shaders\tessellationShader</Filter>
+    </None>
+    <None Include="src\shaders\tessellationShader\tessellationTES.glsl">
+      <Filter>shaders\tessellationShader</Filter>
     </None>
   </ItemGroup>
 </Project>

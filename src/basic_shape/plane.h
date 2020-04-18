@@ -30,8 +30,9 @@ public:
 	unsigned int textureID;
 	unsigned int NormalTextureID;	//normal map(may not use)
 	unsigned int HeightTextureID;	//height map(may not use)
-	Plane(unsigned int textureID);
+	Plane(unsigned int textureID=NULL);
 	void Draw(StandardShader* shader,int shadowID=NULL);
+	void DrawDebug(StandardShader* shader);
 
 	glm::mat4 model;
 };
@@ -52,7 +53,8 @@ Plane::Plane(unsigned int textureID) {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GL_FLOAT), (void*)(6 * sizeof(GL_FLOAT)));
 	glBindVertexArray(0);
 
-	this->textureID = textureID;
+	if(!textureID)
+		this->textureID = textureID;
 	model = glm::mat4(1.0f);
 }
 
@@ -73,6 +75,17 @@ void Plane::Draw(StandardShader* shader,int shadowID) {
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 12);
 	glBindVertexArray(0);
+}
+
+inline void Plane::DrawDebug(StandardShader* shader)
+{
+	shader->use();
+	shader->setMatrix4("model", model);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_PATCHES, 0, 3);
+//	glDrawArrays(GL_LINES, 0, 12);
+//	glBindVertexArray(0);
+
 }
 
 #endif
