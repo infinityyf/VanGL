@@ -39,9 +39,9 @@ int main() {
 	Window window(width, height);
 	if (window.window == NULL) return -1;
 	//get cursor but make it invisible
-	window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.01f, 100.0f);
+	Camera camera(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.01f, 100.0f);
 	camera.linkToWindow(&window);
 	//register size change call back
 	camera.SetFramebufferSizeCallback();
@@ -67,6 +67,11 @@ int main() {
 	
 	//model setting
 	Plane* plane = new Plane();
+	//Texture heightMap((path + "scene\\materials\\terrain\\heightMap.jpg").c_str());
+	Texture heightMap((path + "scene\\materials\\terrain\\terrain.png").c_str());
+	//Texture heightMap((path + "scene\\materials\\textures\\brick\\bricks2_disp.jpg").c_str());
+	tesselation.use();
+	tesselation.setInt("heightMap", 0);
 
 
 	//rendering setting
@@ -83,9 +88,7 @@ int main() {
 	// Setup Platform/Renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
 	ImGui_ImplOpenGL3_Init("#version 410");
-	float metal = 1.0f;
-	float roughness = 1.0f;
-	float aoScale = 1.0f;
+	float sub = 16;
 
 	glm::mat4 model(1.0);
 
@@ -107,6 +110,9 @@ int main() {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		tesselation.use();
 		tesselation.setVector3("viewPos", camera.cameraPos);
+		tesselation.setFloat("sub", sub);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, heightMap.textureID);
 		
 		plane->DrawDebug(&tesselation);
 
@@ -116,10 +122,8 @@ int main() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		ImGui::Begin("rendering setting");                          // Create a window called "Hello, world!" and append into it.
-		ImGui::SliderFloat("metal", &metal, 0.0f, 1.0f);
-		ImGui::SliderFloat("roughness", &roughness, 0.0f, 1.0f);
-		ImGui::SliderFloat("aoScale", &aoScale, 0.0f, 1.0f);
+		ImGui::Begin("tessellation setting");                          // Create a window called "Hello, world!" and append into it.
+		ImGui::SliderFloat("sub", &sub, 0.0f, 512.0);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 		ImGui::Render();

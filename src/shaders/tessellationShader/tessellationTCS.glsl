@@ -2,6 +2,7 @@
 // define the number of CPs in the output patch
 layout (vertices = 3) out;
 uniform vec3 viewPos;
+uniform float sub;
 // attributes of the input CPs
 in vec3 WorldPos_CS_in[];
 in vec2 TexCoord_CS_in[];
@@ -11,19 +12,17 @@ out vec3 WorldPos_ES_in[];
 out vec2 TexCoord_ES_in[];
 out vec3 Normal_ES_in[];
 
-
-
 float GetTessLevel(float Distance0, float Distance1)
 {
     float AvgDistance = (Distance0 + Distance1) / 2.0;
     if (AvgDistance <= 2.0) {
-        return 10.0;
+        return sub;
     }
     else if (AvgDistance <= 5.0) {
-        return 7.0;
+        return sub/2;
     }
     else {
-        return 3.0;
+        return sub/4;
     }
 } 
 

@@ -48,7 +48,7 @@ inline Texture::Texture(const std::string picPath)
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	// load texture flip y coordinate
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
 
 	// load texture
 	int ImageWidth, ImageHeight, nrChannels;
@@ -73,6 +73,7 @@ inline Texture::Texture(const std::string picPath)
 		// set date(set the second parameter to use mipmap or use glgenerateMipmap)
 		glTexImage2D(GL_TEXTURE_2D, 0, format, ImageWidth, ImageHeight, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
+		std::cout << format << std::endl;
 	}
 	else {
 		std::cerr << "ERROR: fail to load texture" << std::endl;
