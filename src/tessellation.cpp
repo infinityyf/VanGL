@@ -66,6 +66,7 @@ int main() {
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 	
 	//model setting
+	Plane::GenTerrain(10, 10);
 	Plane* plane = new Plane();
 	//Texture heightMap((path + "scene\\materials\\terrain\\heightMap.jpg").c_str());
 	Texture heightMap((path + "scene\\materials\\terrain\\terrain.png").c_str());

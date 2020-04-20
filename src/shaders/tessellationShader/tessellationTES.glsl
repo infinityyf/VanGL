@@ -1,5 +1,5 @@
 #version 410 core
-layout(triangles, equal_spacing, ccw) in;
+layout(triangles, equal_spacing, cw) in;
 in vec3 WorldPos_ES_in[];
 in vec2 TexCoord_ES_in[];
 in vec3 Normal_ES_in[];
