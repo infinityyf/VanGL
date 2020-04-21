@@ -26,6 +26,15 @@ enum BIND_POINT {
 	SSAO_SAMPLER_POINT = 1,
 };
 
+enum SHADER_TYPE {
+	NULL_SHADER = -1,
+	VERTEX_SHADER = GL_VERTEX_SHADER,
+	FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
+	TESS_CONTROL_SHADER = GL_TESS_CONTROL_SHADER,
+	TESS_EVALUATION_SHADER = GL_TESS_EVALUATION_SHADER,
+	GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
+	COMPUTE_SHADER = GL_COMPUTE_SHADER,
+};
 
 
 class StandardShader
@@ -35,8 +44,6 @@ public:
 	static void createIncludeShaderFile(const GLchar* includePath);
 	const GLchar* shaderSearchPath;
 	
-
-
 	// shader ID
 	unsigned int shaderProgramID;
 
@@ -395,4 +402,170 @@ void StandardShader::createIncludeShaderFile(const GLchar* includePath)
 
 
 
+
+
+//seperate shader pipeline
+class SeperatePipeline {
+public:
+	// shader ID
+	unsigned int shaderPipeLineID;
+	//include path
+	const GLchar* shaderSearchPath;
+
+	SeperatePipeline(
+		unsigned int vertex, 
+		unsigned int fragment, 
+		unsigned int tessellationControl, 
+		unsigned int tessellationEvaluation, 
+		unsigned int geometry);
+
+	// use program
+	void use();
+	// called once before use shader
+	static void createIncludeShaderFile(const GLchar* includePath);
+
+	void setBool(const std::string& name, bool value) const;
+	void setInt(const std::string& name, int value) const;
+	void setFloat(const std::string& name, float value) const;
+	void setMatrix4(const std::string& name, const glm::mat4 matrix) const;
+	void setVector3(const std::string& name, const glm::vec3 vec)const;
+};
+inline SeperatePipeline::SeperatePipeline(unsigned int vertex, unsigned int fragment, unsigned int tessellationControl, unsigned int tessellationEvaluation, unsigned int geometry)
+{
+	glGenProgramPipelines(1, &shaderPipeLineID);
+	if (vertex != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_VERTEX_SHADER_BIT, vertex);;
+	if (fragment != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_FRAGMENT_SHADER_BIT, fragment);;
+	if (tessellationControl != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_TESS_CONTROL_SHADER_BIT, tessellationControl);;
+	if (tessellationEvaluation != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_TESS_EVALUATION_SHADER_BIT, tessellationEvaluation);;
+	if (geometry != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_GEOMETRY_SHADER_BIT, geometry);;
+}
+
+inline void SeperatePipeline::use() {
+	glBindProgramPipeline(shaderPipeLineID);
+}
+
+inline void SeperatePipeline::createIncludeShaderFile(const GLchar* includePath)
+{
+	std::string filePath = includePath;
+
+	std::string shaderCode;
+	std::ifstream shaderFile;
+	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try {
+		//open file
+		shaderFile.open(filePath);
+		std::stringstream shaderStream;
+
+		//rdbuf: use another stream to output this stream content
+		shaderStream << shaderFile.rdbuf();
+		shaderFile.close();
+
+		shaderCode = shaderStream.str();
+	}
+	catch (std::ifstream::failure error) {
+		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
+	}
+	//get include shader filename
+	std::string fileName = filePath.substr(filePath.find_last_of('\\') + 1, filePath.length() - filePath.find_last_of('\\'));
+	std::string shaderFileName = "/" + fileName;
+	glNamedStringARB(GL_SHADER_INCLUDE_ARB, shaderFileName.size(), shaderFileName.c_str(), shaderCode.size(), shaderCode.c_str());
+}
+
+inline void SeperatePipeline::setBool(const std::string& name, bool value) const
+{
+	glUniform1i(glGetUniformLocation(shaderPipeLineID, name.c_str()), (int)value);
+}
+
+inline void SeperatePipeline::setInt(const std::string& name, int value) const
+{
+	glUniform1i(glGetUniformLocation(shaderPipeLineID, name.c_str()), value);
+}
+
+inline void SeperatePipeline::setFloat(const std::string& name, float value) const
+{
+	glUniform1f(glGetUniformLocation(shaderPipeLineID, name.c_str()), value);
+}
+
+inline void SeperatePipeline::setMatrix4(const std::string& name, const glm::mat4 matrix) const
+{
+	unsigned int matrixLocation = glGetUniformLocation(shaderPipeLineID, name.c_str());
+	// second parameter means how many matrixs
+	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+inline void SeperatePipeline::setVector3(const std::string& name, const glm::vec3 vec) const
+{
+	unsigned int location = glGetUniformLocation(shaderPipeLineID, name.c_str());
+	glUniform3fv(location, 1, glm::value_ptr(vec));
+}
+
+
+
+//get single shader program
+unsigned int CreateShader(const GLchar* filePath,unsigned int shaderType) {
+
+	//for include
+	const GLchar* shaderSearchPath = "/";
+	//for tessellation 
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	std::string shaderCode;
+	std::ifstream shaderFile;
+
+	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try {
+		//open file
+		shaderFile.open(filePath);
+		std::stringstream shaderStream;
+
+		//rdbuf: use another stream to output this stream content
+		shaderStream << shaderFile.rdbuf();
+		shaderFile.close();
+
+		shaderCode = shaderStream.str();
+
+	}
+	catch (std::ifstream::failure error) {
+		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
+	}
+
+	//source code
+	const char* shaderCodeInC = shaderCode.c_str();
+
+	//compile vertex shader runtime
+	unsigned int shader;
+
+	//check result
+	int  success;
+	char infoLog[512];
+
+	shader = glCreateShader(shaderType);
+	glShaderSource(shader, 1, &shaderCodeInC, NULL);
+	glCompileShaderIncludeARB(shader, 1, &shaderSearchPath, nullptr);
+	glCompileShader(shader);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		std::cerr << "ERROR IN VERTEX SHADER:\n" << infoLog << std::endl;
+		return -1;
+	}
+
+	//attach shader to a program
+	GLuint program = glCreateProgram();
+	glAttachShader(program, shader);
+	glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);	//set as seperate
+	glLinkProgram(program);
+
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(program, 512, NULL, infoLog);
+		std::cerr << "ERROR IN LINK:\n" << infoLog << std::endl;
+	}
+	glDeleteShader(shader);
+	return program;
+}
 #endif
