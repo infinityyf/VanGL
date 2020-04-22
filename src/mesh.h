@@ -29,6 +29,7 @@ public:
 	void setupMesh();
 	//draw in traditional way
 	void drawMesh(StandardShader* shader, unsigned int sky, int shadowID=NULL);
+	void drawMesh(SeperatePipeline* shader);
 	//draw in PBR way
 	void drawMeshPBR(StandardShader* shader, unsigned int irradiance, unsigned int prefilter, unsigned int brdfLUT, int shadowID = NULL);
 	void drawMeshInstanced(StandardShader* shader, unsigned int sky, int amount);
@@ -136,6 +137,15 @@ inline void Mesh::drawMesh(StandardShader* shader, unsigned int sky,int shadowID
 	glBindVertexArray(VAO);
 	// third parameter data type
 	// forth parameter offset 
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+inline void Mesh::drawMesh(SeperatePipeline* shader)
+{
+	//assemble the programs
+	shader->use();
+	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

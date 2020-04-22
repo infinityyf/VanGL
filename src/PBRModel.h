@@ -55,6 +55,7 @@ inline void PBRModel::drawPBRModel(StandardShader* shader, unsigned int irradian
 	}
 }
 
+
 void PBRModel::loadModel(std::string modelPath) {
 	Assimp::Importer modelImpoter;
 	const aiScene* scene = modelImpoter.ReadFile(modelPath.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenNormals);

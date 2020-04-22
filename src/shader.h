@@ -412,6 +412,13 @@ public:
 	//include path
 	const GLchar* shaderSearchPath;
 
+	//components
+	unsigned int vertexProgram;
+	unsigned int fragmentProgram;
+	unsigned int tessellationControlProgram;
+	unsigned int tessellationEvaluationProgram;
+	unsigned int geometryProgram;
+
 	SeperatePipeline(
 		unsigned int vertex, 
 		unsigned int fragment, 
@@ -424,29 +431,45 @@ public:
 	// called once before use shader
 	static void createIncludeShaderFile(const GLchar* includePath);
 
-	void setBool(const std::string& name, bool value) const;
-	void setInt(const std::string& name, int value) const;
-	void setFloat(const std::string& name, float value) const;
-	void setMatrix4(const std::string& name, const glm::mat4 matrix) const;
-	void setVector3(const std::string& name, const glm::vec3 vec)const;
+	void setBool(const std::string& name, bool value, unsigned int programID) const;
+	void setInt(const std::string& name, int value, unsigned int programID) const;
+	void setFloat(const std::string& name, float value, unsigned int programID) const;
+	void setMatrix4(const std::string& name, const glm::mat4 matrix, unsigned int programID) const;
+	void setVector3(const std::string& name, const glm::vec3 vec, unsigned int programID)const;
 };
 inline SeperatePipeline::SeperatePipeline(unsigned int vertex, unsigned int fragment, unsigned int tessellationControl, unsigned int tessellationEvaluation, unsigned int geometry)
 {
 	glGenProgramPipelines(1, &shaderPipeLineID);
 	if (vertex != NULL_SHADER)
-		glUseProgramStages(shaderPipeLineID, GL_VERTEX_SHADER_BIT, vertex);;
+		glUseProgramStages(shaderPipeLineID, GL_VERTEX_SHADER_BIT, vertex);
 	if (fragment != NULL_SHADER)
-		glUseProgramStages(shaderPipeLineID, GL_FRAGMENT_SHADER_BIT, fragment);;
+		glUseProgramStages(shaderPipeLineID, GL_FRAGMENT_SHADER_BIT, fragment);
 	if (tessellationControl != NULL_SHADER)
-		glUseProgramStages(shaderPipeLineID, GL_TESS_CONTROL_SHADER_BIT, tessellationControl);;
+		glUseProgramStages(shaderPipeLineID, GL_TESS_CONTROL_SHADER_BIT, tessellationControl);
 	if (tessellationEvaluation != NULL_SHADER)
-		glUseProgramStages(shaderPipeLineID, GL_TESS_EVALUATION_SHADER_BIT, tessellationEvaluation);;
+		glUseProgramStages(shaderPipeLineID, GL_TESS_EVALUATION_SHADER_BIT, tessellationEvaluation);
 	if (geometry != NULL_SHADER)
-		glUseProgramStages(shaderPipeLineID, GL_GEOMETRY_SHADER_BIT, geometry);;
+		glUseProgramStages(shaderPipeLineID, GL_GEOMETRY_SHADER_BIT, geometry);
+	this->vertexProgram = vertex;
+	this->fragmentProgram = fragment;
+	this->tessellationControlProgram = tessellationControl;
+	this->tessellationEvaluationProgram = tessellationEvaluation;
+	this->geometryProgram = geometry;
 }
 
 inline void SeperatePipeline::use() {
 	glBindProgramPipeline(shaderPipeLineID);
+	if (vertexProgram != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_VERTEX_SHADER_BIT, vertexProgram);
+	if (fragmentProgram != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_FRAGMENT_SHADER_BIT, fragmentProgram);
+	if (tessellationControlProgram != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_TESS_CONTROL_SHADER_BIT, tessellationControlProgram);
+	if (tessellationEvaluationProgram != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_TESS_EVALUATION_SHADER_BIT, tessellationEvaluationProgram);
+	if (geometryProgram != NULL_SHADER)
+		glUseProgramStages(shaderPipeLineID, GL_GEOMETRY_SHADER_BIT, geometryProgram);
+
 }
 
 inline void SeperatePipeline::createIncludeShaderFile(const GLchar* includePath)
@@ -476,30 +499,35 @@ inline void SeperatePipeline::createIncludeShaderFile(const GLchar* includePath)
 	glNamedStringARB(GL_SHADER_INCLUDE_ARB, shaderFileName.size(), shaderFileName.c_str(), shaderCode.size(), shaderCode.c_str());
 }
 
-inline void SeperatePipeline::setBool(const std::string& name, bool value) const
+inline void SeperatePipeline::setBool(const std::string& name, bool value, unsigned int programID) const
 {
+	glUseProgram(programID);
 	glUniform1i(glGetUniformLocation(shaderPipeLineID, name.c_str()), (int)value);
 }
 
-inline void SeperatePipeline::setInt(const std::string& name, int value) const
+inline void SeperatePipeline::setInt(const std::string& name, int value, unsigned int programID) const
 {
+	glUseProgram(programID);
 	glUniform1i(glGetUniformLocation(shaderPipeLineID, name.c_str()), value);
 }
 
-inline void SeperatePipeline::setFloat(const std::string& name, float value) const
+inline void SeperatePipeline::setFloat(const std::string& name, float value, unsigned int programID) const
 {
+	glUseProgram(programID);
 	glUniform1f(glGetUniformLocation(shaderPipeLineID, name.c_str()), value);
 }
 
-inline void SeperatePipeline::setMatrix4(const std::string& name, const glm::mat4 matrix) const
+inline void SeperatePipeline::setMatrix4(const std::string& name, const glm::mat4 matrix, unsigned int programID) const
 {
-	unsigned int matrixLocation = glGetUniformLocation(shaderPipeLineID, name.c_str());
+	glUseProgram(programID);
+	unsigned int matrixLocation = glGetUniformLocation(programID, name.c_str());
 	// second parameter means how many matrixs
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-inline void SeperatePipeline::setVector3(const std::string& name, const glm::vec3 vec) const
+inline void SeperatePipeline::setVector3(const std::string& name, const glm::vec3 vec, unsigned int programID) const
 {
+	glUseProgram(programID);
 	unsigned int location = glGetUniformLocation(shaderPipeLineID, name.c_str());
 	glUniform3fv(location, 1, glm::value_ptr(vec));
 }
@@ -568,4 +596,5 @@ unsigned int CreateShader(const GLchar* filePath,unsigned int shaderType) {
 	glDeleteShader(shader);
 	return program;
 }
+
 #endif

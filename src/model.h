@@ -36,6 +36,7 @@ public:
 public:
 	Model(std::string modelPath);
 	void drawModel(StandardShader* shader, unsigned int sky, int shadowID = NULL);
+	void drawModel(SeperatePipeline* shader);
 	void drawModelInstaced(StandardShader* shader, unsigned int sky, int amount,glm::mat4 *matrix);
 	
 	void loadModel(std::string modelPath);
@@ -72,6 +73,14 @@ inline void Model::drawModel(StandardShader* shader, unsigned int sky,int shadow
 	shader->setMatrix4("model",model);
 	for (int i = 0; i < meshes.size(); i++) {
 		meshes[i].drawMesh(shader, sky, shadowID);
+	}
+}
+
+inline void Model::drawModel(SeperatePipeline* shader)
+{
+	shader->setMatrix4("model", model, shader->vertexProgram);
+	for (int i = 0; i < meshes.size(); i++) {
+		meshes[i].drawMesh(shader);
 	}
 }
 
