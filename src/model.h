@@ -78,7 +78,7 @@ inline void Model::drawModel(StandardShader* shader, unsigned int sky,int shadow
 
 inline void Model::drawModel(SeperatePipeline* shader)
 {
-	shader->setMatrix4("model", model, shader->vertexProgram);
+	setMatrix4("model", model, shader->vertexProgram);
 	for (int i = 0; i < meshes.size(); i++) {
 		meshes[i].drawMesh(shader);
 	}

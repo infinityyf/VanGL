@@ -61,7 +61,7 @@ int main() {
 
 	//shader
 	//init include shaders
-	StandardShader::createIncludeShaderFile((path + "src\\shaders\\includeShader\\StandardShader.glsl").c_str());
+	StandardShader::createIncludeShaderFile((path + "src\\shaders\\includeShader\\baseVariables.glsl").c_str());
 	// create cube map (need before model
 	CubeMap* cubeMap = new CubeMap();
 	cubeMap->cubeMapFromHDR(path + "scene\\materials\\HDR\\Ridgecrest_Road\\Ridgecrest_Road_4k_Bg.jpg");
@@ -83,7 +83,7 @@ int main() {
 	
 
 	//use seperate pipeline
-	SeperatePipeline::createIncludeShaderFile((path + "src\\shaders\\includeShader\\StandardShader.glsl").c_str());
+	SeperatePipeline::createIncludeShaderFile((path + "src\\shaders\\includeShader\\baseVariables.glsl").c_str());
 	unsigned int testv = CreateShader((path + "src\\shaders\\seperateShaderTest\\test.vs").c_str(), VERTEX_SHADER);
 	unsigned int testf = CreateShader((path + "src\\shaders\\seperateShaderTest\\test.fs").c_str(), FRAGMENT_SHADER);
 	SeperatePipeline testPipeLine(testv, testf, NULL_SHADER, NULL_SHADER, NULL_SHADER);
@@ -292,15 +292,15 @@ int main() {
 		else
 		{
 			
-			//pbrShader.use();
-			//pbrShader.setVector3("viewPos", camera.cameraPos);
-			//pbrShader.setFloat("metal", metal);
-			//pbrShader.setFloat("roughness", roughness);
-			//pbrShader.setFloat("aoScale", aoScale);
-			//gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, cubeMap->brdfLUTTexture);
+			pbrShader.use();
+			pbrShader.setVector3("viewPos", camera.cameraPos);
+			pbrShader.setFloat("metal", metal);
+			pbrShader.setFloat("roughness", roughness);
+			pbrShader.setFloat("aoScale", aoScale);
+			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, cubeMap->brdfLUTTexture);
 
 			
-			nanosuit.drawModel(&testPipeLine);
+			//nanosuit.drawModel(&testPipeLine);
 
 
 			//set the depth with 1 (so only draw on the pixels not cull bt object)

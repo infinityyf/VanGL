@@ -431,12 +431,10 @@ public:
 	// called once before use shader
 	static void createIncludeShaderFile(const GLchar* includePath);
 
-	void setBool(const std::string& name, bool value, unsigned int programID) const;
-	void setInt(const std::string& name, int value, unsigned int programID) const;
-	void setFloat(const std::string& name, float value, unsigned int programID) const;
-	void setMatrix4(const std::string& name, const glm::mat4 matrix, unsigned int programID) const;
-	void setVector3(const std::string& name, const glm::vec3 vec, unsigned int programID)const;
+	
 };
+
+//create pipeline record every program
 inline SeperatePipeline::SeperatePipeline(unsigned int vertex, unsigned int fragment, unsigned int tessellationControl, unsigned int tessellationEvaluation, unsigned int geometry)
 {
 	glGenProgramPipelines(1, &shaderPipeLineID);
@@ -457,6 +455,7 @@ inline SeperatePipeline::SeperatePipeline(unsigned int vertex, unsigned int frag
 	this->geometryProgram = geometry;
 }
 
+//assemble the pipeline
 inline void SeperatePipeline::use() {
 	glBindProgramPipeline(shaderPipeLineID);
 	if (vertexProgram != NULL_SHADER)
@@ -499,25 +498,25 @@ inline void SeperatePipeline::createIncludeShaderFile(const GLchar* includePath)
 	glNamedStringARB(GL_SHADER_INCLUDE_ARB, shaderFileName.size(), shaderFileName.c_str(), shaderCode.size(), shaderCode.c_str());
 }
 
-inline void SeperatePipeline::setBool(const std::string& name, bool value, unsigned int programID) const
+inline void setBool(const std::string& name, bool value, unsigned int programID)
 {
 	glUseProgram(programID);
-	glUniform1i(glGetUniformLocation(shaderPipeLineID, name.c_str()), (int)value);
+	glUniform1i(glGetUniformLocation(programID, name.c_str()), (int)value);
 }
 
-inline void SeperatePipeline::setInt(const std::string& name, int value, unsigned int programID) const
+inline void setInt(const std::string& name, int value, unsigned int programID)
 {
 	glUseProgram(programID);
-	glUniform1i(glGetUniformLocation(shaderPipeLineID, name.c_str()), value);
+	glUniform1i(glGetUniformLocation(programID, name.c_str()), value);
 }
 
-inline void SeperatePipeline::setFloat(const std::string& name, float value, unsigned int programID) const
+inline void setFloat(const std::string& name, float value, unsigned int programID)
 {
 	glUseProgram(programID);
-	glUniform1f(glGetUniformLocation(shaderPipeLineID, name.c_str()), value);
+	glUniform1f(glGetUniformLocation(programID, name.c_str()), value);
 }
 
-inline void SeperatePipeline::setMatrix4(const std::string& name, const glm::mat4 matrix, unsigned int programID) const
+inline void setMatrix4(const std::string& name, const glm::mat4 matrix, unsigned int programID)
 {
 	glUseProgram(programID);
 	unsigned int matrixLocation = glGetUniformLocation(programID, name.c_str());
@@ -525,10 +524,10 @@ inline void SeperatePipeline::setMatrix4(const std::string& name, const glm::mat
 	glUniformMatrix4fv(matrixLocation, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-inline void SeperatePipeline::setVector3(const std::string& name, const glm::vec3 vec, unsigned int programID) const
+inline void setVector3(const std::string& name, const glm::vec3 vec, unsigned int programID)
 {
 	glUseProgram(programID);
-	unsigned int location = glGetUniformLocation(shaderPipeLineID, name.c_str());
+	unsigned int location = glGetUniformLocation(programID, name.c_str());
 	glUniform3fv(location, 1, glm::value_ptr(vec));
 }
 

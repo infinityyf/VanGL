@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 layout (location = 0) out vec4 FragColor;
 
 
@@ -29,8 +29,8 @@ float Phong(vec3 viewDir,vec3 reflectDir,float shininess){
     return pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 }
 float Blinn_Phong(vec3 viewDir,vec3 lightDir,vec3 Normal,float shininess){
-    vec3 half = normalize(viewDir+lightDir);
-    return pow(max(dot(Normal, half), 0.0), shininess);
+    vec3 halfVector = normalize(viewDir+lightDir);
+    return pow(max(dot(Normal, halfVector), 0.0), shininess);
 }
 
 //directlight calculation

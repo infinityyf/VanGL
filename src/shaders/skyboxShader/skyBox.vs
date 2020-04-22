@@ -1,18 +1,9 @@
-#version 330 core
+#version 430 core
+#extension GL_ARB_shading_language_include : require
+#include "/baseVariables.glsl"
 layout (location = 0) in vec3 aPos;
 
 out vec3 TexCoords;
-
-struct Camera{         
-    mat4 view;         
-    mat4 projection;    
-    float near;        
-    float far;          
-};                              
-layout(std140) uniform Matrix{
-    Camera camera;      
-    mat4 lightSpaceMatrix;
-};
 
 void main()
 {

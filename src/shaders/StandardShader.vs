@@ -1,4 +1,6 @@
-#version 330 core
+#version 430 core
+#extension GL_ARB_shading_language_include : require
+#include "/baseVariables.glsl"
 layout (location = 0) in vec3 aPos;   // 位置变量的属性位置值为 0 
 layout (location = 1) in vec3 aNormal; // 颜色变量的属性位置值为 1
 layout (location = 2) in vec2 aTexCoord;
@@ -16,21 +18,6 @@ out VS_OUT{
     vec4 FragLightSpacePos;
 }vs_out;
 
-struct Camera{          //align
-    mat4 view;          //64    //0
-    mat4 projection;    //64    //64
-    float near;         //4     //128
-    float far;          //4     //132
-};                              //144
-    
-
-//use uniform block we can access component directly nont need to use Matrix
-layout(std140) uniform Matrix{
-    Camera camera;      //144   //0
-    mat4 lightSpaceMatrix;//64    //208
-};
-
-uniform mat4 model;
 
 void main()
 {

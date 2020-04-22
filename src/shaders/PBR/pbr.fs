@@ -1,6 +1,6 @@
-#version 330 core
+#version 430 core
 #extension GL_ARB_shading_language_include : require
-#include "/StandardShader.glsl"
+#include "/baseVariables.glsl"
 //support more than one spotlight
 #define NUM_POINT_LIGHTS 4
 #define NUM_SPOT_LIGHTS 4

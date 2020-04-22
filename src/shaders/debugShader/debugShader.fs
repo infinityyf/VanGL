@@ -1,4 +1,4 @@
-#version 410 core
+#version 430 core
 out vec4 FragColor;
 in vec3 color;
 in vec3 Normal_FS_in;
