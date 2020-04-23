@@ -157,6 +157,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\tessellation.cpp" />
+    <ClCompile Include="src\test.cpp" />
     <ClCompile Include="src\源.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,11 +181,12 @@
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\light_probe\cubeMapGenerate.h" />
     <ClInclude Include="src\material\material.h" />
-    <ClInclude Include="src\mesh.h" />
-    <ClInclude Include="src\model.h" />
-    <ClInclude Include="src\particle_system\ODE.h" />
-    <ClInclude Include="src\particle_system\particles.h" />
-    <ClInclude Include="src\PBRModel.h" />
+    <ClInclude Include="src\material\skybox.h" />
+    <ClInclude Include="src\model_loader\mesh.h" />
+    <ClInclude Include="src\model_loader\model.h" />
+    <ClInclude Include="src\model_loader\PBRModel.h" />
+    <ClInclude Include="src\model_loader\StandardMesh.h" />
+    <ClInclude Include="src\model_loader\StandardModel.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\shadowMap.h" />
     <ClInclude Include="src\stdafx.h" />
@@ -202,8 +204,6 @@
     <None Include="src\shaders\deferredRendering\deferred.fs" />
     <None Include="src\shaders\deferredRendering\gBuffer.fs" />
     <None Include="src\shaders\deferredRendering\gBuffer.vs" />
-    <None Include="src\shaders\deformShader\deform.fs" />
-    <None Include="src\shaders\deformShader\deform.vs" />
     <None Include="src\shaders\furryEffectShader\furry.fs" />
     <None Include="src\shaders\furryEffectShader\furry.gs" />
     <None Include="src\shaders\furryEffectShader\furry.vs" />
@@ -212,8 +212,6 @@
     <None Include="src\shaders\instanceShader\instance.vs" />
     <None Include="src\shaders\ParallaxMap\parallax.fs" />
     <None Include="src\shaders\ParallaxMap\parallax.vs" />
-    <None Include="src\shaders\particleShader\particle.fs" />
-    <None Include="src\shaders\particleShader\particle.vs" />
     <None Include="src\shaders\PBR\pbr.fs" />
     <None Include="src\shaders\PBR\pbr.vs" />
     <None Include="src\shaders\postProcess\postProcessShader.fs" />

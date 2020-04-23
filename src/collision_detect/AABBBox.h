@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
-#include "../mesh.h"
+#include "../model_loader/mesh.h"
 using namespace std;
 namespace VANCollision {
 	class AABBBox {

@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #endif
 #include "stb_image.h"
-#include <string>
+
 #include <iostream>
 #include <io.h>
 #include <fstream>
@@ -18,6 +18,7 @@
 
 enum TEX_TYPE
 {
+	NULL_TEX = -1,
 	DIFFUSE_TEX = 0,
 	SPECULAR_TEX = 1,
 	AMBIENT_TEX = 2,
@@ -26,6 +27,7 @@ enum TEX_TYPE
 	METALLIC_TEX = 5,
 	ROUGHNESS_TEX = 6,
 	AO_TEX = 7,
+	SKYBOX_TEX = 8,
 };
 
 class Texture {

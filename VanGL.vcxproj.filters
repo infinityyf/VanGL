@@ -40,9 +40,6 @@
     <Filter Include="include\SSAO">
       <UniqueIdentifier>{953e78a1-14f9-43df-92c6-8eb292633670}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\particle_system">
-      <UniqueIdentifier>{b902fed6-4b21-4ad6-bf4d-bddf1eafbac0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shaders\deferredRendering">
       <UniqueIdentifier>{7f40032b-b440-4225-b171-97e2c00bdaf4}</UniqueIdentifier>
     </Filter>
@@ -52,12 +49,6 @@
     <Filter Include="shaders\instanceShader">
       <UniqueIdentifier>{4dc40ab0-adac-44d7-8b9e-b6ffe2f6d41f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shaders\particleShader">
-      <UniqueIdentifier>{ff21b013-711c-4ac0-9631-7c4848ec3f01}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="shaders\deformShader">
-      <UniqueIdentifier>{9b77be71-f25b-44f7-98ac-3c5f95fc360b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shaders\PBR">
       <UniqueIdentifier>{c6ca7753-0f5f-4773-be3b-3552cfd89800}</UniqueIdentifier>
     </Filter>
@@ -66,9 +57,6 @@
     </Filter>
     <Filter Include="shaders\cubeMapShader">
       <UniqueIdentifier>{fb123759-9cec-4b3d-b4c5-af707266b179}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\model_loader">
-      <UniqueIdentifier>{8e241987-c03c-45a2-9c73-d39fd1da1bf0}</UniqueIdentifier>
     </Filter>
     <Filter Include="source\test">
       <UniqueIdentifier>{e7a5d497-514e-472e-a6bb-d4c2314b3a24}</UniqueIdentifier>
@@ -84,6 +72,9 @@
     </Filter>
     <Filter Include="include\material">
       <UniqueIdentifier>{46df5f84-049e-42f8-9af3-3dbe7031274d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\model_loader">
+      <UniqueIdentifier>{76bbe4f2-8559-4a92-86af-6f322725f2ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="src\tessellation.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test.cpp">
+      <Filter>source\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,26 +158,11 @@
     <ClInclude Include="src\collision_detect\OBBBox.h">
       <Filter>include\collision_detect</Filter>
     </ClInclude>
-    <ClInclude Include="src\particle_system\particles.h">
-      <Filter>include\particle_system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\particle_system\ODE.h">
-      <Filter>include\particle_system</Filter>
-    </ClInclude>
     <ClInclude Include="src\AO\SSAO.h">
       <Filter>include\SSAO</Filter>
     </ClInclude>
     <ClInclude Include="src\light_probe\cubeMapGenerate.h">
       <Filter>include\light_probe</Filter>
-    </ClInclude>
-    <ClInclude Include="src\mesh.h">
-      <Filter>include\model_loader</Filter>
-    </ClInclude>
-    <ClInclude Include="src\model.h">
-      <Filter>include\model_loader</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PBRModel.h">
-      <Filter>include\model_loader</Filter>
     </ClInclude>
     <ClInclude Include="3rd\imgui\imconfig.h">
       <Filter>include\gui</Filter>
@@ -214,6 +193,24 @@
     </ClInclude>
     <ClInclude Include="src\material\material.h">
       <Filter>include\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model_loader\mesh.h">
+      <Filter>include\model_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model_loader\model.h">
+      <Filter>include\model_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model_loader\PBRModel.h">
+      <Filter>include\model_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\skybox.h">
+      <Filter>include\material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model_loader\StandardModel.h">
+      <Filter>include\model_loader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model_loader\StandardMesh.h">
+      <Filter>include\model_loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -289,20 +286,8 @@
     <None Include="src\shaders\deferredRendering\deferred.fs">
       <Filter>shaders\deferredRendering</Filter>
     </None>
-    <None Include="src\shaders\particleShader\particle.vs">
-      <Filter>shaders\particleShader</Filter>
-    </None>
-    <None Include="src\shaders\particleShader\particle.fs">
-      <Filter>shaders\particleShader</Filter>
-    </None>
     <None Include="src\shaders\postProcess\ssao.fs">
       <Filter>shaders\postProcess</Filter>
-    </None>
-    <None Include="src\shaders\deformShader\deform.fs">
-      <Filter>shaders\deformShader</Filter>
-    </None>
-    <None Include="src\shaders\deformShader\deform.vs">
-      <Filter>shaders\deformShader</Filter>
     </None>
     <None Include="src\shaders\PBR\pbr.fs">
       <Filter>shaders\PBR</Filter>
