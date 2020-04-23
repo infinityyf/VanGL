@@ -7,7 +7,7 @@ out vec3 WorldPos_FS_in;
 out vec2 TexCoord_FS_in;
 out vec3 Normal_FS_in;
 
-out vec3 color;
+out vec3 height;
 
 struct Camera{          //align
     mat4 view;          //64    //0
@@ -22,7 +22,7 @@ layout(std140) uniform Matrix{
 };
 
 uniform sampler2D heightMap;
-
+uniform float heightScale;
 //v0,v1,v2 come from tcl
 //gl_tessCoord comes from pg
 vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
@@ -43,7 +43,7 @@ void main()
     WorldPos_FS_in = interpolate3D(WorldPos_ES_in[0], WorldPos_ES_in[1], WorldPos_ES_in[2]);
 
      // Displace the vertex along the normal
-    WorldPos_FS_in += vec3(0.0,texture(heightMap,TexCoord_FS_in).r*0.1,0.0);
-    color = texture(heightMap,TexCoord_FS_in).rrr;
+    WorldPos_FS_in += vec3(0.0,texture(heightMap,TexCoord_FS_in).r*heightScale,0.0);
+    height = texture(heightMap,TexCoord_FS_in).rrr;
     gl_Position = camera.projection*camera.view * vec4(WorldPos_FS_in, 1.0);
 } 

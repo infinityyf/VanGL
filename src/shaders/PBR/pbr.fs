@@ -85,7 +85,7 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 void main()
 {
 
-    vec3 albedo = texture(PBRmaterial.albedoMap,fs_in.TexCoord).rgb;
+    vec3 albedo = texture(PBRmaterial.albedoMap,fs_in.TexCoord).rgb*brightness;
     //albedo  = pow(albedo, 2.2); //translate into linear space
 
     vec3 normal = texture(PBRmaterial.normalMap,fs_in.TexCoord).rgb;

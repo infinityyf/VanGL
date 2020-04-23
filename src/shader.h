@@ -36,7 +36,7 @@ enum SHADER_TYPE {
 	COMPUTE_SHADER = GL_COMPUTE_SHADER,
 };
 
-
+//for rendering functional things
 class StandardShader
 {
 public:
@@ -404,7 +404,7 @@ void StandardShader::createIncludeShaderFile(const GLchar* includePath)
 
 
 
-//seperate shader pipeline
+//seperate shader pipeline for rendering items
 class SeperatePipeline {
 public:
 	// shader ID

@@ -79,11 +79,11 @@
     <Filter Include="include\gui\integration">
       <UniqueIdentifier>{2b6e5090-de16-4bb3-bd75-a42ac32ba1ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\global_illumination">
-      <UniqueIdentifier>{86efb372-dfe4-4067-9b42-91f21963107a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shaders\tessellationShader">
       <UniqueIdentifier>{f077767f-794d-4d38-b826-f4d1fcce40d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\material">
+      <UniqueIdentifier>{46df5f84-049e-42f8-9af3-3dbe7031274d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="3rd\imgui\integration\imgui_impl_win32.h">
       <Filter>include\gui\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material\material.h">
+      <Filter>include\material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -66,6 +66,8 @@ int main() {
 	CubeMap* cubeMap = new CubeMap();
 	cubeMap->cubeMapFromHDR(path + "scene\\materials\\HDR\\Ridgecrest_Road\\Ridgecrest_Road_4k_Bg.jpg");
 	Skybox skybox(" ");
+
+	//shaders
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
@@ -206,7 +208,7 @@ int main() {
 	float metal = 1.0f;
 	float roughness = 1.0f;
 	float aoScale = 1.0f;
-
+	float brightness = 1.0f;
 
 
 	//render loop
@@ -297,6 +299,7 @@ int main() {
 			pbrShader.setFloat("metal", metal);
 			pbrShader.setFloat("roughness", roughness);
 			pbrShader.setFloat("aoScale", aoScale);
+			pbrShader.setFloat("brightness", brightness);
 			gun.drawPBRModel(&pbrShader, cubeMap->irradianceMap,cubeMap->prefilterMap, cubeMap->brdfLUTTexture);
 
 			
@@ -332,6 +335,7 @@ int main() {
 		ImGui::SliderFloat("metal", &metal, 0.0f, 1.0f);
 		ImGui::SliderFloat("roughness", &roughness, 0.0f, 1.0f);
 		ImGui::SliderFloat("aoScale", &aoScale, 0.0f, 1.0f);
+		ImGui::SliderFloat("brightness", &brightness, 1.0f, 10.0f);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 		ImGui::Render();

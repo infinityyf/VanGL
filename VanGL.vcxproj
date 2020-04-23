@@ -179,6 +179,7 @@
     <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\light_probe\cubeMapGenerate.h" />
+    <ClInclude Include="src\material\material.h" />
     <ClInclude Include="src\mesh.h" />
     <ClInclude Include="src\model.h" />
     <ClInclude Include="src\particle_system\ODE.h" />

@@ -41,7 +41,7 @@
 //	//get cursor but make it invisible
 //	//window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 //
-//	Camera camera(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.01f, 100.0f);
+//	Camera camera(glm::vec3(0.5f, 0.0f, 2.0f), glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.01f, 100.0f);
 //	camera.linkToWindow(&window);
 //	//register size change call back
 //	camera.SetFramebufferSizeCallback();
@@ -58,7 +58,7 @@
 //	//shader setting 
 //	StandardShader tesselation(
 //		(path + "src\\shaders\\tessellationShader\\tessellation.vs").c_str()
-//		, (path + "src\\shaders\\debugShader\\debugShader.fs").c_str()
+//		, (path + "src\\shaders\\tessellationShader\\tessellation.fs").c_str()
 //		, (path + "src\\shaders\\tessellationShader\\tessellationTCS.glsl").c_str()
 //		, (path + "src\\shaders\\tessellationShader\\tessellationTES.glsl").c_str());
 //	unsigned int matrixIndex = glGetUniformBlockIndex(tesselation.shaderProgramID, "Matrix");
@@ -69,11 +69,15 @@
 //	//model setting
 //	Plane::GenTerrain(100, 100);
 //	Plane* plane = new Plane();
-//	//Texture heightMap((path + "scene\\materials\\terrain\\heightMap.jpg").c_str());
 //	Texture heightMap((path + "scene\\materials\\terrain\\terrain.png").c_str());
-//	//Texture heightMap((path + "scene\\materials\\textures\\brick\\bricks2_disp.jpg").c_str());
+//	Texture terrainTex0((path + "scene\\materials\\terrain\\terrainTex0.jpg").c_str());
+//	Texture terrainTex1((path + "scene\\materials\\terrain\\terrainTex1.jpg").c_str());
+//	Texture terrainTex2((path + "scene\\materials\\terrain\\terrainTex2.jpg").c_str());
 //	tesselation.use();
 //	tesselation.setInt("heightMap", 0);
+//	tesselation.setInt("terrainTex0", 1);
+//	tesselation.setInt("terrainTex1", 2);
+//	tesselation.setInt("terrainTex2", 3);
 //
 //
 //	//rendering setting
@@ -91,7 +95,7 @@
 //	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
 //	ImGui_ImplOpenGL3_Init("#version 410");
 //	float sub = 16;
-//
+//	float heightScale = 0.1f;
 //	glm::mat4 model(1.0);
 //
 //	//render loop
@@ -113,9 +117,16 @@
 //		tesselation.use();
 //		tesselation.setVector3("viewPos", camera.cameraPos);
 //		tesselation.setFloat("sub", sub);
+//		tesselation.setFloat("heightScale", heightScale);
 //		glActiveTexture(GL_TEXTURE0);
 //		glBindTexture(GL_TEXTURE_2D, heightMap.textureID);
-//		
+//		glActiveTexture(GL_TEXTURE1);
+//		glBindTexture(GL_TEXTURE_2D, terrainTex0.textureID);
+//		glActiveTexture(GL_TEXTURE2);
+//		glBindTexture(GL_TEXTURE_2D, terrainTex1.textureID);
+//		glActiveTexture(GL_TEXTURE3);
+//		glBindTexture(GL_TEXTURE_2D, terrainTex2.textureID);
+//
 //		plane->DrawDebug(&tesselation);
 //
 //		//check events
@@ -126,6 +137,7 @@
 //		ImGui::NewFrame();
 //		ImGui::Begin("tessellation setting");                          // Create a window called "Hello, world!" and append into it.
 //		ImGui::SliderFloat("sub", &sub, 0.0f, 512.0);
+//		ImGui::SliderFloat("heightScale", &heightScale, 0.1f, 2.0f);
 //		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 //		ImGui::End();
 //		ImGui::Render();

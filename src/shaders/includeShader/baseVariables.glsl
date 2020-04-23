@@ -1,4 +1,5 @@
 //pbr setting
+uniform float brightness;
 uniform float roughness;
 uniform float metal;
 uniform float aoScale;
