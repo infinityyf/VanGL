@@ -18,10 +18,16 @@ out VS_OUT{
     vec4 FragLightSpacePos;
 }vs_out;
 
+out gl_PerVertex{
+    vec4 gl_Position;
+    float gl_PointSize;
+};
+
 
 void main()
 {
     gl_Position = camera.projection * camera.view * model * vec4(aPos, 1.0);
+    vs_out.Normal = aNormal;
     vs_out.TexCoord = aTexCoord;
     //world coord
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
@@ -32,7 +38,6 @@ void main()
     vs_out.FragLightSpacePos = lightSpaceMatrix * vec4(vs_out.FragPos,1.0f);
 
     //calculate TBN matrix
-   // mat3 normalMatrix = mat3(transpose(inverse( model)));
     vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));
     vec3 N = normalize(vec3(model * vec4(aNormal,    0.0)));
     // re-orthogonalize T with respect to N
@@ -40,5 +45,5 @@ void main()
     vec3 B = normalize(cross(N,T));    //left hand
     mat3 TBN = mat3(T, B, N);
     vs_out.TBN = TBN;
-    vs_out.Normal = aNormal;
+    
 }

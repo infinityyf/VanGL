@@ -28,6 +28,7 @@ enum TEX_TYPE
 	ROUGHNESS_TEX = 6,
 	AO_TEX = 7,
 	SKYBOX_TEX = 8,
+	SHADOW_TEX = 9,
 };
 
 class Texture {
@@ -228,7 +229,7 @@ public:
 };
 
 Skybox::Skybox(std::string picDictionary) {
-	if (picDictionary==" ") {
+	if (picDictionary!=" ") {
 		glGenTextures(1, &skyBox);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
 

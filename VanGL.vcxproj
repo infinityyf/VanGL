@@ -155,7 +155,6 @@
     <ClCompile Include="3rd\imgui\integration\imgui_impl_win32.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\tessellation.cpp" />
     <ClCompile Include="src\test.cpp" />
     <ClCompile Include="src\源.cpp" />
@@ -180,13 +179,9 @@
     <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\light.h" />
     <ClInclude Include="src\light_probe\cubeMapGenerate.h" />
-    <ClInclude Include="src\material\material.h" />
-    <ClInclude Include="src\material\skybox.h" />
     <ClInclude Include="src\model_loader\mesh.h" />
     <ClInclude Include="src\model_loader\model.h" />
     <ClInclude Include="src\model_loader\PBRModel.h" />
-    <ClInclude Include="src\model_loader\StandardMesh.h" />
-    <ClInclude Include="src\model_loader\StandardModel.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\shadowMap.h" />
     <ClInclude Include="src\stdafx.h" />
@@ -207,11 +202,8 @@
     <None Include="src\shaders\furryEffectShader\furry.fs" />
     <None Include="src\shaders\furryEffectShader\furry.gs" />
     <None Include="src\shaders\furryEffectShader\furry.vs" />
-    <None Include="src\shaders\geometry.gs" />
     <None Include="src\shaders\instanceShader\instance.fs" />
     <None Include="src\shaders\instanceShader\instance.vs" />
-    <None Include="src\shaders\ParallaxMap\parallax.fs" />
-    <None Include="src\shaders\ParallaxMap\parallax.vs" />
     <None Include="src\shaders\PBR\pbr.fs" />
     <None Include="src\shaders\PBR\pbr.vs" />
     <None Include="src\shaders\postProcess\postProcessShader.fs" />

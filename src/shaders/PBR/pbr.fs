@@ -20,19 +20,8 @@ in VS_OUT{
 }fs_in;
 
 
-//material
-struct StandardMaterial{
-    sampler2D albedoMap;
-    sampler2D normalMap;
-    sampler2D metallicMap;
-    sampler2D rougnnessMap;
-    sampler2D aoMap;
-};
-uniform StandardMaterial PBRmaterial;
-uniform samplerCube prefilterMap;
-uniform samplerCube irradianceMap;
-uniform sampler2D brdfMap;
-uniform vec3 viewPos;
+
+
 
 //F
 vec3 fresnelSchlick(float cosTheta, vec3 F0)

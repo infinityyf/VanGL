@@ -24,7 +24,7 @@ public:
 
 public:
 	StandardModel(std::string modelPath);
-	void drawModel();
+	void drawModel(ForwardStandardMaterial* material,unsigned int skybox,unsigned int shadowID=0);
 
 	void loadModel(std::string modelPath);
 	void processNode(aiNode* node, const aiScene* scene);
@@ -32,8 +32,6 @@ public:
 
 	//load texture
 	std::vector<Texture> loadMaterialTextures(aiMaterial* material, aiTextureType type, unsigned int typeName);
-	//load program 
-	void loadMaterialProgram(unsigned int vertex, unsigned int fragment, unsigned int tessellationControl, unsigned int tessellationEvaluation, unsigned int geometry);
 
 	//model operate
 	void scale(glm::vec3 scale);
@@ -49,11 +47,11 @@ inline StandardModel::StandardModel(std::string modelPath) {
 }
 
 
-inline void StandardModel::drawModel()
+inline void StandardModel::drawModel(ForwardStandardMaterial* material,unsigned int skybox, unsigned int shadowID)
 {
+	material->setMatrix4("model", model, material->vertexProgram);
 	for (int i = 0; i < meshes.size(); i++) {
-		meshes[i].material->setMatrix4("model", model, meshes[i].material->vertexProgram);
-		meshes[i].drawMesh();
+		meshes[i].drawMesh(material,skybox,shadowID);
 	}
 }
 
@@ -90,12 +88,12 @@ inline void StandardModel::processNode(aiNode* node, const aiScene* scene)
 
 inline StandardMesh StandardModel::processMesh(aiMesh* mesh, const aiScene* scene)
 {
-	std::vector<Vertex> vertexs;
+	std::vector<StandardVertex> vertexs;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;
 	//translate vertice 
 	for (int i = 0; i < mesh->mNumVertices; i++) {
-		Vertex vertex;
+		StandardVertex vertex;
 		//generate vertex
 		glm::vec3 vector;
 		vector.x = mesh->mVertices[i].x;
@@ -168,13 +166,6 @@ std::vector<Texture> StandardModel::loadMaterialTextures(aiMaterial* material, a
 		textures.push_back(texture);
 	}
 	return textures;
-}
-
-inline void StandardModel::loadMaterialProgram(unsigned int vertex, unsigned int fragment, unsigned int tessellationControl, unsigned int tessellationEvaluation, unsigned int geometry)
-{
-	for (int i = 0; i < meshes.size(); i++) {
-		meshes[i].setupMaterial(vertex, fragment, tessellationControl, tessellationEvaluation, geometry);
-	}
 }
 
 void StandardModel::scale(glm::vec3 scale) {

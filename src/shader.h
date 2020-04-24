@@ -50,6 +50,8 @@ public:
 	// get source code 
 	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath = nullptr,bool include = false);
 	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* tessellationTCL, const GLchar* tessellationTEL, bool include = false);
+
+	
 	// use program
 	void use();
 
@@ -400,7 +402,68 @@ void StandardShader::createIncludeShaderFile(const GLchar* includePath)
 	glNamedStringARB(GL_SHADER_INCLUDE_ARB, shaderFileName.size(), shaderFileName.c_str(), shaderCode.size(), shaderCode.c_str());
 }
 
+//get single shader program
+unsigned int CreateShader(const GLchar* filePath, unsigned int shaderType) {
 
+	//for include
+	const GLchar* shaderSearchPath = "/";
+	//for tessellation 
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
+	std::string shaderCode;
+	std::ifstream shaderFile;
+
+	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try {
+		//open file
+		shaderFile.open(filePath);
+		std::stringstream shaderStream;
+
+		//rdbuf: use another stream to output this stream content
+		shaderStream << shaderFile.rdbuf();
+		shaderFile.close();
+
+		shaderCode = shaderStream.str();
+
+	}
+	catch (std::ifstream::failure error) {
+		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
+	}
+
+	//source code
+	const char* shaderCodeInC = shaderCode.c_str();
+
+	//compile vertex shader runtime
+	unsigned int shader;
+
+	//check result
+	int  success;
+	char infoLog[512];
+
+	shader = glCreateShader(shaderType);
+	glShaderSource(shader, 1, &shaderCodeInC, NULL);
+	glCompileShaderIncludeARB(shader, 1, &shaderSearchPath, nullptr);
+	glCompileShader(shader);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		std::cerr << "ERROR IN VERTEX SHADER:\n" << infoLog << std::endl;
+		return -1;
+	}
+
+	//attach shader to a program
+	GLuint program = glCreateProgram();
+	glAttachShader(program, shader);
+	glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);	//set as seperate
+	glLinkProgram(program);
+
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(program, 512, NULL, infoLog);
+		std::cerr << "ERROR IN LINK:\n" << infoLog << std::endl;
+	}
+	glDeleteShader(shader);
+	return program;
+}
 
 
 
@@ -438,6 +501,7 @@ public:
 inline SeperatePipeline::SeperatePipeline(unsigned int vertex, unsigned int fragment, unsigned int tessellationControl, unsigned int tessellationEvaluation, unsigned int geometry)
 {
 	glGenProgramPipelines(1, &shaderPipeLineID);
+	glBindProgramPipeline(shaderPipeLineID);
 	if (vertex != NULL_SHADER)
 		glUseProgramStages(shaderPipeLineID, GL_VERTEX_SHADER_BIT, vertex);
 	if (fragment != NULL_SHADER)
@@ -532,68 +596,5 @@ inline void setVector3(const std::string& name, const glm::vec3 vec, unsigned in
 }
 
 
-
-//get single shader program
-unsigned int CreateShader(const GLchar* filePath,unsigned int shaderType) {
-
-	//for include
-	const GLchar* shaderSearchPath = "/";
-	//for tessellation 
-	glPatchParameteri(GL_PATCH_VERTICES, 3);
-	std::string shaderCode;
-	std::ifstream shaderFile;
-
-	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	try {
-		//open file
-		shaderFile.open(filePath);
-		std::stringstream shaderStream;
-
-		//rdbuf: use another stream to output this stream content
-		shaderStream << shaderFile.rdbuf();
-		shaderFile.close();
-
-		shaderCode = shaderStream.str();
-
-	}
-	catch (std::ifstream::failure error) {
-		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
-	}
-
-	//source code
-	const char* shaderCodeInC = shaderCode.c_str();
-
-	//compile vertex shader runtime
-	unsigned int shader;
-
-	//check result
-	int  success;
-	char infoLog[512];
-
-	shader = glCreateShader(shaderType);
-	glShaderSource(shader, 1, &shaderCodeInC, NULL);
-	glCompileShaderIncludeARB(shader, 1, &shaderSearchPath, nullptr);
-	glCompileShader(shader);
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cerr << "ERROR IN VERTEX SHADER:\n" << infoLog << std::endl;
-		return -1;
-	}
-
-	//attach shader to a program
-	GLuint program = glCreateProgram();
-	glAttachShader(program, shader);
-	glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);	//set as seperate
-	glLinkProgram(program);
-
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cerr << "ERROR IN LINK:\n" << infoLog << std::endl;
-	}
-	glDeleteShader(shader);
-	return program;
-}
 
 #endif

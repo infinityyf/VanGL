@@ -29,14 +29,14 @@ public:
 	StandardShader* prefilterShader;
 	StandardShader* brdfShader;
 public:
-	void cubeMapFromHDR(std::string path);
+	void preCalculateForPBR(std::string path);
 	void renderCube();
 	void renderQuad();
 	//void cubeMapFromProbe();
 
 };
 
-inline void CubeMap::cubeMapFromHDR(std::string path) {
+inline void CubeMap::preCalculateForPBR(std::string path) {
 	stbi_set_flip_vertically_on_load(true);
 	int width, height, nrComponents;
 	float* data = stbi_loadf(path.c_str(), &width, &height, &nrComponents, 0);

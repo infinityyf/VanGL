@@ -9,18 +9,6 @@
 
 #include "../texture.h"
 
-enum SHADER_TYPE {
-	NULL_SHADER = -1,
-	VERTEX_SHADER = GL_VERTEX_SHADER,
-	FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
-	TESS_CONTROL_SHADER = GL_TESS_CONTROL_SHADER,
-	TESS_EVALUATION_SHADER = GL_TESS_EVALUATION_SHADER,
-	GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
-	COMPUTE_SHADER = GL_COMPUTE_SHADER,
-};
-
-
-
 class BaseMaterial {
 public:
 	static unsigned int MaterixUBO;
@@ -57,7 +45,7 @@ public:
 		glUniform3fv(location, 1, glm::value_ptr(vec));
 	}
 	//get single shader program
-	static unsigned int CreateShader(const GLchar* filePath, unsigned int shaderType) {
+	static unsigned int createShader(const GLchar* filePath, unsigned int shaderType) {
 
 		//for include
 		const GLchar* shaderSearchPath = "/";
@@ -119,7 +107,7 @@ public:
 		return program;
 	}
 	//create include file
-	static void CreateIncludeShaderFile(const GLchar* includePath) {
+	static void createIncludeShaderFile(const GLchar* includePath) {
 		std::string filePath = includePath;
 		std::string shaderCode;
 		std::ifstream shaderFile;
@@ -156,16 +144,11 @@ public:
 	}
 };
 
+unsigned int BaseMaterial::MaterixUBO = -1;
+
 class ForwardStandardMaterial : public BaseMaterial {
 
 public:
-	//texture info
-	unsigned int diffuseTexture;
-	unsigned int specularTexture;
-	unsigned int normalTexture;
-	unsigned int ambientTexture;
-	unsigned int skyBox;
-
 	//program info
 	unsigned int vertexProgram;
 	unsigned int fragmentProgram;
@@ -178,48 +161,45 @@ public:
 
 public:
 	ForwardStandardMaterial(unsigned int vertex, unsigned int fragment, unsigned int tessellationControl, unsigned int tessellationEvaluation, unsigned int geometry) {
+
+		glGenProgramPipelines(1, &renderingPipeline);
+		glBindProgramPipeline(renderingPipeline);
+		if (vertex != NULL_SHADER) {
+			//binding to UBO
+			glUseProgramStages(renderingPipeline, GL_VERTEX_SHADER_BIT, vertex);
+			unsigned int matrixIndex = glGetUniformBlockIndex(vertex, "Matrix");
+			glUniformBlockBinding(vertex, matrixIndex, BIND_POINT::MATRIX_POINT);
+		}
+			
+		if (fragment != NULL_SHADER)
+			glUseProgramStages(renderingPipeline, GL_FRAGMENT_SHADER_BIT, fragment);
+		if (tessellationControl != NULL_SHADER)
+			glUseProgramStages(renderingPipeline, GL_TESS_CONTROL_SHADER_BIT, tessellationControl);
+		if (tessellationEvaluation != NULL_SHADER)
+			glUseProgramStages(renderingPipeline, GL_TESS_EVALUATION_SHADER_BIT, tessellationEvaluation);
+		if (geometry != NULL_SHADER)
+			glUseProgramStages(renderingPipeline, GL_GEOMETRY_SHADER_BIT, geometry);
+
 		vertexProgram = vertex;
 		fragmentProgram = fragment;
 		tcProgram = tessellationControl;
 		teProgram = tessellationEvaluation;
 		geometryProgram = geometry;
-
-		diffuseTexture = NULL_TEX;
-		specularTexture = NULL_TEX;
-		normalTexture = NULL_TEX;
-		ambientTexture = NULL_TEX;
-		skyBox = NULL_TEX;
-
-		glGenProgramPipelines(1, &renderingPipeline);
-		if (vertexProgram != NULL_SHADER) {
-			//binding to UBO
-			glUseProgramStages(renderingPipeline, GL_VERTEX_SHADER_BIT, vertexProgram);
-			unsigned int matrixIndex = glGetUniformBlockIndex(vertexProgram, "Matrix");
-			glUniformBlockBinding(vertexProgram, matrixIndex, BIND_POINT::MATRIX_POINT);
-		}
-			
-		if (fragmentProgram != NULL_SHADER)
-			glUseProgramStages(renderingPipeline, GL_FRAGMENT_SHADER_BIT, fragmentProgram);
-		if (tcProgram != NULL_SHADER)
-			glUseProgramStages(renderingPipeline, GL_TESS_CONTROL_SHADER_BIT, tcProgram);
-		if (teProgram != NULL_SHADER)
-			glUseProgramStages(renderingPipeline, GL_TESS_EVALUATION_SHADER_BIT, teProgram);
-		if (geometryProgram != NULL_SHADER)
-			glUseProgramStages(renderingPipeline, GL_GEOMETRY_SHADER_BIT, geometryProgram);
 	}
 
-	void setTexture(unsigned int textureID, int textureType) {
-		switch (textureType)
-		{
-		case DIFFUSE_TEX:	diffuseTexture = textureID; break;
-		case SPECULAR_TEX:	specularTexture = textureID; break;
-		case AMBIENT_TEX:	ambientTexture = textureID; break;
-		case NORMAL_TEX:	normalTexture = textureID; break;
-		case SKYBOX_TEX:	skyBox = textureID; break;
-		default:
-			break;
-		}
-	}
+	//void setTexture(unsigned int textureID, int textureType) {
+	//	switch (textureType)
+	//	{
+	//	case DIFFUSE_TEX:	diffuseTexture = textureID; break;
+	//	case SPECULAR_TEX:	specularTexture = textureID; break;
+	//	case AMBIENT_TEX:	ambientTexture = textureID; break;
+	//	case NORMAL_TEX:	normalTexture = textureID; break;
+	//	case SKYBOX_TEX:	skyBox = textureID; break;
+	//	case SHADOW_TEX:	shadowMap = textureID; break;
+	//	default:
+	//		break;
+	//	}
+	//}
 
 	void setProgram(unsigned int program,int programType) {
 		switch (programType)
@@ -268,6 +248,11 @@ public:
 	unsigned int normalTexture;
 	unsigned int ambientTexture;
 	unsigned int skyBox;
+
+	//program info
+	unsigned int gBufferVertexProgram;
+	unsigned int gBufferFragmentProgram;
+
 };
 
 class CustomMaterial : public BaseMaterial {

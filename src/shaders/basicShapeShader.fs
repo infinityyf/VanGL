@@ -12,7 +12,6 @@ in VS_OUT{
 
 uniform sampler2D shadowMap;
 uniform sampler2D basicTex0;
-uniform vec3 viewPos;
 
 
 struct DirLight {

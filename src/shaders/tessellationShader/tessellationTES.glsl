@@ -19,6 +19,7 @@ struct Camera{          //align
 layout(std140) uniform Matrix{
     Camera camera;      //144   //0
     mat4 lightSpaceMatrix;//64    //208
+    
 };
 
 uniform sampler2D heightMap;

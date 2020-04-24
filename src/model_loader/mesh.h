@@ -8,9 +8,9 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <glad/glad.h>
-#include "texture.h"
+#include "../texture.h"
 
-#include "shader.h"
+#include "../shader.h"
 
 // vertex information
 struct Vertex {
@@ -29,7 +29,7 @@ public:
 	void setupMesh();
 	//draw in traditional way
 	void drawMesh(StandardShader* shader, unsigned int sky, int shadowID=NULL);
-	void drawMesh(SeperatePipeline* shader);
+	void drawMesh(SeperatePipeline* shader, unsigned int sky, unsigned int shadowID =NULL);
 	//draw in PBR way
 	void drawMeshPBR(StandardShader* shader, unsigned int irradiance, unsigned int prefilter, unsigned int brdfLUT, int shadowID = NULL);
 	void drawMeshInstanced(StandardShader* shader, unsigned int sky, int amount);
@@ -141,9 +141,55 @@ inline void Mesh::drawMesh(StandardShader* shader, unsigned int sky,int shadowID
 	glBindVertexArray(0);
 }
 
-inline void Mesh::drawMesh(SeperatePipeline* shader)
+inline void Mesh::drawMesh(SeperatePipeline* shader,unsigned int sky, unsigned int shadowID)
 {
-	//assemble the programs
+	shader->use();
+	unsigned int i;
+	for (i = 0; i < textures.size(); i++) {
+
+		unsigned int type = textures[i].textureType;
+		switch (type)
+		{
+			// set texture1 uniform to texture unit0(bind with GPU texture unit not data)
+			//case AMBIENT_TEX: shader->setInt("material.ambient", i);
+		case DIFFUSE_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			setInt("material.diffuse", i,shader->fragmentProgram);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		case SPECULAR_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			setInt("material.specular", i, shader->fragmentProgram);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		case AMBIENT_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			setInt("material.ambient", i, shader->fragmentProgram);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break; }
+		case NORMAL_TEX: {
+			glActiveTexture(GL_TEXTURE0 + i);
+			setInt("material.normal", i, shader->fragmentProgram);
+			glBindTexture(GL_TEXTURE_2D, textures[i].textureID);
+			break;
+		}
+		default:
+			break;
+		}
+
+	}
+	setFloat("material.shininess", 32.0f, shader->fragmentProgram);
+	// load sky box
+	glActiveTexture(GL_TEXTURE0 + i);
+	setInt("material.sky", i, shader->fragmentProgram);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, sky);
+	if (shadowID != NULL) {
+		//load shadow map
+		glActiveTexture(GL_TEXTURE0 + (i + 1));
+		setInt("shadowMap", (i + 1), shader->fragmentProgram);
+		glBindTexture(GL_TEXTURE_2D, shadowID);
+	}
+
 	shader->use();
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
