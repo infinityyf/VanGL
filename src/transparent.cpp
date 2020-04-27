@@ -7,6 +7,7 @@
 //#include "camera.h"
 //#include "shader.h"
 //#include "shadowMap.h"
+//#include "model_loader/model.h"
 //
 ////basic shape
 //#include "basic_shape/plane.h"
@@ -37,7 +38,7 @@
 //	//get cursor but make it invisible
 //	//window.SetInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 //
-//	Camera camera(glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.01f, 100.0f);
+//	Camera camera(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.01f, 100.0f);
 //	camera.linkToWindow(&window);
 //	//register size change call back
 //	camera.SetFramebufferSizeCallback();
@@ -49,39 +50,30 @@
 //	glGenBuffers(1, &UBO);
 //	glBindBuffer(GL_UNIFORM_BUFFER, UBO);
 //	glBufferData(GL_UNIFORM_BUFFER, 512, NULL, GL_DYNAMIC_DRAW);
-//	glBindBuffer(GL_UNIFORM_BUFFER,0);
+//	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 //
-//	//shader setting 
-//	StandardShader tesselation(
-//		(path + "src\\shaders\\tessellationShader\\tessellation.vs").c_str()
-//		, (path + "src\\shaders\\tessellationShader\\tessellation.fs").c_str()
-//		, (path + "src\\shaders\\tessellationShader\\tessellationTCS.glsl").c_str()
-//		, (path + "src\\shaders\\tessellationShader\\tessellationTES.glsl").c_str());
-//	unsigned int matrixIndex = glGetUniformBlockIndex(tesselation.shaderProgramID, "Matrix");
+//	StandardShader::createIncludeShaderFile((path + "src\\shaders\\includeShader\\baseLights.glsl").c_str());
+//	StandardShader::createIncludeShaderFile((path + "src\\shaders\\includeShader\\baseFunctions.glsl").c_str());
+//	StandardShader::createIncludeShaderFile((path + "src\\shaders\\includeShader\\baseVariables.glsl").c_str());
+//	Skybox skybox(path + "scene\\materials\\textures\\skybox");
 //
-//	glUniformBlockBinding(tesselation.shaderProgramID, matrixIndex, BIND_POINT::MATRIX_POINT);
-//	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 //	
-//	//model setting
-//	Plane::GenTerrain(100, 100);
-//	Plane* plane = new Plane();
-//	Texture heightMap((path + "scene\\materials\\terrain\\terrain.png").c_str());
-//	Texture terrainTex0((path + "scene\\materials\\terrain\\terrainTex0.jpg").c_str());
-//	Texture terrainTex1((path + "scene\\materials\\terrain\\terrainTex3.jpg").c_str());
-//	Texture terrainTex2((path + "scene\\materials\\terrain\\terrainTex2.jpg").c_str());
-//	tesselation.use();
-//	tesselation.setInt("heightMap", 0);
-//	tesselation.setInt("terrainTex0", 1);
-//	tesselation.setInt("terrainTex1", 2);
-//	tesselation.setInt("terrainTex2", 3);
+//	StandardShader shader(
+//		(path + "src\\shaders\\transparentShader\\transparent.vs").c_str()
+//		, (path + "src\\shaders\\transparentShader\\transparent.fs").c_str());
+//	
+//	unsigned int matrixIndex = glGetUniformBlockIndex(shader.shaderProgramID, "Matrix");
+//	glUniformBlockBinding(shader.shaderProgramID, matrixIndex, BIND_POINT::MATRIX_POINT);
+//	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 //
+//	Model dragon((path + "scene\\models\\dragon.obj"));
 //
 //	//rendering setting
 //	glEnable(GL_DEPTH_TEST);
 //	glEnable(GL_CULL_FACE);
 //	glEnable(GL_MULTISAMPLE);
 //
-//	
+//
 //	//gui setting
 //	IMGUI_CHECKVERSION();
 //	ImGui::CreateContext();
@@ -90,9 +82,7 @@
 //	// Setup Platform/Renderer bindings
 //	ImGui_ImplGlfw_InitForOpenGL(window.window, true);
 //	ImGui_ImplOpenGL3_Init("#version 410");
-//	float sub = 16;
-//	float heightScale = 0.1f;
-//	glm::mat4 model(1.0);
+//	float f0 = 0.04;
 //
 //	//render loop
 //	while (!glfwWindowShouldClose(window.window)) {
@@ -102,7 +92,7 @@
 //		camera.processInput();
 //		camera.updateMatrixs();
 //
-//		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //
 //		glBindBuffer(GL_UNIFORM_BUFFER, UBO);
 //		glBufferSubData(GL_UNIFORM_BUFFER, 0, 64, glm::value_ptr(camera.view));
@@ -110,20 +100,13 @@
 //		glBufferSubData(GL_UNIFORM_BUFFER, 128, 4, &camera.nearPlane);
 //		glBufferSubData(GL_UNIFORM_BUFFER, 132, 4, &camera.farPlane);
 //		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-//		tesselation.use();
-//		tesselation.setVector3("viewPos", camera.cameraPos);
-//		tesselation.setFloat("sub", sub);
-//		tesselation.setFloat("heightScale", heightScale);
-//		glActiveTexture(GL_TEXTURE0);
-//		glBindTexture(GL_TEXTURE_2D, heightMap.textureID);
-//		glActiveTexture(GL_TEXTURE1);
-//		glBindTexture(GL_TEXTURE_2D, terrainTex0.textureID);
-//		glActiveTexture(GL_TEXTURE2);
-//		glBindTexture(GL_TEXTURE_2D, terrainTex1.textureID);
-//		glActiveTexture(GL_TEXTURE3);
-//		glBindTexture(GL_TEXTURE_2D, terrainTex2.textureID);
+//	
 //
-//		plane->DrawDebug(&tesselation);
+//		dragon.drawModel(&shader, skybox.skyBox, 0);
+//
+//		glDepthFunc(GL_LEQUAL);
+//		skybox.drawSkyBox();
+//
 //
 //		//check events
 //		glfwPollEvents();
@@ -131,9 +114,8 @@
 //		ImGui_ImplOpenGL3_NewFrame();
 //		ImGui_ImplGlfw_NewFrame();
 //		ImGui::NewFrame();
-//		ImGui::Begin("tessellation setting");                          // Create a window called "Hello, world!" and append into it.
-//		ImGui::SliderFloat("sub", &sub, 0.0f, 512.0);
-//		ImGui::SliderFloat("heightScale", &heightScale, 0.1f, 2.0f);
+//		ImGui::Begin("transparent setting");        
+//		ImGui::SliderFloat("f0", &f0, 0.0f, 10.0f);
 //		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 //		ImGui::End();
 //		ImGui::Render();

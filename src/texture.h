@@ -159,6 +159,8 @@ inline unsigned int Texture::loadTextureFromFile(const char* picName, std::strin
 
 		// set date(set the second parameter to use mipmap or use glgenerateMipmap)
 		glTexImage2D(GL_TEXTURE_2D, 0, format, ImageWidth, ImageHeight, 0, format, GL_UNSIGNED_BYTE, data);
+		//glTextureStorage2D;
+		//glTextureSubImage3D
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {

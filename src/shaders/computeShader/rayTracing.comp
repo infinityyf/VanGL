@@ -1,0 +1,21 @@
+#version 430 core
+#extension GL_NV_shadow_samplers_cube : enable
+layout (local_size_x=32, local_size_y=16) in;   //work ground
+
+
+
+layout (rgba16f, binding = 0) uniform image2D screen;  //data image
+
+uniform samplerCube sky;
+
+uniform vec3 viewPos;
+uniform mat4 view;         
+uniform mat4 projection;    
+
+void main(void)
+{
+    ivec2 pos=ivec2(gl_GlobalInvocationID.xy); //确认线程对应的像素
+    barrier();
+    vec4 data = textureCube(sky,viewPos);
+    imageStore(screen,pos.xy,data);
+}

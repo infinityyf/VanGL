@@ -108,6 +108,12 @@
     <ClCompile Include="src\test.cpp">
       <Filter>source\test</Filter>
     </ClCompile>
+    <ClCompile Include="src\transparent.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rayTracing.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">

@@ -155,8 +155,10 @@
     <ClCompile Include="3rd\imgui\integration\imgui_impl_win32.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\rayTracing.cpp" />
     <ClCompile Include="src\tessellation.cpp" />
     <ClCompile Include="src\test.cpp" />
+    <ClCompile Include="src\transparent.cpp" />
     <ClCompile Include="src\源.cpp" />
   </ItemGroup>
   <ItemGroup>

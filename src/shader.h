@@ -50,7 +50,7 @@ public:
 	// get source code 
 	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* geometryPath = nullptr,bool include = false);
 	StandardShader(const GLchar* vertexPath, const GLchar* fragmentPath, const GLchar* tessellationTCL, const GLchar* tessellationTEL, bool include = false);
-
+	StandardShader(const GLchar* computePath);
 	
 	// use program
 	void use();
@@ -340,6 +340,61 @@ inline StandardShader::StandardShader(const GLchar* vertexPath, const GLchar* fr
 
 
 
+}
+
+inline StandardShader::StandardShader(const GLchar* computePath)
+{
+	//open file
+	std::string computeCode;
+	std::ifstream computeShaderFile;
+	computeShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try {
+		//open file
+		computeShaderFile.open(computePath);
+		std::stringstream computeShaderStream, fShaderStream;
+
+		//rdbuf: use another stream to output this stream content
+		computeShaderStream << computeShaderFile.rdbuf();
+		computeShaderFile.close();
+
+		computeCode = computeShaderStream.str();
+
+	}
+	catch (std::ifstream::failure error) {
+		std::cerr << "ERROR SHADER: FILE READ FAILE" << std::endl;
+	}
+
+	//source code
+	const char* computeShaderCode = computeCode.c_str();
+
+
+	unsigned int computeShader;
+
+	//check result
+	int  success;
+	char infoLog[512];
+
+
+	computeShader = glCreateShader(GL_COMPUTE_SHADER);
+	glShaderSource(computeShader, 1, &computeShaderCode, NULL);
+
+	glCompileShader(computeShader);
+
+	glGetShaderiv(computeShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(computeShader, 512, NULL, infoLog);
+		std::cerr << "ERROR IN compute SHADER:\n" << infoLog << std::endl;
+	}
+
+	shaderProgramID = glCreateProgram();
+	glAttachShader(shaderProgramID, computeShader);
+	glLinkProgram(shaderProgramID);
+	glGetProgramiv(shaderProgramID, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgramID, 512, NULL, infoLog);
+		std::cerr << "ERROR IN LINK:\n" << infoLog << std::endl;
+	}
+	glDeleteShader(computeShader);
 }
 
 void StandardShader::use() {
