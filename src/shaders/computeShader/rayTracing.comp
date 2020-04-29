@@ -5,6 +5,7 @@ layout (local_size_x=32, local_size_y=16) in;   //work ground
 
 
 layout (rgba16f, binding = 0) uniform image2D screen;  //data image
+layout (rgba16f, binding = 1) uniform image2D direction;  //data image
 
 uniform samplerCube sky;
 
@@ -15,7 +16,9 @@ uniform mat4 projection;
 void main(void)
 {
     ivec2 pos=ivec2(gl_GlobalInvocationID.xy); //确认线程对应的像素
+    vec3 dir = imageLoad(direction,pos).rgb - viewPos;
+    dir = inverse(mat3(view)) * dir;
     barrier();
-    vec4 data = textureCube(sky,viewPos);
+    vec4 data = textureCube(sky,dir);
     imageStore(screen,pos.xy,data);
 }

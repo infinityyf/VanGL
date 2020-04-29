@@ -82,10 +82,33 @@ int main() {
 	glBindImageTexture(0, screen, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA16F);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	//direction image
+	float* direction = (float*)malloc(sizeof(float)*width*height*4);
+	float pixelSize = 0.01;
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			float x = j - width / 2.0f;
+			float y = x - height / 2.0f;
+			glm::vec3 viewPixelPosition = glm::vec3(0.0f);
+			viewPixelPosition += glm::vec3(0.0, 0.0, 0.01) + glm::vec3(0.0,y* pixelSize,  0.0) + glm::vec3( x* pixelSize, 0.0, 0.0);
+			direction[(i * width + j) * 4 + 0] = viewPixelPosition.x;
+			direction[(i * width + j) * 4 + 1] = viewPixelPosition.y;
+			direction[(i * width + j) * 4 + 2] = viewPixelPosition.z;
+			direction[(i * width + j) * 4 + 3] = 0.0f;
+		}
+	}
+
+	unsigned int directionImage;
+	glGenTextures(1, &directionImage);
+	glBindTexture(GL_TEXTURE_2D, directionImage);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA16F, width, height);
+
+	glBindImageTexture(1, directionImage, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA16F);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_FLOAT, direction);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	//post rendering
 	Screen* postScreen = new Screen();
-	
-	float* data = new float[width * height];
 
 	//render loop
 	while (!glfwWindowShouldClose(window.window)) {
@@ -98,7 +121,10 @@ int main() {
 		//calculate rays
 		rayTracingShader.use();
 		rayTracingShader.setVector3("viewPos", camera.cameraPos);
+		rayTracingShader.setMatrix4("view", camera.view);
 		glBindImageTexture(0, screen, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA16F);
+		glBindImageTexture(1, directionImage, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA16F);
+
 
 		glDispatchCompute(width, height,1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
