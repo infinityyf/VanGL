@@ -16,21 +16,39 @@ uniform mat4 projection;
 void main(void)
 {
     ivec2 pos=ivec2(gl_GlobalInvocationID.xy ); //确认线程对应的像素
-    vec3 pixelPos = imageLoad(direction,pos).rgb;
-    pixelPos = inverse(mat3(view)) * pixelPos;
+    vec4 pixelPos = imageLoad(direction,pos);
+    pixelPos = inverse(view) * pixelPos;  //世界坐标下的像素坐标
     
-    vec3 dir = normalize(pixelPos - viewPos);
-
-    //计算和场景球的相交
-    vec3 sceneVector = vec3(0.0)-viewPos;
-    float cosTheta = dot(sceneVector,dir);
-    float dist =length(sceneVector - dir*cosTheta);
+    vec3 dir = normalize(pixelPos.xyz - viewPos);
     vec4 data;
-    if(dist < 0.1f){
-        data = vec4(0.0,0.0,0.0,1.0);
-    }
-    else{
+    // //计算和场景球的相交
+    // vec3 sceneVector = vec3(0.0)-viewPos;
+    // float cosTheta = dot(sceneVector,dir);
+    // float dist =length(sceneVector - dir*cosTheta);
+    // vec4 data;
+    // if(dist < 0.1f){
+    //     data = vec4(0.0,0.0,0.0,1.0);
+    // }
+    // else{
+    //     data = textureCube(sky,dir);
+    // }
+
+    //计算和球的交点
+    vec3 v = vec3(0.0)-2*viewPos;
+    vec3 d = dir;
+    float c = dot(v,v) - 0.01f;
+    float b = 2*dot(v,d);
+    float a = dot(d,d);
+    float delta = b*b-4*a*c;
+    if(delta<0){
         data = textureCube(sky,dir);
+    }else{
+        float t = (-b-sqrt(delta))/(2*a);
+        vec3 hitPos = viewPos+dir*t;
+        vec3 normal = normalize(hitPos);
+        vec3 refl = reflect(dir,normal);
+        vec3 refr = refract(dir,normal,0.5);
+        data = textureCube(sky,refl)*0.1 + textureCube(sky,refr)*0.9;
     }
     barrier();
     

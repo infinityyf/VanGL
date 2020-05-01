@@ -94,17 +94,17 @@ int main() {
 
 	//direction image
 	float* direction = (float*)malloc(sizeof(float)*width*height*4);
-	float pixelSize = 0.001;
+	float pixelSize = 0.00003;
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			float x = j - width / 2.0f;
 			float y = i - height / 2.0f;
-			glm::vec3 viewPixelPosition = glm::vec3(0.0f);
-			viewPixelPosition += glm::vec3(0.0, 0.0, 0.01) + glm::vec3(0.0,y* pixelSize,  0.0) + glm::vec3( x* pixelSize, 0.0, 0.0);
+			glm::vec4 viewPixelPosition = glm::vec4(0.0f);
+			viewPixelPosition += glm::vec4(0.0, 0.0, 0.01,1.0) + glm::vec4(0.0,y* pixelSize,  0.0, 1.0) + glm::vec4( x* pixelSize, 0.0, 0.0, 1.0);
 			direction[(i * width + j) * 4 + 0] = viewPixelPosition.x;
 			direction[(i * width + j) * 4 + 1] = viewPixelPosition.y;
 			direction[(i * width + j) * 4 + 2] = viewPixelPosition.z;
-			direction[(i * width + j) * 4 + 3] = 0.0f;
+			direction[(i * width + j) * 4 + 3] = 1.0f;
 		}
 	}
 
