@@ -1,6 +1,6 @@
 #version 430 core
 #extension GL_NV_shadow_samplers_cube : enable
-layout (local_size_x=32, local_size_y=16) in;   //work ground
+layout (local_size_x=1, local_size_y=1) in;   //work ground
 
 
 
@@ -15,10 +15,25 @@ uniform mat4 projection;
 
 void main(void)
 {
-    ivec2 pos=ivec2(gl_GlobalInvocationID.xy); //确认线程对应的像素
-    vec3 dir = imageLoad(direction,pos).rgb - viewPos;
-    dir = inverse(mat3(view)) * dir;
+    ivec2 pos=ivec2(gl_GlobalInvocationID.xy ); //确认线程对应的像素
+    vec3 pixelPos = imageLoad(direction,pos).rgb;
+    pixelPos = inverse(mat3(view)) * pixelPos;
+    
+    vec3 dir = normalize(pixelPos - viewPos);
+
+    //计算和场景球的相交
+    vec3 sceneVector = vec3(0.0)-viewPos;
+    float cosTheta = dot(sceneVector,dir);
+    float dist =length(sceneVector - dir*cosTheta);
+    vec4 data;
+    if(dist < 0.1f){
+        data = vec4(0.0,0.0,0.0,1.0);
+    }
+    else{
+        data = textureCube(sky,dir);
+    }
     barrier();
-    vec4 data = textureCube(sky,dir);
-    imageStore(screen,pos.xy,data);
+    
+    //vec4 data = vec4(pixelPos,1.0);
+    imageStore(screen,pos,data);
 }

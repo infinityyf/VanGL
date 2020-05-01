@@ -46,6 +46,13 @@ int main() {
 	camera.SetScrollCallBack();
 
 	
+	//uniform buffer
+	unsigned int UBO;
+	glGenBuffers(1, &UBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+	glBufferData(GL_UNIFORM_BUFFER, 512, NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
 
 	//create computer shader
@@ -63,7 +70,10 @@ int main() {
 	postShader.use();
 	postShader.setInt("screenTexture", 0);
 	
-	
+	unsigned int matrixIndex4 = glGetUniformBlockIndex(skybox.shader->shaderProgramID, "Matrix");
+	glUniformBlockBinding(skybox.shader->shaderProgramID, matrixIndex4, BIND_POINT::MATRIX_POINT);
+
+
 	//generate mesh info send to computer shader
 
 
@@ -84,11 +94,11 @@ int main() {
 
 	//direction image
 	float* direction = (float*)malloc(sizeof(float)*width*height*4);
-	float pixelSize = 0.01;
+	float pixelSize = 0.001;
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			float x = j - width / 2.0f;
-			float y = x - height / 2.0f;
+			float y = i - height / 2.0f;
 			glm::vec3 viewPixelPosition = glm::vec3(0.0f);
 			viewPixelPosition += glm::vec3(0.0, 0.0, 0.01) + glm::vec3(0.0,y* pixelSize,  0.0) + glm::vec3( x* pixelSize, 0.0, 0.0);
 			direction[(i * width + j) * 4 + 0] = viewPixelPosition.x;
