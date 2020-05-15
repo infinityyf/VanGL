@@ -36,7 +36,7 @@ void main(void)
     //计算和球的交点
     vec3 v = vec3(0.0)-2*viewPos;
     vec3 d = dir;
-    float c = dot(v,v) - 0.01f;
+    float c = dot(v,v) - 1.0f;
     float b = 2*dot(v,d);
     float a = dot(d,d);
     float delta = b*b-4*a*c;
@@ -48,7 +48,7 @@ void main(void)
         vec3 normal = normalize(hitPos);
         vec3 refl = reflect(dir,normal);
         vec3 refr = refract(dir,normal,0.5);
-        data = textureCube(sky,refl)*0.1 + textureCube(sky,refr)*0.9;
+        data = textureCube(sky,refl)*vec4(0.0,0.0,1.0,1.0)*0.5 + textureCube(sky,refr)*0.5;
     }
     barrier();
     
