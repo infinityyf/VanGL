@@ -72,6 +72,7 @@ int main() {
 	Skybox blackSkybox(path + "scene\\materials\\textures\\blackSky");
 	//shaders
 	StandardShader planeShader((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\basicShapeShader.fs").c_str());
+	StandardShader screenSpaceReflect((path + "src\\shaders\\basicShapeShader.vs").c_str(), (path + "src\\shaders\\ScreenSpaceEffect\\SSR.fs").c_str());
 	StandardShader shader((path + "src\\shaders\\StandardShader.vs").c_str(), (path + "src\\shaders\\StandardShader.fs").c_str()/*, (path + "src\\shaders\\geometry.gs").c_str()*/);
 	StandardShader pbrShader((path + "src\\shaders\\PBR\\pbr.vs").c_str(), (path + "src\\shaders\\PBR\\pbr.fs").c_str(),nullptr, true);
 	StandardShader debugShader((path + "src\\shaders\\debugShader\\debugShader.vs").c_str(), (path + "src\\shaders\\debugShader\\debugShader.fs").c_str());
@@ -123,6 +124,10 @@ int main() {
 	ssaoShader.setInt("width", width);
 	ssaoShader.setInt("height", height);
 
+	screenSpaceReflect.use();
+	screenSpaceReflect.setInt("screenDepth",0);
+	screenSpaceReflect.setInt("screenColor",1);
+
 	//bind uniform buffer object to bind point
 	glBindBufferBase(GL_UNIFORM_BUFFER, BIND_POINT::MATRIX_POINT, UBO);
 
@@ -163,10 +168,14 @@ int main() {
 	nanosuit.translate(glm::vec3(0.0f, -5.0f, 0.0f));
 	//PBR MODEL
 	PBRModel gun(path + "scene\\models\\Cerberus\\Cerberus_LP.FBX");
+	//load lut
+	Texture brdf("scene\\materials\\PBR\\ibl_brdf_lut.png");
 	gun.scale(glm::vec3(0.01f, 0.01f, 0.01f));
 	gun.rotate(glm::vec3(1.0, 0.0, 0.0), -3.14 / 2);
-	Texture brdf("scene\\materials\\PBR\\ibl_brdf_lut.png");
+	
 
+	Plane plane = Plane();
+	plane.scale(glm::vec3(10.0f, 1.0f, 10.0f));
 
 	//shadow map 
 	ShadowMap* shadowMap = new ShadowMap(glm::vec3(3.0f, 3.0f, 3.0f), glm::vec3(-1.0f, -1.0f, -1.0f));
@@ -291,7 +300,7 @@ int main() {
 
 			//draw floor and reflection after draw gun
 			//screenSpaceReflect.use();
-			//floor, draw();
+			plane.DrawSSR(&screenSpaceReflect, frame->texAttachs[DEPTH_TEXTURE], frame->texAttachs[COLOR_TEXTURE]);
 
 
 			//set the depth with 1 (so only draw on the pixels not cull bt object)

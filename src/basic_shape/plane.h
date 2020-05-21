@@ -77,12 +77,28 @@ public:
 	Plane(unsigned int textureID=NULL);
 	void Draw(StandardShader* shader,int shadowID=NULL);
 	void DrawDebug(StandardShader* shader);
+	void DrawSSR(StandardShader* shader, unsigned int screenDepthTex, unsigned int screenColorTex);;
 
 	//generate terrain
 	static void GenTerrain(int x=128, int y=128);
 
 	glm::mat4 model;
+	void scale(glm::vec3 scale);
+	void translate(glm::vec3 translate);
+	void rotate(glm::vec3 axis, float radian);
 };
+
+void Plane::scale(glm::vec3 scale) {
+	model = glm::scale(model, scale);
+}
+
+void Plane::translate(glm::vec3 translate) {
+	model = glm::translate(model, translate);
+}
+
+void Plane::rotate(glm::vec3 axis, float radian) {
+	model = glm::rotate(model, radian, axis);
+}
 
 
 Plane::Plane(unsigned int textureID) {
@@ -139,6 +155,19 @@ inline void Plane::DrawDebug(StandardShader* shader)
 //	glDrawArrays(GL_LINES, 0, 12);
 //	glBindVertexArray(0);
 
+}
+
+inline void Plane::DrawSSR(StandardShader* shader, unsigned int screenDepthTex, unsigned int screenColorTex)
+{
+	shader->use();
+	shader->setMatrix4("model", model);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, screenDepthTex);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, screenColorTex);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 24);
+	glBindVertexArray(0);
 }
 
 inline void Plane::GenTerrain(int x, int y)

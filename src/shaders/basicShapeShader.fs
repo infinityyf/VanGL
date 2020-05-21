@@ -1,4 +1,6 @@
 #version 430 core
+#extension GL_ARB_shading_language_include : require
+#include "/baseVariables.glsl"
 layout (location = 0) out vec4 FragColor;
 
 
@@ -10,7 +12,6 @@ in VS_OUT{
     vec4 FragLightSpacePos;
 }fs_in;
 
-uniform sampler2D shadowMap;
 uniform sampler2D basicTex0;
 
 

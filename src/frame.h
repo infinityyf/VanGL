@@ -20,7 +20,7 @@ GLuint attachments[MAC_COLOR_ATTACHMENT] = {
 //record what color attachment means
 enum COLOR_ATTACH {
 	COLOR_TEXTURE = 0,
-	BLOOM_TEXTURE = 1,
+	DEPTH_TEXTURE = 1,
 	POSITION_TEXTURE = 2,
 	NORMAL_TEXTURE = 3,
 	AMBIENT_TEXTURE = 4,

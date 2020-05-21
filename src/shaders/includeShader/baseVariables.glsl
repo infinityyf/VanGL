@@ -22,7 +22,9 @@ struct StandardMaterial{
     float shininess;
 };
 uniform StandardMaterial material;
-uniform sampler2D shadowMap;//shadow map
+
+//shadow map
+uniform sampler2D shadowMap;
 
 
 //pbr material
@@ -34,6 +36,7 @@ struct pbrMaterial{
     sampler2D aoMap;
 };
 uniform pbrMaterial PBRmaterial;
+//预过滤贴图
 uniform samplerCube prefilterMap;
 uniform samplerCube irradianceMap;
 uniform sampler2D brdfMap;

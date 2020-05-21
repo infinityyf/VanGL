@@ -5,7 +5,8 @@
 #define NUM_POINT_LIGHTS 4
 #define NUM_SPOT_LIGHTS 4
 
-layout (location = 0) out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;//颜色信息
+layout (location = 1) out vec4 FragDepth;//深度信息
 const float PI = 3.14159265359;
 
 in VS_OUT{
@@ -114,4 +115,7 @@ void main()
 
     vec3 ambient    = (kd * diffuse + specular) * ao;
     FragColor = vec4(ambient,1.0f);
+
+    //将深度信息填入帧缓存，用于进行屏幕空间计算
+    FragDepth = fs_in.View * vec4(fs_in.FragPos,1.0);
 }
