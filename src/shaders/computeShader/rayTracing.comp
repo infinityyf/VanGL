@@ -13,43 +13,71 @@ uniform vec3 viewPos;
 uniform mat4 view;         
 uniform mat4 projection;    
 
+//射线和球求交，得到是否相交，以及交点和反射方向
+bool rayHitSphere(inout vec3 rayOrigin,inout vec3 rayDir,vec3 spherePos,float sphereRadius){
+    vec3 v = spherePos-2*rayOrigin;
+    vec3 d = rayDir;
+    float c = dot(v,v) - sphereRadius;
+    float b = 2*dot(v,d);
+    float a = dot(d,d);
+    float delta = b*b-4*a*c;
+    if(delta<0){
+        return false;
+    }else{
+        float t = (-b-sqrt(delta))/(2*a);
+        rayOrigin = viewPos+rayDir*t;
+        vec3 normal = normalize(rayOrigin-spherePos);
+        rayDir = reflect(rayDir,normal);
+        return true;
+    }
+}
+
 void main(void)
 {
     ivec2 pos=ivec2(gl_GlobalInvocationID.xy ); //确认线程对应的像素
     vec4 pixelPos = imageLoad(direction,pos);
     pixelPos = inverse(view) * pixelPos;  //世界坐标下的像素坐标
     
+    //得到初始光线的起点和方向
     vec3 dir = normalize(pixelPos.xyz - viewPos);
+    vec3 origin = viewPos;
     vec4 data;
-    // //计算和场景球的相交
-    // vec3 sceneVector = vec3(0.0)-viewPos;
-    // float cosTheta = dot(sceneVector,dir);
-    // float dist =length(sceneVector - dir*cosTheta);
-    // vec4 data;
-    // if(dist < 0.1f){
-    //     data = vec4(0.0,0.0,0.0,1.0);
-    // }
-    // else{
-    //     data = textureCube(sky,dir);
-    // }
 
     //计算和球的交点
-    vec3 v = vec3(0.0)-2*viewPos;
-    vec3 d = dir;
-    float c = dot(v,v) - 1.0f;
-    float b = 2*dot(v,d);
-    float a = dot(d,d);
-    float delta = b*b-4*a*c;
-    if(delta<0){
-        data = textureCube(sky,dir);
+    if(rayHitSphere(origin,dir,vec3(0.0,0.0,0.0),1.0)){
+        data = textureCube(sky,dir)*vec4(0.0,0.0,1.0,1.0);
     }else{
-        float t = (-b-sqrt(delta))/(2*a);
-        vec3 hitPos = viewPos+dir*t;
-        vec3 normal = normalize(hitPos);
-        vec3 refl = reflect(dir,normal);
-        vec3 refr = refract(dir,normal,0.5);
-        data = textureCube(sky,refl)*vec4(0.0,0.0,1.0,1.0)*0.5 + textureCube(sky,refr)*0.5;
+        data = textureCube(sky,dir);
     }
+
+    if(rayHitSphere(origin,dir,vec3(0.0,2.0,0.0),1.0)){
+        data = textureCube(sky,dir)*vec4(0.0,1.0,0.0,1.0);
+    }else{
+        data = textureCube(sky,dir);
+    }
+
+    if(rayHitSphere(origin,dir,vec3(2.0,0.0,0.0),1.0)){
+        data = textureCube(sky,dir)*vec4(1.0,0.0,0.0,1.0);
+    }else{
+        data = textureCube(sky,dir);
+    }
+
+    // vec3 v = vec3(0.0)-2*viewPos;
+    // vec3 d = dir;
+    // float c = dot(v,v) - 1.0f;
+    // float b = 2*dot(v,d);
+    // float a = dot(d,d);
+    // float delta = b*b-4*a*c;
+    // if(delta<0){
+    //     data = textureCube(sky,dir);
+    // }else{
+    //     float t = (-b-sqrt(delta))/(2*a);
+    //     vec3 hitPos = viewPos+dir*t;
+    //     vec3 normal = normalize(hitPos);
+    //     vec3 refl = reflect(dir,normal);
+    //     vec3 refr = refract(dir,normal,0.5);
+    //     data = textureCube(sky,refl)*vec4(0.0,0.0,1.0,1.0)*0.5 + textureCube(sky,refr)*0.5;
+    // }
     barrier();
     
     //vec4 data = vec4(pixelPos,1.0);
