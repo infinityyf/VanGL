@@ -175,7 +175,7 @@ int main() {
 	
 
 	Plane plane = Plane();
-	//plane.translate(glm::vec3(0.0f, 0.2f, 0.0f));
+	plane.translate(glm::vec3(0.0f, 0.2f, 0.0f));
 	plane.scale(glm::vec3(10.0f, 1.0f, 10.0f));
 
 	//shadow map 
